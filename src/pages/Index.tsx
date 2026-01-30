@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Wallet, Shield, FileText, Snowflake, Zap, Terminal, Lock, ChevronRight } from 'lucide-react';
+import { Wallet, Snowflake, Zap, Terminal, Lock, ChevronRight } from 'lucide-react';
 import { useAppKit } from '@reown/appkit/react';
 import { ParticleBackground } from '@/components/3d/ParticleBackground';
+import { HolographicShield } from '@/components/HolographicShield';
 import { NeonButton } from '@/components/ui/neon-button';
 import { NetworkBadge } from '@/components/ui/status-badge';
 import { useWallet } from '@/lib/web3/hooks';
@@ -121,71 +122,14 @@ export default function Index() {
       <main className="container mx-auto px-4 pt-20 pb-16 min-h-screen">
         <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 items-center min-h-[calc(100vh-10rem)]">
           
-          {/* Left Side - 3D Visual Focus */}
+          {/* Left Side - Holographic Shield Visual */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             className="relative flex items-center justify-center"
           >
-            <div className="relative w-full max-w-md aspect-square">
-              {/* Main Shield */}
-              <motion.div 
-                className="absolute inset-0 flex items-center justify-center"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
-              >
-                <div className="w-64 h-64 border border-primary/20" style={{
-                  clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
-                }} />
-              </motion.div>
-              
-              <motion.div 
-                className="absolute inset-0 flex items-center justify-center"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 45, repeat: Infinity, ease: 'linear' }}
-              >
-                <div className="w-48 h-48 border border-accent/30" style={{
-                  clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
-                }} />
-              </motion.div>
-
-              {/* Central Shield Icon */}
-              <motion.div 
-                className="absolute inset-0 flex items-center justify-center"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.3, type: 'spring' }}
-              >
-                <div className="w-40 h-40 hex-clip gradient-amber p-1 shadow-terminal-amber">
-                  <div className="w-full h-full hex-clip bg-background/95 flex items-center justify-center">
-                    <Shield className="w-16 h-16 text-primary" />
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Floating data points */}
-              {[0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-3 h-3 gradient-amber"
-                  style={{
-                    top: `${20 + i * 30}%`,
-                    left: i % 2 === 0 ? '10%' : '85%',
-                    clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
-                  }}
-                  animate={{
-                    y: [0, -10, 0],
-                    opacity: [0.5, 1, 0.5],
-                  }}
-                  transition={{
-                    duration: 2,
-                    delay: i * 0.3,
-                    repeat: Infinity,
-                  }}
-                />
-              ))}
-            </div>
+            <HolographicShield />
           </motion.div>
 
           {/* Right Side - Terminal Console */}

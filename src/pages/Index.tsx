@@ -1,37 +1,33 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Wallet, Shield, FileText, Snowflake, Zap, Terminal, Lock } from 'lucide-react';
+import { Wallet, Shield, FileText, Snowflake, Zap, Terminal, Lock, ChevronRight } from 'lucide-react';
 import { useAppKit } from '@reown/appkit/react';
 import { ParticleBackground } from '@/components/3d/ParticleBackground';
 import { NeonButton } from '@/components/ui/neon-button';
-import { GlassCard } from '@/components/ui/glass-card';
 import { NetworkBadge } from '@/components/ui/status-badge';
 import { useWallet } from '@/lib/web3/hooks';
 import { kiteTestnet } from '@/lib/web3/config';
 
-const features = [
+const capabilities = [
   {
-    icon: Shield,
-    title: 'Multi-Sig Security',
-    description: '2/3 threshold multi-signature wallet for maximum asset protection',
-    color: 'amber',
+    id: '01',
+    title: 'MULTI-SIG',
+    description: '2/3 threshold protection',
     href: '/dashboard',
   },
   {
-    icon: Snowflake,
-    title: 'Freeze Control',
-    description: 'Emergency freeze capabilities for suspicious addresses',
-    color: 'emerald',
+    id: '02',
+    title: 'FREEZE',
+    description: 'Emergency address blocking',
     href: '/freeze',
   },
   {
-    icon: FileText,
-    title: 'Proposal System',
-    description: 'Create, confirm and execute multi-sig proposals securely',
-    color: 'amber',
+    id: '03',
+    title: 'PROPOSALS',
+    description: 'Decentralized governance',
     href: '/proposals',
   },
-] as const;
+];
 
 // Typewriter effect component
 function TypewriterText({ text, className }: { text: string; className?: string }) {
@@ -48,7 +44,7 @@ function TypewriterText({ text, className }: { text: string; className?: string 
         </motion.span>
       ))}
       <motion.span 
-        className="inline-block w-3 h-6 bg-primary ml-1"
+        className="inline-block w-2 h-4 bg-primary ml-1"
         animate={{ opacity: [1, 0] }}
         transition={{ duration: 0.8, repeat: Infinity }}
       />
@@ -56,32 +52,52 @@ function TypewriterText({ text, className }: { text: string; className?: string 
   );
 }
 
+// Terminal status line
+function StatusLine({ label, value, status = 'normal' }: { 
+  label: string; 
+  value: string; 
+  status?: 'normal' | 'success' | 'warning';
+}) {
+  return (
+    <div className="terminal-line">
+      <span className="text-muted-foreground">{label}:</span>
+      <span className={
+        status === 'success' ? 'text-success' : 
+        status === 'warning' ? 'text-primary' : 
+        'text-foreground'
+      }>
+        {value}
+      </span>
+    </div>
+  );
+}
+
 export default function Index() {
   const { open } = useAppKit();
-  const { isConnected, address } = useWallet();
+  const { isConnected } = useWallet();
 
   return (
     <div className="relative min-h-screen overflow-hidden">
       <ParticleBackground />
       
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 z-50 terminal-card border-x-0 border-t-0" style={{ borderRadius: 0 }}>
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-3"
           >
-            <div className="w-10 h-10 hex-clip gradient-amber flex items-center justify-center">
-              <Terminal className="w-5 h-5 text-background" />
+            <div className="w-8 h-8 hex-clip gradient-amber flex items-center justify-center">
+              <Terminal className="w-4 h-4 text-background" />
             </div>
-            <span className="text-xl font-bold font-mono terminal-text">AGENT_PAY_GUARD</span>
+            <span className="text-lg font-bold font-mono terminal-text">AGENT_PAY_GUARD</span>
           </motion.div>
           
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-4"
+            className="flex items-center gap-3"
           >
             <NetworkBadge connected={isConnected} chainName={kiteTestnet.name} />
             {isConnected ? (
@@ -92,7 +108,7 @@ export default function Index() {
                 </NeonButton>
               </Link>
             ) : (
-              <NeonButton onClick={() => open()} pulse>
+              <NeonButton onClick={() => open()} size="sm">
                 <Wallet className="w-4 h-4" />
                 CONNECT
               </NeonButton>
@@ -101,131 +117,185 @@ export default function Index() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <main className="container mx-auto px-4 pt-32 pb-20">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Logo Animation */}
+      {/* Main Content - Split Screen Layout */}
+      <main className="container mx-auto px-4 pt-20 pb-16 min-h-screen">
+        <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 items-center min-h-[calc(100vh-10rem)]">
+          
+          {/* Left Side - 3D Visual Focus */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, type: 'spring' }}
-            className="mb-8"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="relative flex items-center justify-center"
           >
-            <div className="w-32 h-32 mx-auto hex-clip gradient-amber p-1 shadow-terminal-amber animate-float">
-              <div className="w-full h-full hex-clip bg-background/90 flex items-center justify-center">
-                <Shield className="w-14 h-14 text-primary" />
+            <div className="relative w-full max-w-md aspect-square">
+              {/* Main Shield */}
+              <motion.div 
+                className="absolute inset-0 flex items-center justify-center"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+              >
+                <div className="w-64 h-64 border border-primary/20" style={{
+                  clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
+                }} />
+              </motion.div>
+              
+              <motion.div 
+                className="absolute inset-0 flex items-center justify-center"
+                animate={{ rotate: -360 }}
+                transition={{ duration: 45, repeat: Infinity, ease: 'linear' }}
+              >
+                <div className="w-48 h-48 border border-accent/30" style={{
+                  clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
+                }} />
+              </motion.div>
+
+              {/* Central Shield Icon */}
+              <motion.div 
+                className="absolute inset-0 flex items-center justify-center"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3, type: 'spring' }}
+              >
+                <div className="w-40 h-40 hex-clip gradient-amber p-1 shadow-terminal-amber">
+                  <div className="w-full h-full hex-clip bg-background/95 flex items-center justify-center">
+                    <Shield className="w-16 h-16 text-primary" />
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Floating data points */}
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-3 h-3 gradient-amber"
+                  style={{
+                    top: `${20 + i * 30}%`,
+                    left: i % 2 === 0 ? '10%' : '85%',
+                    clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+                  }}
+                  animate={{
+                    y: [0, -10, 0],
+                    opacity: [0.5, 1, 0.5],
+                  }}
+                  transition={{
+                    duration: 2,
+                    delay: i * 0.3,
+                    repeat: Infinity,
+                  }}
+                />
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Right Side - Terminal Console */}
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="space-y-6"
+          >
+            {/* Title Block */}
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold font-mono mb-2">
+                <span className="terminal-text">AGENT</span>
+                <span className="text-foreground">_PAY_</span>
+                <span className="terminal-text">GUARD</span>
+              </h1>
+              <div className="h-0.5 w-full bg-gradient-to-r from-primary via-accent to-transparent mb-4" />
+              <div className="text-xs font-mono text-muted-foreground">
+                <TypewriterText text=">> SECURITY PROTOCOL v1.0.0" />
               </div>
             </div>
-          </motion.div>
 
-          {/* Title */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mb-6"
-          >
-            <h1 className="text-4xl md:text-6xl font-bold font-mono">
-              <span className="terminal-text">AGENT</span>
-              <span className="text-foreground">_PAY_</span>
-              <span className="terminal-text">GUARD</span>
-            </h1>
-            <div className="mt-4 text-sm font-mono text-muted-foreground">
-              <TypewriterText text=">> INITIALIZING SECURITY PROTOCOL..." />
+            {/* Status Console */}
+            <div className="control-panel">
+              <div className="panel-title">System Status</div>
+              <div className="space-y-1">
+                <StatusLine label="STATUS" value="ONLINE" status="success" />
+                <StatusLine label="SECURITY" value="MAXIMUM" status="success" />
+                <StatusLine label="NETWORK" value={kiteTestnet.name.toUpperCase()} />
+                <StatusLine label="CHAIN_ID" value="2368" />
+                <StatusLine label="THRESHOLD" value="2/3 MULTISIG" status="warning" />
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              {isConnected ? (
+                <>
+                  <Link to="/dashboard" className="block">
+                    <NeonButton size="lg" pulse className="w-full justify-between">
+                      <span className="flex items-center gap-2">
+                        <Zap className="w-5 h-5" />
+                        ACCESS TERMINAL
+                      </span>
+                      <ChevronRight className="w-5 h-5" />
+                    </NeonButton>
+                  </Link>
+                  <Link to="/freeze" className="block">
+                    <NeonButton size="lg" variant="secondary" className="w-full justify-between">
+                      <span className="flex items-center gap-2">
+                        <Snowflake className="w-5 h-5" />
+                        EMERGENCY FREEZE
+                      </span>
+                      <ChevronRight className="w-5 h-5" />
+                    </NeonButton>
+                  </Link>
+                </>
+              ) : (
+                <NeonButton size="lg" onClick={() => open()} pulse className="w-full">
+                  <Wallet className="w-5 h-5" />
+                  CONNECT WALLET TO CONTINUE
+                </NeonButton>
+              )}
             </div>
           </motion.div>
-
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto font-mono"
-          >
-            Military-grade security for your DeFi assets with{' '}
-            <span className="text-primary">multi-signature</span> protection and{' '}
-            <span className="text-accent">freeze</span> capabilities
-          </motion.p>
-
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="flex flex-wrap items-center justify-center gap-4 mb-16"
-          >
-            {isConnected ? (
-              <>
-                <Link to="/dashboard">
-                  <NeonButton size="lg" pulse>
-                    <Zap className="w-5 h-5" />
-                    ACCESS TERMINAL
-                  </NeonButton>
-                </Link>
-                <Link to="/freeze">
-                  <NeonButton size="lg" variant="secondary">
-                    <Snowflake className="w-5 h-5" />
-                    FREEZE CONTROL
-                  </NeonButton>
-                </Link>
-              </>
-            ) : (
-              <NeonButton size="lg" onClick={() => open()} pulse>
-                <Wallet className="w-5 h-5" />
-                CONNECT WALLET
-              </NeonButton>
-            )}
-          </motion.div>
-
-          {/* Feature Cards */}
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 + index * 0.1 }}
-              >
-                <Link to={feature.href}>
-                  <GlassCard 
-                    glow={feature.color} 
-                    className="h-full cursor-pointer"
-                  >
-                    <div className={`w-12 h-12 hex-clip ${feature.color === 'amber' ? 'gradient-amber' : 'gradient-emerald'} flex items-center justify-center mb-4`}>
-                      <feature.icon className="w-6 h-6 text-background" />
-                    </div>
-                    <h3 className="text-lg font-bold mb-2 font-mono terminal-text uppercase">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
-                  </GlassCard>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
         </div>
 
-        {/* Network Info */}
+        {/* Capabilities Section - Horizontal List */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="mt-20 text-center"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mt-8"
         >
-          <div className="inline-flex items-center gap-3 terminal-card px-6 py-3">
-            <div className="w-2 h-2 bg-success animate-pulse" style={{ borderRadius: '1px' }} />
-            <span className="text-sm text-muted-foreground font-mono uppercase tracking-wider">
-              Network: <span className="text-foreground font-medium">{kiteTestnet.name}</span> | Chain ID: 2368
-            </span>
+          <div className="control-panel">
+            <div className="panel-title">Capabilities</div>
+            <div className="space-y-0">
+              {capabilities.map((cap, index) => (
+                <Link key={cap.id} to={cap.href}>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.7 + index * 0.1 }}
+                    className="inline-stat group cursor-pointer hover:bg-muted/30 px-2 -mx-2 transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className="text-primary font-mono text-xs">[{cap.id}]</span>
+                      <span className="font-mono font-bold uppercase text-sm group-hover:text-primary transition-colors">
+                        {cap.title}
+                      </span>
+                    </div>
+                    <span className="text-muted-foreground text-xs font-mono">
+                      {cap.description}
+                    </span>
+                  </motion.div>
+                </Link>
+              ))}
+            </div>
           </div>
         </motion.div>
       </main>
 
       {/* Footer */}
-      <footer className="absolute bottom-0 left-0 right-0 py-6">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-sm text-muted-foreground font-mono uppercase tracking-wider">
-            🛡️ Built for Hackathon 2024 | Powered by{' '}
-            <span className="terminal-text">{kiteTestnet.name}</span>
-          </p>
+      <footer className="fixed bottom-0 left-0 right-0 py-3 terminal-card border-x-0 border-b-0" style={{ borderRadius: 0 }}>
+        <div className="container mx-auto px-4 flex items-center justify-between text-xs font-mono text-muted-foreground">
+          <span>🛡️ HACKATHON 2024</span>
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 bg-success animate-pulse" />
+            <span>{kiteTestnet.name} • CHAIN 2368</span>
+          </div>
         </div>
       </footer>
     </div>

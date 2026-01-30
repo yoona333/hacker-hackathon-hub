@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Wallet, Shield, FileText, History, Snowflake, Zap } from 'lucide-react';
+import { Wallet, Shield, FileText, Snowflake, Zap, Terminal, Lock } from 'lucide-react';
 import { useAppKit } from '@reown/appkit/react';
 import { ParticleBackground } from '@/components/3d/ParticleBackground';
 import { NeonButton } from '@/components/ui/neon-button';
@@ -13,25 +13,48 @@ const features = [
   {
     icon: Shield,
     title: 'Multi-Sig Security',
-    description: '2/3 threshold multi-signature wallet for enhanced security',
-    color: 'purple',
+    description: '2/3 threshold multi-signature wallet for maximum asset protection',
+    color: 'amber',
     href: '/dashboard',
   },
   {
     icon: Snowflake,
     title: 'Freeze Control',
-    description: 'Freeze suspicious addresses to protect your assets',
-    color: 'cyan',
+    description: 'Emergency freeze capabilities for suspicious addresses',
+    color: 'emerald',
     href: '/freeze',
   },
   {
     icon: FileText,
     title: 'Proposal System',
-    description: 'Create, confirm and execute multi-sig proposals',
-    color: 'blue',
+    description: 'Create, confirm and execute multi-sig proposals securely',
+    color: 'amber',
     href: '/proposals',
   },
 ] as const;
+
+// Typewriter effect component
+function TypewriterText({ text, className }: { text: string; className?: string }) {
+  return (
+    <motion.span className={className}>
+      {text.split('').map((char, index) => (
+        <motion.span
+          key={index}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: index * 0.05, duration: 0.1 }}
+        >
+          {char}
+        </motion.span>
+      ))}
+      <motion.span 
+        className="inline-block w-3 h-6 bg-primary ml-1"
+        animate={{ opacity: [1, 0] }}
+        transition={{ duration: 0.8, repeat: Infinity }}
+      />
+    </motion.span>
+  );
+}
 
 export default function Index() {
   const { open } = useAppKit();
@@ -49,10 +72,10 @@ export default function Index() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-3"
           >
-            <div className="w-10 h-10 rounded-xl gradient-purple-blue flex items-center justify-center">
-              <Zap className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 hex-clip gradient-amber flex items-center justify-center">
+              <Terminal className="w-5 h-5 text-background" />
             </div>
-            <span className="text-xl font-bold neon-text">AgentPayGuard</span>
+            <span className="text-xl font-bold font-mono terminal-text">AGENT_PAY_GUARD</span>
           </motion.div>
           
           <motion.div
@@ -64,14 +87,14 @@ export default function Index() {
             {isConnected ? (
               <Link to="/dashboard">
                 <NeonButton size="sm">
-                  <Wallet className="w-4 h-4" />
-                  Dashboard
+                  <Lock className="w-4 h-4" />
+                  DASHBOARD
                 </NeonButton>
               </Link>
             ) : (
               <NeonButton onClick={() => open()} pulse>
                 <Wallet className="w-4 h-4" />
-                Connect Wallet
+                CONNECT
               </NeonButton>
             )}
           </motion.div>
@@ -88,42 +111,47 @@ export default function Index() {
             transition={{ duration: 0.8, type: 'spring' }}
             className="mb-8"
           >
-            <div className="w-32 h-32 mx-auto rounded-3xl gradient-purple-blue p-1 shadow-neon-purple animate-float">
-              <div className="w-full h-full rounded-3xl bg-background/80 backdrop-blur-xl flex items-center justify-center">
-                <Shield className="w-16 h-16 text-primary" />
+            <div className="w-32 h-32 mx-auto hex-clip gradient-amber p-1 shadow-terminal-amber animate-float">
+              <div className="w-full h-full hex-clip bg-background/90 flex items-center justify-center">
+                <Shield className="w-14 h-14 text-primary" />
               </div>
             </div>
           </motion.div>
 
           {/* Title */}
-          <motion.h1
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold mb-6"
+            className="mb-6"
           >
-            <span className="neon-text">Agent</span>
-            <span className="text-foreground">Pay</span>
-            <span className="neon-text">Guard</span>
-          </motion.h1>
+            <h1 className="text-4xl md:text-6xl font-bold font-mono">
+              <span className="terminal-text">AGENT</span>
+              <span className="text-foreground">_PAY_</span>
+              <span className="terminal-text">GUARD</span>
+            </h1>
+            <div className="mt-4 text-sm font-mono text-muted-foreground">
+              <TypewriterText text=">> INITIALIZING SECURITY PROTOCOL..." />
+            </div>
+          </motion.div>
 
           {/* Subtitle */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto"
+            transition={{ delay: 0.4 }}
+            className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto font-mono"
           >
-            Secure your DeFi assets with{' '}
+            Military-grade security for your DeFi assets with{' '}
             <span className="text-primary">multi-signature</span> protection and{' '}
-            <span className="text-accent">freeze</span> capabilities on Kite Testnet
+            <span className="text-accent">freeze</span> capabilities
           </motion.p>
 
           {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.5 }}
             className="flex flex-wrap items-center justify-center gap-4 mb-16"
           >
             {isConnected ? (
@@ -131,20 +159,20 @@ export default function Index() {
                 <Link to="/dashboard">
                   <NeonButton size="lg" pulse>
                     <Zap className="w-5 h-5" />
-                    Enter Dashboard
+                    ACCESS TERMINAL
                   </NeonButton>
                 </Link>
                 <Link to="/freeze">
                   <NeonButton size="lg" variant="secondary">
                     <Snowflake className="w-5 h-5" />
-                    Freeze Control
+                    FREEZE CONTROL
                   </NeonButton>
                 </Link>
               </>
             ) : (
               <NeonButton size="lg" onClick={() => open()} pulse>
                 <Wallet className="w-5 h-5" />
-                Connect Wallet to Start
+                CONNECT WALLET
               </NeonButton>
             )}
           </motion.div>
@@ -156,17 +184,17 @@ export default function Index() {
                 key={feature.title}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
+                transition={{ delay: 0.6 + index * 0.1 }}
               >
                 <Link to={feature.href}>
                   <GlassCard 
-                    glow={feature.color as 'purple' | 'blue' | 'cyan'} 
+                    glow={feature.color} 
                     className="h-full cursor-pointer"
                   >
-                    <div className={`w-12 h-12 rounded-xl gradient-${feature.color === 'purple' ? 'purple-blue' : feature.color === 'cyan' ? 'blue-cyan' : 'purple-blue'} flex items-center justify-center mb-4`}>
-                      <feature.icon className="w-6 h-6 text-white" />
+                    <div className={`w-12 h-12 hex-clip ${feature.color === 'amber' ? 'gradient-amber' : 'gradient-emerald'} flex items-center justify-center mb-4`}>
+                      <feature.icon className="w-6 h-6 text-background" />
                     </div>
-                    <h3 className="text-lg font-bold mb-2 neon-text">{feature.title}</h3>
+                    <h3 className="text-lg font-bold mb-2 font-mono terminal-text uppercase">{feature.title}</h3>
                     <p className="text-sm text-muted-foreground">{feature.description}</p>
                   </GlassCard>
                 </Link>
@@ -182,10 +210,10 @@ export default function Index() {
           transition={{ delay: 1 }}
           className="mt-20 text-center"
         >
-          <div className="inline-flex items-center gap-3 glass-card px-6 py-3 rounded-full">
-            <div className="w-3 h-3 rounded-full bg-success animate-pulse" />
-            <span className="text-sm text-muted-foreground">
-              Built on <span className="text-foreground font-medium">Kite Testnet</span> (Chain ID: 2368)
+          <div className="inline-flex items-center gap-3 terminal-card px-6 py-3">
+            <div className="w-2 h-2 bg-success animate-pulse" style={{ borderRadius: '1px' }} />
+            <span className="text-sm text-muted-foreground font-mono uppercase tracking-wider">
+              Network: <span className="text-foreground font-medium">{kiteTestnet.name}</span> | Chain ID: 2368
             </span>
           </div>
         </motion.div>
@@ -194,9 +222,9 @@ export default function Index() {
       {/* Footer */}
       <footer className="absolute bottom-0 left-0 right-0 py-6">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-sm text-muted-foreground">
-            🚀 Built for Hackathon 2024 | Powered by{' '}
-            <span className="neon-text">Kite Testnet</span>
+          <p className="text-sm text-muted-foreground font-mono uppercase tracking-wider">
+            🛡️ Built for Hackathon 2024 | Powered by{' '}
+            <span className="terminal-text">{kiteTestnet.name}</span>
           </p>
         </div>
       </footer>

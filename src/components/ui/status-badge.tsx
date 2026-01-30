@@ -21,19 +21,20 @@ export function StatusBadge({ status, children, pulse = false }: StatusBadgeProp
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       className={cn(
-        'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border',
+        'inline-flex items-center px-3 py-1 text-xs font-mono font-medium border uppercase tracking-wider',
         statusStyles[status],
         pulse && 'animate-pulse'
       )}
+      style={{ borderRadius: '2px' }}
     >
       <span className={cn(
-        'w-2 h-2 rounded-full mr-2',
+        'w-1.5 h-1.5 mr-2',
         status === 'frozen' && 'bg-destructive',
         status === 'active' && 'bg-accent',
         status === 'pending' && 'bg-primary',
         status === 'success' && 'bg-success',
         status === 'failed' && 'bg-destructive',
-      )} />
+      )} style={{ borderRadius: '1px' }} />
       {children}
     </motion.span>
   );
@@ -45,26 +46,32 @@ interface TypeBadgeProps {
 
 export function TypeBadge({ type }: TypeBadgeProps) {
   const typeStyles = {
-    freeze: 'gradient-pink-purple',
-    unfreeze: 'bg-success',
-    confirm: 'gradient-purple-blue',
-    execute: 'gradient-blue-cyan',
-    transfer: 'bg-secondary',
+    freeze: 'gradient-danger text-foreground',
+    unfreeze: 'gradient-emerald text-background',
+    confirm: 'gradient-amber text-background',
+    execute: 'gradient-terminal text-background',
+    transfer: 'bg-secondary text-foreground',
   };
 
   const typeLabels = {
-    freeze: '❄️ Freeze',
-    unfreeze: '🔓 Unfreeze',
-    confirm: '✅ Confirm',
-    execute: '⚡ Execute',
-    transfer: '💸 Transfer',
+    freeze: '❄️ FREEZE',
+    unfreeze: '🔓 UNFREEZE',
+    confirm: '✓ CONFIRM',
+    execute: '⚡ EXECUTE',
+    transfer: '→ TRANSFER',
   };
 
   return (
-    <span className={cn(
-      'inline-flex items-center px-3 py-1 rounded-full text-xs font-bold text-white',
-      typeStyles[type]
-    )}>
+    <span 
+      className={cn(
+        'inline-flex items-center px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider',
+        typeStyles[type]
+      )}
+      style={{ 
+        borderRadius: '2px',
+        clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))'
+      }}
+    >
       {typeLabels[type]}
     </span>
   );
@@ -81,17 +88,18 @@ export function NetworkBadge({ connected = false, chainName = 'Kite Testnet' }: 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={cn(
-        'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border',
+        'flex items-center gap-2 px-3 py-1.5 text-xs font-mono font-medium border',
         connected 
           ? 'bg-success/10 text-success border-success/30' 
           : 'bg-muted text-muted-foreground border-border'
       )}
+      style={{ borderRadius: '2px' }}
     >
       <span className={cn(
-        'w-2 h-2 rounded-full',
+        'w-2 h-2',
         connected ? 'bg-success animate-pulse' : 'bg-muted-foreground'
-      )} />
-      <span>{chainName}</span>
+      )} style={{ borderRadius: '1px' }} />
+      <span className="uppercase tracking-wider">{chainName}</span>
     </motion.div>
   );
 }

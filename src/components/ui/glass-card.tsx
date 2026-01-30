@@ -6,16 +6,20 @@ interface GlassCardProps {
   children: ReactNode;
   className?: string;
   hover?: boolean;
-  glow?: 'purple' | 'blue' | 'cyan' | 'pink' | 'green';
+  glow?: 'amber' | 'emerald' | 'red' | 'purple' | 'blue' | 'cyan' | 'pink' | 'green';
 }
 
 export function GlassCard({ children, className, hover = true, glow }: GlassCardProps) {
   const glowClasses = {
-    purple: 'hover:shadow-neon-purple',
-    blue: 'hover:shadow-neon-blue',
-    cyan: 'hover:shadow-neon-cyan',
-    pink: 'hover:shadow-[0_0_30px_hsl(330_91%_60%/0.5)]',
-    green: 'hover:shadow-[0_0_30px_hsl(142_76%_45%/0.5)]',
+    amber: 'hover:shadow-terminal-amber hover:border-primary/40',
+    emerald: 'hover:shadow-terminal-emerald hover:border-accent/40',
+    red: 'hover:shadow-[0_0_30px_hsl(0_72%_51%/0.4)] hover:border-destructive/40',
+    // Legacy support
+    purple: 'hover:shadow-terminal-amber hover:border-primary/40',
+    blue: 'hover:shadow-terminal-amber hover:border-primary/40',
+    cyan: 'hover:shadow-terminal-emerald hover:border-accent/40',
+    pink: 'hover:shadow-[0_0_30px_hsl(0_72%_51%/0.4)] hover:border-destructive/40',
+    green: 'hover:shadow-terminal-emerald hover:border-accent/40',
   };
 
   return (
@@ -23,9 +27,9 @@ export function GlassCard({ children, className, hover = true, glow }: GlassCard
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      whileHover={hover ? { scale: 1.02, y: -5 } : undefined}
+      whileHover={hover ? { scale: 1.01, y: -2 } : undefined}
       className={cn(
-        'glass-card p-6 transition-all duration-300',
+        'terminal-card p-6 transition-all duration-300',
         glow && glowClasses[glow],
         className
       )}
@@ -42,8 +46,8 @@ interface NeonBorderCardProps {
 
 export function NeonBorderCard({ children, className }: NeonBorderCardProps) {
   return (
-    <div className={cn('neon-border p-[2px]', className)}>
-      <div className="glass-card p-6 h-full">
+    <div className={cn('neon-border p-[1px]', className)}>
+      <div className="terminal-card p-6 h-full">
         {children}
       </div>
     </div>
@@ -56,17 +60,17 @@ interface StatCardProps {
   subtitle?: string;
   icon?: ReactNode;
   trend?: 'up' | 'down';
-  glow?: 'purple' | 'blue' | 'cyan' | 'pink' | 'green';
+  glow?: 'amber' | 'emerald' | 'red' | 'purple' | 'blue' | 'cyan' | 'pink' | 'green';
 }
 
-export function StatCard({ title, value, subtitle, icon, glow = 'purple' }: StatCardProps) {
+export function StatCard({ title, value, subtitle, icon, glow = 'amber' }: StatCardProps) {
   return (
     <GlassCard glow={glow} className="relative overflow-hidden">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-muted-foreground">{title}</p>
+          <p className="text-sm text-muted-foreground font-mono uppercase tracking-wider">{title}</p>
           <motion.p 
-            className="text-3xl font-bold neon-text mt-1"
+            className="text-3xl font-bold terminal-text mt-1 font-mono"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
@@ -78,7 +82,7 @@ export function StatCard({ title, value, subtitle, icon, glow = 'purple' }: Stat
           )}
         </div>
         {icon && (
-          <div className="p-2 rounded-lg gradient-purple-blue opacity-80">
+          <div className="p-2 hex-clip gradient-amber">
             {icon}
           </div>
         )}

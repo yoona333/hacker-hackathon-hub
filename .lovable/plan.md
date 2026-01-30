@@ -1,236 +1,224 @@
 
 
-# AgentPayGuard 界面重设计方案
+# AgentPayGuard 布局革命 - "Control Room" 控制室风格
 
-## 问题分析
-当前的蓝紫渐变配色确实是典型的 "AI 生成风格"，需要彻底改变视觉方向，同时大幅增强 Three.js 3D 效果。
+## 问题诊断
 
----
-
-## 新设计方向：**"Obsidian Terminal"** 黑曜石终端风格
-
-### 美学理念
-受启发于高端安全终端、军事级控制台、以及 Blade Runner 的工业美学 —— 一种 **冷酷、专业、令人敬畏** 的界面。
-
-### 核心配色（完全抛弃蓝紫）
-
-| 元素 | 颜色 | 用途 |
-|------|------|------|
-| **主色** | 琥珀金 `#F59E0B` | 主要操作、高亮文字 |
-| **次色** | 翡翠绿 `#10B981` | 成功状态、解冻操作 |
-| **警告** | 血红 `#DC2626` | 冻结、危险操作 |
-| **背景** | 深空黑 `#0A0A0F` | 主背景 |
-| **表面** | 石墨灰 `#18181B` | 卡片表面 |
-| **边框** | 钛合金 `#3F3F46` | 边框和分隔线 |
-| **文字** | 月光白 `#FAFAFA` | 主文字 |
-
-### 字体选择
-- **标题**: `JetBrains Mono` 或 `Fira Code` — 程序员风格等宽字体
-- **正文**: `IBM Plex Sans` — 专业、易读
+当前布局的 AI 感来源：
+- **对称的 3 列/4 列网格** - 太规整、可预测
+- **居中对齐的一切** - 缺乏层次感
+- **统一大小的卡片** - 没有视觉重点
+- **均匀的间距** - 缺乏呼吸感
+- **重复的组件模式** - 图标+标题+描述的公式化结构
 
 ---
 
-## 增强 Three.js 3D 效果
+## 新设计方向：**"Mission Control"** 任务控制室
 
-### 1. 全新 3D 背景组件
+### 设计理念
 
-**当前问题**: 简单的粒子点和线框几何体，缺乏视觉冲击力。
+受启发于：
+- NASA 任务控制中心
+- 军事指挥室
+- Bloomberg Terminal
+- 电影《黑客帝国》的操作界面
 
-**新方案 - 多层次 3D 场景**:
+**核心原则**：不对称、功能密集、信息层次分明
 
-```text
-┌─────────────────────────────────────────┐
-│  Layer 1: 动态网格地面 (Grid Floor)      │
-│  - 无限延伸的发光网格线                  │
-│  - 随鼠标产生波纹效果                    │
-├─────────────────────────────────────────┤
-│  Layer 2: 浮动数据立方体 (Data Cubes)    │
-│  - 半透明玻璃质感立方体                  │
-│  - 内部发光的数据流动画                  │
-│  - 缓慢旋转和浮动                       │
-├─────────────────────────────────────────┤
-│  Layer 3: 粒子数据流 (Data Stream)       │
-│  - 从下往上的粒子流                      │
-│  - 模拟区块链数据传输                    │
-│  - 琥珀色发光粒子                       │
-├─────────────────────────────────────────┤
-│  Layer 4: 六边形蜂巢网络 (Hex Network)   │
-│  - 连接的六边形节点                      │
-│  - 脉冲光效表示网络活动                  │
-└─────────────────────────────────────────┘
+---
+
+## 首页 (Index) 重设计
+
+### 从居中式 Hero 改为 **分屏式控制台**
+
+**当前**:
+```
+        [居中Logo]
+     [居中大标题]
+      [居中按钮]
+   [卡片] [卡片] [卡片]
 ```
 
-### 2. 新增 3D 组件
+**新方案 - 左右分屏**:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  AGENT_PAY_GUARD              [Network] [Connect]               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   ┌─────────────────────────────┐                               │
+│   │                             │                               │
+│   │   巨大的 3D 盾牌            │    AGENT_PAY_GUARD            │
+│   │   (占据左侧 60%)            │    ─────────────────          │
+│   │                             │                               │
+│   │   动态旋转 + 粒子环绕       │    > SYSTEM ONLINE            │
+│   │                             │    > SECURITY: MAXIMUM        │
+│   │                             │    > NETWORK: KITE            │
+│   │                             │                               │
+│   └─────────────────────────────┘    [ACCESS TERMINAL]          │
+│                                      [EMERGENCY FREEZE]         │
+│                                                                  │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │  CAPABILITIES                                            │   │
+│   │  ─────────────────────────────────────────────────────   │   │
+│   │                                                          │   │
+│   │  [01] MULTI-SIG    2/3 threshold protection              │   │
+│   │  [02] FREEZE       Emergency address blocking             │   │
+│   │  [03] PROPOSALS    Decentralized governance               │   │
+│   │                                                          │   │
+│   └─────────────────────────────────────────────────────────┘   │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
+```
 
-**A. CyberGrid.tsx** - 赛博网格地面
-- 使用 `LineSegments` 创建无限网格
-- Shader 驱动的发光效果
-- 鼠标交互产生涟漪
+### 关键变化
 
-**B. DataCubes.tsx** - 漂浮数据立方体
-- 玻璃材质 (`MeshPhysicalMaterial`)
-- 内部发光效果
-- 随机分布 + 缓慢动画
-
-**C. HexNetwork.tsx** - 六边形节点网络
-- 代表多签网络的可视化
-- 脉冲动画表示交易确认
-- 连接线带有数据流动效果
-
-**D. ParticleStream.tsx** - 数据粒子流
-- 垂直上升的粒子
-- 不同颜色代表不同类型交易
-- Shader 实现的拖尾效果
+1. **左右不对称分屏** - 左侧 3D 可视化，右侧控制台文字
+2. **终端式信息展示** - 用行号和前缀代替卡片
+3. **水平列表** - 功能不再是卡片，而是紧凑的行
+4. **巨大的视觉焦点** - 一个大元素而非多个小元素
 
 ---
 
-## UI 组件重设计
+## Dashboard 重设计
 
-### 卡片样式
+### 从卡片网格改为 **面板式布局**
 
-**当前**: 玻璃拟态 + 紫色发光
-**新方案**: 工业面板风格
+**当前**:
+```
+[Stat] [Stat] [Stat] [Stat]
+
+[大卡片]          [大卡片]
+
+[小卡片] [小卡片] [小卡片] [小卡片]
+```
+
+**新方案 - 不对称控制面板**:
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ ← DASHBOARD                              [Address] [0.1 ETH] [×] │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  ┌──────────────────────────────────────┐ ┌────────────────────┐ │
+│  │  MULTI-SIG WALLET                    │ │   QUICK STATUS     │ │
+│  │  ════════════════                    │ │   ────────────     │ │
+│  │                                      │ │                    │ │
+│  │  CONTRACT                            │ │   THRESHOLD  2/3   │ │
+│  │  0xA247...EECA                       │ │   FROZEN     3     │ │
+│  │                                      │ │   PENDING    1     │ │
+│  │  THRESHOLD ██████████████░░░ 2/3     │ │   TOTAL TX   3     │ │
+│  │                                      │ │                    │ │
+│  │  OWNERS                              │ │   ──────────────   │ │
+│  │  ├─ #1 0x1234...7890                 │ │   [FREEZE]         │ │
+│  │  ├─ #2 0xabcd...efab                 │ │   [UNFREEZE]       │ │
+│  │  └─ #3 0x9876...3210                 │ │   [PROPOSAL]       │ │
+│  │                                      │ │   [HISTORY]        │ │
+│  │  [PROPOSALS]              [EXPLORER] │ │                    │ │
+│  └──────────────────────────────────────┘ └────────────────────┘ │
+│                                                                   │
+│  ┌──────────────────────────────────────────────────────────────┐│
+│  │  FREEZE CONTRACT                                              ││
+│  │  ═══════════════                                              ││
+│  │                                                               ││
+│  │  CONTRACT: 0x3168...A719                           FROZEN: 3  ││
+│  │                                                               ││
+│  │  BLOCKED ADDRESSES                                            ││
+│  │  ┌─────────────────────────────────────────────────────────┐ ││
+│  │  │ 0xdead...0001  │ FROZEN │ 0xdead...0002  │ FROZEN │ ... │ ││
+│  │  └─────────────────────────────────────────────────────────┘ ││
+│  │                                                               ││
+│  │  [FREEZE CONTROL]                                 [EXPLORER] ││
+│  └──────────────────────────────────────────────────────────────┘│
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### 关键变化
+
+1. **主次分明** - 左侧大面板 70%，右侧窄面板 30%
+2. **树形结构** - Owner 列表用 `├─` `└─` 符号
+3. **内联数据** - 数字直接在标签旁边，不是大字体块
+4. **水平滚动列表** - 冻结地址用水平行而非垂直堆叠
+5. **紧凑按钮组** - 垂直堆叠在右侧面板
+
+---
+
+## 具体实现要点
+
+### 布局系统
 
 ```css
-/* 新卡片样式 */
-.terminal-card {
-  background: linear-gradient(
-    135deg,
-    rgba(24, 24, 27, 0.9) 0%,
-    rgba(10, 10, 15, 0.95) 100%
-  );
-  border: 1px solid rgba(245, 158, 11, 0.2);
-  border-radius: 4px; /* 更锐利的边角 */
-  box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 4px 20px rgba(0, 0, 0, 0.5);
+/* 不对称网格 */
+.control-room {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* 左 70% 右 30% */
+  gap: 1rem;
 }
 
-/* 扫描线效果 */
-.terminal-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(245, 158, 11, 0.8),
-    transparent
-  );
-  animation: scan 3s linear infinite;
+/* 或者用固定宽度侧边栏 */
+.mission-control {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+}
+
+/* 全宽面板 */
+.full-panel {
+  grid-column: 1 / -1;
 }
 ```
-
-### 按钮样式
-
-**新方案**: 硬边切角按钮（军事风格）
-
-```css
-.cyber-button {
-  clip-path: polygon(
-    0 0, 
-    calc(100% - 10px) 0, 
-    100% 10px, 
-    100% 100%, 
-    10px 100%, 
-    0 calc(100% - 10px)
-  );
-  background: linear-gradient(135deg, #F59E0B, #D97706);
-  border: none;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 700;
-}
-```
-
-### 地址显示
-
-**新方案**: 终端风格等宽显示
-
-```css
-.address-display {
-  font-family: 'JetBrains Mono', monospace;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  padding: 8px 12px;
-  color: #F59E0B;
-  text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
-}
-```
-
----
-
-## 页面级特效
-
-### 首页 Hero
-
-1. **中央 3D 盾牌模型**
-   - 使用 `@react-three/drei` 的基础几何体构建
-   - 金属质感材质
-   - 缓慢旋转 + 发光边缘
-
-2. **标题打字机效果**
-   - 逐字符显示
-   - 闪烁的光标
-   - 终端风格
-
-3. **背景全屏 3D 场景**
-   - 网格地面
-   - 浮动立方体
-   - 粒子流
-
-### Dashboard
-
-1. **3D 网络可视化**
-   - 中央显示多签网络拓扑
-   - 三个 Owner 节点围绕中心
-   - 确认状态用连接线表示
-
-2. **实时数据动画**
-   - 数字滚动效果
-   - 状态变化时的脉冲动画
-
-### 冻结页面
-
-1. **3D 冰晶效果**
-   - 冻结操作时的冰晶粒子爆发
-   - 解冻时的融化动画
-
----
-
-## 技术实现要点
 
 ### 文件修改清单
 
 | 文件 | 修改内容 |
 |------|----------|
-| `src/index.css` | 全新配色系统、终端风格样式 |
-| `tailwind.config.ts` | 新颜色变量、动画定义 |
-| `index.html` | 加载 JetBrains Mono 字体 |
-| `src/components/3d/ParticleBackground.tsx` | 完全重写为多层次场景 |
-| `src/components/3d/CyberGrid.tsx` | 新增 - 网格地面 |
-| `src/components/3d/DataCubes.tsx` | 新增 - 漂浮立方体 |
-| `src/components/3d/HexNetwork.tsx` | 新增 - 六边形网络 |
-| `src/components/ui/terminal-card.tsx` | 新增 - 终端风格卡片 |
-| `src/components/ui/cyber-button.tsx` | 新增 - 切角按钮 |
-| `src/components/ui/glass-card.tsx` | 更新配色和样式 |
-| `src/components/ui/neon-button.tsx` | 更新为新配色 |
-| `src/components/ui/status-badge.tsx` | 更新配色 |
-| `src/pages/Index.tsx` | 更新 UI 组件和样式类 |
-| `src/pages/Dashboard.tsx` | 更新 UI 组件和样式类 |
-| `src/pages/Freeze.tsx` | 更新 UI 组件、添加冰晶效果 |
-| `src/pages/Proposals.tsx` | 更新 UI 组件和样式类 |
-| `src/pages/History.tsx` | 更新 UI 组件和样式类 |
+| `src/pages/Index.tsx` | 改为左右分屏布局，左侧3D，右侧终端式文字 |
+| `src/pages/Dashboard.tsx` | 改为不对称面板布局，移除卡片网格 |
+| `src/pages/Freeze.tsx` | 改为单面板+侧边栏布局 |
+| `src/pages/Proposals.tsx` | 改为列表式布局，不再用卡片 |
+| `src/pages/History.tsx` | 保持时间线但简化卡片 |
+| `src/index.css` | 添加新的面板样式类 |
 
-### 性能优化
+### 新样式类
 
-- 使用 `useMemo` 缓存几何体和材质
-- 实现 LOD (Level of Detail) 降低远处对象复杂度
-- 使用 `instancedMesh` 减少 draw calls
-- 移动端自动降低粒子数量
+```css
+/* 控制面板 */
+.control-panel {
+  background: linear-gradient(180deg, 
+    hsl(var(--card)) 0%, 
+    hsl(var(--background)) 100%
+  );
+  border: 1px solid hsl(var(--border));
+  border-top: 2px solid hsl(var(--terminal-amber));
+}
+
+/* 分隔线标题 */
+.panel-title {
+  border-bottom: 1px solid hsl(var(--border));
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-family: 'JetBrains Mono';
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* 树形结构 */
+.tree-item::before {
+  content: '├─ ';
+  color: hsl(var(--muted-foreground));
+}
+.tree-item:last-child::before {
+  content: '└─ ';
+}
+
+/* 行内数据 */
+.inline-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  border-bottom: 1px dotted hsl(var(--border) / 0.5);
+}
+```
 
 ---
 
@@ -238,13 +226,13 @@
 
 | 元素 | 当前 | 新方案 |
 |------|------|--------|
-| 主色调 | 蓝紫渐变 | 琥珀金/深空黑 |
-| 风格 | 赛博朋克霓虹 | 军事级终端 |
-| 圆角 | 大圆角 (12px) | 锐利切角 (4px) |
-| 字体 | Inter | JetBrains Mono |
-| 3D效果 | 简单粒子点 | 多层次场景+几何体 |
-| 动画 | 发光脉冲 | 扫描线+数据流 |
-| 整体感觉 | 通用 AI 风格 | 独特专业安全感 |
+| 首页布局 | 居中对称 | 左右分屏不对称 |
+| 功能展示 | 3 个均匀卡片 | 编号行列表 |
+| Dashboard | 4 统计卡 + 2 大卡 | 主面板 + 侧边栏 |
+| 数据展示 | 大字体块 | 行内紧凑显示 |
+| 列表 | 垂直堆叠卡片 | 树形/水平滚动 |
+| 按钮 | 并排居中 | 垂直堆叠/固定位置 |
+| 整体感觉 | 展示页/营销站 | 操作界面/控制台 |
 
-这个新设计将让你的项目在黑客松中绝对脱颖而出，既有技术深度又有视觉冲击力！
+这个新布局将让界面看起来像真正的控制系统，而不是模板生成的展示页！
 

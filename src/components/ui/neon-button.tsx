@@ -1,5 +1,5 @@
-import { ButtonHTMLAttributes, forwardRef, ReactNode } from 'react';
-import { motion, HTMLMotionProps } from 'framer-motion';
+import { ReactNode } from 'react';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface NeonButtonProps {
@@ -24,17 +24,17 @@ export function NeonButton({
   type = 'button'
 }: NeonButtonProps) {
   const variants = {
-    primary: 'gradient-purple-blue hover:shadow-neon-purple',
-    secondary: 'gradient-blue-cyan hover:shadow-neon-cyan',
-    success: 'bg-success hover:shadow-[0_0_30px_hsl(142_76%_45%/0.5)]',
-    danger: 'gradient-pink-purple hover:shadow-[0_0_30px_hsl(330_91%_60%/0.5)]',
-    outline: 'bg-transparent border-2 border-primary hover:bg-primary/20',
+    primary: 'cyber-button',
+    secondary: 'cyber-button cyber-button-secondary',
+    success: 'cyber-button cyber-button-success',
+    danger: 'cyber-button cyber-button-danger',
+    outline: 'cyber-button cyber-button-secondary',
   };
 
   const sizes = {
-    sm: 'px-4 py-2 text-sm',
-    md: 'px-6 py-3 text-base',
-    lg: 'px-8 py-4 text-lg',
+    sm: 'px-4 py-2 text-xs',
+    md: 'px-6 py-3 text-sm',
+    lg: 'px-8 py-4 text-base',
   };
 
   return (
@@ -42,22 +42,18 @@ export function NeonButton({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      whileHover={disabled ? undefined : { scale: 1.05 }}
-      whileTap={disabled ? undefined : { scale: 0.95 }}
+      whileHover={disabled ? undefined : { scale: 1.02 }}
+      whileTap={disabled ? undefined : { scale: 0.98 }}
       className={cn(
-        'relative font-bold text-white rounded-xl overflow-hidden transition-all duration-300',
-        'shadow-lg hover:shadow-xl',
-        'disabled:opacity-50 disabled:cursor-not-allowed',
         variants[variant],
         sizes[size],
-        pulse && 'animate-pulse-glow',
+        pulse && 'animate-pulse-amber',
         className
       )}
     >
       <span className="relative z-10 flex items-center justify-center gap-2">
         {children}
       </span>
-      <div className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity" />
     </motion.button>
   );
 }
@@ -78,8 +74,8 @@ export function IconButton({
   title
 }: IconButtonProps) {
   const variants = {
-    ghost: 'bg-transparent hover:bg-muted/50',
-    solid: 'gradient-purple-blue',
+    ghost: 'bg-transparent hover:bg-muted/50 border border-transparent hover:border-primary/30',
+    solid: 'gradient-amber',
   };
 
   return (
@@ -90,10 +86,11 @@ export function IconButton({
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       className={cn(
-        'p-2 rounded-lg transition-all duration-300',
+        'p-2 transition-all duration-200',
         variants[variant],
         className
       )}
+      style={{ borderRadius: '2px' }}
     >
       {children}
     </motion.button>

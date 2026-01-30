@@ -33,7 +33,7 @@ export function AddressDisplay({
   return (
     <div className={cn('flex items-center gap-2', className)}>
       <motion.span 
-        className="address-gradient font-mono text-sm"
+        className="address-terminal font-mono text-sm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
@@ -77,19 +77,23 @@ export function GradientAvatar({ address, size = 'md' }: AvatarProps) {
   // Generate a consistent color based on address
   const colorIndex = parseInt(address.slice(2, 4), 16) % 4;
   const gradients = [
-    'from-neon-purple to-neon-blue',
-    'from-neon-blue to-neon-cyan',
-    'from-neon-cyan to-neon-pink',
-    'from-neon-pink to-neon-purple',
+    'gradient-amber',
+    'gradient-emerald',
+    'gradient-terminal',
+    'gradient-amber',
   ];
 
   return (
     <div 
       className={cn(
-        'rounded-full bg-gradient-to-br flex items-center justify-center text-white font-bold',
+        'flex items-center justify-center text-background font-bold font-mono',
         sizes[size],
         gradients[colorIndex]
       )}
+      style={{ 
+        borderRadius: '2px',
+        clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))'
+      }}
     >
       {address.slice(2, 4).toUpperCase()}
     </div>
@@ -106,20 +110,24 @@ export function OwnerAvatars({ owners, maxDisplay = 3 }: OwnerAvatarsProps) {
   const remaining = owners.length - maxDisplay;
 
   return (
-    <div className="flex -space-x-2">
+    <div className="flex -space-x-1">
       {displayOwners.map((owner, index) => (
         <motion.div
           key={owner}
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="ring-2 ring-background rounded-full"
+          className="ring-1 ring-background"
+          style={{ borderRadius: '2px' }}
         >
           <GradientAvatar address={owner} size="sm" />
         </motion.div>
       ))}
       {remaining > 0 && (
-        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium ring-2 ring-background">
+        <div 
+          className="w-8 h-8 bg-muted flex items-center justify-center text-xs font-mono font-medium ring-1 ring-background"
+          style={{ borderRadius: '2px' }}
+        >
           +{remaining}
         </div>
       )}

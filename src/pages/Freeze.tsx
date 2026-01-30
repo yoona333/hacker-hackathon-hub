@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
-  Snowflake, Search, ArrowLeft, Zap, 
+  Snowflake, Search, ArrowLeft, Terminal, 
   CheckCircle, XCircle, AlertTriangle, Lock, Unlock
 } from 'lucide-react';
 import { ParticleBackground } from '@/components/3d/ParticleBackground';
@@ -29,7 +29,6 @@ export default function FreezePage() {
     if (!searchAddress || searchAddress.length < 10) return;
     
     setIsSearching(true);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     const isFrozen = MOCK_DATA.frozenAddresses.some(
@@ -59,22 +58,23 @@ export default function FreezePage() {
       <ParticleBackground />
       
       {/* Header */}
-      <header className="sticky top-0 z-50 glass-card rounded-none border-x-0 border-t-0">
+      <header className="sticky top-0 z-50 terminal-card border-x-0 border-t-0" style={{ borderRadius: 0 }}>
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/dashboard">
               <motion.button 
                 whileHover={{ scale: 1.1 }}
-                className="p-2 rounded-lg hover:bg-muted/50"
+                className="p-2 hover:bg-muted/50 border border-transparent hover:border-primary/30"
+                style={{ borderRadius: '2px' }}
               >
                 <ArrowLeft className="w-5 h-5" />
               </motion.button>
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl gradient-blue-cyan flex items-center justify-center">
-                <Snowflake className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 hex-clip gradient-emerald flex items-center justify-center">
+                <Snowflake className="w-5 h-5 text-background" />
               </div>
-              <span className="text-xl font-bold neon-text">Freeze Control</span>
+              <span className="text-xl font-bold font-mono terminal-text uppercase">Freeze Control</span>
             </div>
           </div>
           <NetworkBadge connected={isConnected} chainName={kiteTestnet.name} />
@@ -85,15 +85,15 @@ export default function FreezePage() {
         <div className="max-w-4xl mx-auto">
           {/* Search Section */}
           <NeonBorderCard className="mb-8">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 font-mono uppercase">
               <Search className="w-5 h-5 text-primary" />
-              Check Address Status
+              Address Status Check
             </h2>
             
             <div className="flex gap-4">
               <input
                 type="text"
-                placeholder="Enter address to check (0x...)"
+                placeholder="0x... Enter address to scan"
                 value={searchAddress}
                 onChange={(e) => setSearchAddress(e.target.value)}
                 className="glow-input flex-1"
@@ -107,7 +107,7 @@ export default function FreezePage() {
                 ) : (
                   <>
                     <Search className="w-4 h-4" />
-                    Check
+                    SCAN
                   </>
                 )}
               </NeonButton>
@@ -123,9 +123,9 @@ export default function FreezePage() {
                   className="mt-6"
                 >
                   <GlassCard 
-                    glow={searchResult.isFrozen ? 'pink' : 'green'}
+                    glow={searchResult.isFrozen ? 'red' : 'emerald'}
                     className={cn(
-                      'border-2',
+                      'border',
                       searchResult.isFrozen ? 'border-destructive/50' : 'border-success/50'
                     )}
                   >
@@ -135,18 +135,18 @@ export default function FreezePage() {
                         status={searchResult.isFrozen ? 'frozen' : 'active'}
                         pulse
                       >
-                        {searchResult.isFrozen ? 'Frozen' : 'Not Frozen'}
+                        {searchResult.isFrozen ? 'FROZEN' : 'ACTIVE'}
                       </StatusBadge>
                     </div>
 
-                    <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg mb-4">
+                    <div className="flex items-center gap-4 p-4 bg-muted/30 border border-border/50 mb-4" style={{ borderRadius: '2px' }}>
                       {searchResult.isFrozen ? (
                         <>
                           <XCircle className="w-12 h-12 text-destructive" />
                           <div>
-                            <h3 className="font-bold text-destructive">Address is Frozen</h3>
-                            <p className="text-sm text-muted-foreground">
-                              This address cannot perform any transactions until unfrozen.
+                            <h3 className="font-bold text-destructive font-mono uppercase">Address Frozen</h3>
+                            <p className="text-sm text-muted-foreground font-mono">
+                              All transactions from this address are blocked.
                             </p>
                           </div>
                         </>
@@ -154,8 +154,8 @@ export default function FreezePage() {
                         <>
                           <CheckCircle className="w-12 h-12 text-success" />
                           <div>
-                            <h3 className="font-bold text-success">Address is Active</h3>
-                            <p className="text-sm text-muted-foreground">
+                            <h3 className="font-bold text-success font-mono uppercase">Address Active</h3>
+                            <p className="text-sm text-muted-foreground font-mono">
                               This address can perform transactions normally.
                             </p>
                           </div>
@@ -176,7 +176,7 @@ export default function FreezePage() {
                           ) : (
                             <>
                               <Unlock className="w-4 h-4" />
-                              Submit Unfreeze Proposal
+                              SUBMIT UNFREEZE
                             </>
                           )}
                         </NeonButton>
@@ -192,7 +192,7 @@ export default function FreezePage() {
                           ) : (
                             <>
                               <Lock className="w-4 h-4" />
-                              Submit Freeze Proposal
+                              SUBMIT FREEZE
                             </>
                           )}
                         </NeonButton>
@@ -203,10 +203,11 @@ export default function FreezePage() {
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mt-4 p-3 bg-success/20 rounded-lg flex items-center gap-2 text-success"
+                        className="mt-4 p-3 bg-success/20 border border-success/30 flex items-center gap-2 text-success font-mono text-sm"
+                        style={{ borderRadius: '2px' }}
                       >
                         <CheckCircle className="w-5 h-5" />
-                        <span>Proposal submitted successfully! Awaiting confirmations.</span>
+                        <span className="uppercase">Proposal submitted. Awaiting confirmations.</span>
                       </motion.div>
                     )}
                   </GlassCard>
@@ -218,12 +219,12 @@ export default function FreezePage() {
           {/* Frozen Addresses List */}
           <GlassCard>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold flex items-center gap-2">
+              <h2 className="text-xl font-bold flex items-center gap-2 font-mono uppercase">
                 <Snowflake className="w-5 h-5 text-destructive" />
-                Frozen Addresses
+                Frozen Registry
               </h2>
               <StatusBadge status="frozen">
-                {MOCK_DATA.frozenAddresses.length} frozen
+                {MOCK_DATA.frozenAddresses.length} BLOCKED
               </StatusBadge>
             </div>
 
@@ -231,7 +232,7 @@ export default function FreezePage() {
               {MOCK_DATA.frozenAddresses.length === 0 ? (
                 <div className="text-center py-12">
                   <Snowflake className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                  <p className="text-muted-foreground">No frozen addresses</p>
+                  <p className="text-muted-foreground font-mono uppercase">No frozen addresses</p>
                 </div>
               ) : (
                 MOCK_DATA.frozenAddresses.map((address, index) => (
@@ -240,11 +241,12 @@ export default function FreezePage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
+                    className="flex items-center justify-between p-4 bg-muted/30 border border-border/50 hover:border-primary/30 transition-colors"
+                    style={{ borderRadius: '2px' }}
                   >
                     <AddressDisplay address={address} />
                     <div className="flex items-center gap-3">
-                      <StatusBadge status="frozen">Frozen</StatusBadge>
+                      <StatusBadge status="frozen">FROZEN</StatusBadge>
                       <NeonButton 
                         size="sm" 
                         variant="success"
@@ -254,7 +256,7 @@ export default function FreezePage() {
                         }}
                       >
                         <Unlock className="w-4 h-4" />
-                        Unfreeze
+                        UNFREEZE
                       </NeonButton>
                     </div>
                   </motion.div>
@@ -274,13 +276,13 @@ export default function FreezePage() {
               <div className="flex items-start gap-4">
                 <AlertTriangle className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-bold text-primary mb-1">Multi-Signature Required</h3>
-                  <p className="text-sm text-muted-foreground">
-                    All freeze and unfreeze operations require{' '}
+                  <h3 className="font-bold text-primary mb-1 font-mono uppercase">Multi-Signature Required</h3>
+                  <p className="text-sm text-muted-foreground font-mono">
+                    All freeze/unfreeze operations require{' '}
                     <span className="text-foreground font-medium">
                       {MOCK_DATA.threshold} of {MOCK_DATA.owners.length}
                     </span>{' '}
-                    owner confirmations. Your proposal will be submitted and other owners will need to confirm before execution.
+                    owner confirmations before execution.
                   </p>
                 </div>
               </div>

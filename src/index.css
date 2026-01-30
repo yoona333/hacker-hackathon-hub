@@ -344,6 +344,121 @@
   .pulse-glow {
     animation: pulse-amber 2s ease-in-out infinite;
   }
+
+  /* ===== MISSION CONTROL LAYOUT SYSTEM ===== */
+  
+  /* Control Panel - main container with amber top accent */
+  .control-panel {
+    @apply relative;
+    background: linear-gradient(
+      180deg, 
+      hsl(var(--card)) 0%, 
+      hsl(var(--background)) 100%
+    );
+    border: 1px solid hsl(var(--border));
+    border-top: 2px solid hsl(var(--terminal-amber));
+    padding: 1.5rem;
+  }
+
+  /* Panel Title with underline */
+  .panel-title {
+    @apply font-mono uppercase tracking-widest text-sm font-bold;
+    border-bottom: 1px solid hsl(var(--border));
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    color: hsl(var(--terminal-amber));
+  }
+
+  /* Tree structure for lists */
+  .tree-list {
+    @apply space-y-1;
+  }
+
+  .tree-item {
+    @apply flex items-center gap-2 text-sm font-mono py-1;
+  }
+
+  .tree-item::before {
+    content: '├─';
+    color: hsl(var(--muted-foreground));
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .tree-item:last-child::before {
+    content: '└─';
+  }
+
+  /* Inline stat row */
+  .inline-stat {
+    @apply flex justify-between items-center py-2 text-sm font-mono;
+    border-bottom: 1px dotted hsl(var(--border) / 0.5);
+  }
+
+  .inline-stat:last-child {
+    border-bottom: none;
+  }
+
+  .inline-stat-label {
+    @apply text-muted-foreground uppercase tracking-wider text-xs;
+  }
+
+  .inline-stat-value {
+    @apply font-bold;
+    color: hsl(var(--terminal-amber));
+  }
+
+  /* Horizontal scrolling list */
+  .scroll-list {
+    @apply flex gap-2 overflow-x-auto pb-2;
+    scrollbar-width: thin;
+  }
+
+  .scroll-item {
+    @apply flex-shrink-0 px-3 py-2 bg-muted/30 border border-border/50 font-mono text-xs;
+  }
+
+  /* Terminal output lines */
+  .terminal-line {
+    @apply flex items-center gap-2 font-mono text-sm py-0.5;
+  }
+
+  .terminal-line::before {
+    content: '>';
+    color: hsl(var(--terminal-amber));
+  }
+
+  .terminal-line-success::before {
+    content: '✓';
+    color: hsl(var(--terminal-emerald));
+  }
+
+  .terminal-line-error::before {
+    content: '✗';
+    color: hsl(var(--destructive));
+  }
+
+  /* Compact button group */
+  .button-stack {
+    @apply flex flex-col gap-2;
+  }
+
+  /* Data row for key-value display */
+  .data-row {
+    @apply grid grid-cols-[120px_1fr] gap-4 py-2 text-sm;
+    border-bottom: 1px solid hsl(var(--border) / 0.3);
+  }
+
+  .data-row:last-child {
+    border-bottom: none;
+  }
+
+  .data-label {
+    @apply text-muted-foreground font-mono uppercase text-xs tracking-wider;
+  }
+
+  .data-value {
+    @apply font-mono;
+  }
 }
 
 @layer utilities {

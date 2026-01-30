@@ -1,238 +1,137 @@
 
 
-# AgentPayGuard 布局革命 - "Control Room" 控制室风格
+# 左侧视觉区域增强 - "全息防护系统"
 
-## 问题诊断
+## 问题分析
 
-当前布局的 AI 感来源：
-- **对称的 3 列/4 列网格** - 太规整、可预测
-- **居中对齐的一切** - 缺乏层次感
-- **统一大小的卡片** - 没有视觉重点
-- **均匀的间距** - 缺乏呼吸感
-- **重复的组件模式** - 图标+标题+描述的公式化结构
+当前左侧区域只有：
+- 两个缓慢旋转的六边形边框
+- 一个静态的中央盾牌
+- 三个小的浮动菱形点
 
----
-
-## 新设计方向：**"Mission Control"** 任务控制室
-
-### 设计理念
-
-受启发于：
-- NASA 任务控制中心
-- 军事指挥室
-- Bloomberg Terminal
-- 电影《黑客帝国》的操作界面
-
-**核心原则**：不对称、功能密集、信息层次分明
+**太单调、缺乏层次和动态感**
 
 ---
 
-## 首页 (Index) 重设计
+## 新设计方向："Holographic Defense Grid" 全息防护网格
 
-### 从居中式 Hero 改为 **分屏式控制台**
+### 视觉层次结构
 
-**当前**:
 ```
-        [居中Logo]
-     [居中大标题]
-      [居中按钮]
-   [卡片] [卡片] [卡片]
-```
-
-**新方案 - 左右分屏**:
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  AGENT_PAY_GUARD              [Network] [Connect]               │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌─────────────────────────────┐                               │
-│   │                             │                               │
-│   │   巨大的 3D 盾牌            │    AGENT_PAY_GUARD            │
-│   │   (占据左侧 60%)            │    ─────────────────          │
-│   │                             │                               │
-│   │   动态旋转 + 粒子环绕       │    > SYSTEM ONLINE            │
-│   │                             │    > SECURITY: MAXIMUM        │
-│   │                             │    > NETWORK: KITE            │
-│   │                             │                               │
-│   └─────────────────────────────┘    [ACCESS TERMINAL]          │
-│                                      [EMERGENCY FREEZE]         │
-│                                                                  │
-├──────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌─────────────────────────────────────────────────────────┐   │
-│   │  CAPABILITIES                                            │   │
-│   │  ─────────────────────────────────────────────────────   │   │
-│   │                                                          │   │
-│   │  [01] MULTI-SIG    2/3 threshold protection              │   │
-│   │  [02] FREEZE       Emergency address blocking             │   │
-│   │  [03] PROPOSALS    Decentralized governance               │   │
-│   │                                                          │   │
-│   └─────────────────────────────────────────────────────────┘   │
-│                                                                  │
-└──────────────────────────────────────────────────────────────────┘
+Layer 5: 外围扫描圆环 (Radar Sweep)
+Layer 4: 数据轨道环 + 浮动数据点
+Layer 3: 多层旋转六边形 (3-4层，不同速度/方向)
+Layer 2: 脉冲能量波纹
+Layer 1: 中央盾牌 (增强发光效果)
+Layer 0: 科技感背景纹理
 ```
 
-### 关键变化
+### 具体增强内容
 
-1. **左右不对称分屏** - 左侧 3D 可视化，右侧控制台文字
-2. **终端式信息展示** - 用行号和前缀代替卡片
-3. **水平列表** - 功能不再是卡片，而是紧凑的行
-4. **巨大的视觉焦点** - 一个大元素而非多个小元素
+**1. 雷达扫描效果**
+```tsx
+// 外围旋转的扫描线
+<motion.div
+  className="absolute inset-0"
+  style={{
+    background: 'conic-gradient(from 0deg, transparent 0deg, 
+                 hsl(var(--terminal-amber) / 0.3) 30deg, 
+                 transparent 60deg)',
+    clipPath: 'circle(50%)',
+  }}
+  animate={{ rotate: 360 }}
+  transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+/>
+```
+
+**2. 多层六边形光环 (4层)**
+- Layer 1: 最外层 - 虚线边框，顺时针慢速旋转
+- Layer 2: 次外层 - 实线+发光，逆时针旋转  
+- Layer 3: 中层 - 脉冲动画
+- Layer 4: 内层 - 静态但带呼吸效果
+
+**3. 轨道数据点**
+```tsx
+// 环绕盾牌的数据点
+{[0, 1, 2, 3, 4, 5].map((i) => (
+  <motion.div
+    key={i}
+    className="absolute w-2 h-2 bg-primary"
+    style={{
+      // 圆形轨道位置
+      left: '50%', top: '50%',
+      transformOrigin: 'center',
+    }}
+    animate={{
+      rotate: [i * 60, i * 60 + 360],
+      x: [0, Math.cos(i * 60 * Math.PI / 180) * 150],
+      y: [0, Math.sin(i * 60 * Math.PI / 180) * 150],
+    }}
+    transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+  />
+))}
+```
+
+**4. 脉冲能量波**
+```tsx
+// 从中心向外扩散的波纹
+{[0, 1, 2].map((i) => (
+  <motion.div
+    key={i}
+    className="absolute inset-0 border border-primary/30 rounded-full"
+    initial={{ scale: 0.3, opacity: 0.8 }}
+    animate={{ scale: 1.5, opacity: 0 }}
+    transition={{
+      duration: 3,
+      delay: i * 1,
+      repeat: Infinity,
+    }}
+  />
+))}
+```
+
+**5. 角落装饰元素**
+- 四角添加 L 形边框装饰
+- 类似 HUD 界面的瞄准框效果
+
+**6. 浮动数据标签**
+```tsx
+// 围绕盾牌的浮动文字
+<motion.div className="absolute top-1/4 left-0 text-xs font-mono text-primary/60">
+  SEC_LEVEL: MAX
+</motion.div>
+<motion.div className="absolute bottom-1/4 right-0 text-xs font-mono text-accent/60">
+  NODE_STATUS: ACTIVE
+</motion.div>
+```
+
+**7. 中央盾牌增强**
+- 添加外发光效果
+- 盾牌图标添加微妙的呼吸动画
+- 背景添加扫描线纹理
 
 ---
 
-## Dashboard 重设计
-
-### 从卡片网格改为 **面板式布局**
-
-**当前**:
-```
-[Stat] [Stat] [Stat] [Stat]
-
-[大卡片]          [大卡片]
-
-[小卡片] [小卡片] [小卡片] [小卡片]
-```
-
-**新方案 - 不对称控制面板**:
-```
-┌──────────────────────────────────────────────────────────────────┐
-│ ← DASHBOARD                              [Address] [0.1 ETH] [×] │
-├──────────────────────────────────────────────────────────────────┤
-│                                                                   │
-│  ┌──────────────────────────────────────┐ ┌────────────────────┐ │
-│  │  MULTI-SIG WALLET                    │ │   QUICK STATUS     │ │
-│  │  ════════════════                    │ │   ────────────     │ │
-│  │                                      │ │                    │ │
-│  │  CONTRACT                            │ │   THRESHOLD  2/3   │ │
-│  │  0xA247...EECA                       │ │   FROZEN     3     │ │
-│  │                                      │ │   PENDING    1     │ │
-│  │  THRESHOLD ██████████████░░░ 2/3     │ │   TOTAL TX   3     │ │
-│  │                                      │ │                    │ │
-│  │  OWNERS                              │ │   ──────────────   │ │
-│  │  ├─ #1 0x1234...7890                 │ │   [FREEZE]         │ │
-│  │  ├─ #2 0xabcd...efab                 │ │   [UNFREEZE]       │ │
-│  │  └─ #3 0x9876...3210                 │ │   [PROPOSAL]       │ │
-│  │                                      │ │   [HISTORY]        │ │
-│  │  [PROPOSALS]              [EXPLORER] │ │                    │ │
-│  └──────────────────────────────────────┘ └────────────────────┘ │
-│                                                                   │
-│  ┌──────────────────────────────────────────────────────────────┐│
-│  │  FREEZE CONTRACT                                              ││
-│  │  ═══════════════                                              ││
-│  │                                                               ││
-│  │  CONTRACT: 0x3168...A719                           FROZEN: 3  ││
-│  │                                                               ││
-│  │  BLOCKED ADDRESSES                                            ││
-│  │  ┌─────────────────────────────────────────────────────────┐ ││
-│  │  │ 0xdead...0001  │ FROZEN │ 0xdead...0002  │ FROZEN │ ... │ ││
-│  │  └─────────────────────────────────────────────────────────┘ ││
-│  │                                                               ││
-│  │  [FREEZE CONTROL]                                 [EXPLORER] ││
-│  └──────────────────────────────────────────────────────────────┘│
-│                                                                   │
-└──────────────────────────────────────────────────────────────────┘
-```
-
-### 关键变化
-
-1. **主次分明** - 左侧大面板 70%，右侧窄面板 30%
-2. **树形结构** - Owner 列表用 `├─` `└─` 符号
-3. **内联数据** - 数字直接在标签旁边，不是大字体块
-4. **水平滚动列表** - 冻结地址用水平行而非垂直堆叠
-5. **紧凑按钮组** - 垂直堆叠在右侧面板
-
----
-
-## 具体实现要点
-
-### 布局系统
-
-```css
-/* 不对称网格 */
-.control-room {
-  display: grid;
-  grid-template-columns: 2fr 1fr; /* 左 70% 右 30% */
-  gap: 1rem;
-}
-
-/* 或者用固定宽度侧边栏 */
-.mission-control {
-  display: grid;
-  grid-template-columns: 1fr 280px;
-}
-
-/* 全宽面板 */
-.full-panel {
-  grid-column: 1 / -1;
-}
-```
-
-### 文件修改清单
+## 文件修改
 
 | 文件 | 修改内容 |
 |------|----------|
-| `src/pages/Index.tsx` | 改为左右分屏布局，左侧3D，右侧终端式文字 |
-| `src/pages/Dashboard.tsx` | 改为不对称面板布局，移除卡片网格 |
-| `src/pages/Freeze.tsx` | 改为单面板+侧边栏布局 |
-| `src/pages/Proposals.tsx` | 改为列表式布局，不再用卡片 |
-| `src/pages/History.tsx` | 保持时间线但简化卡片 |
-| `src/index.css` | 添加新的面板样式类 |
-
-### 新样式类
-
-```css
-/* 控制面板 */
-.control-panel {
-  background: linear-gradient(180deg, 
-    hsl(var(--card)) 0%, 
-    hsl(var(--background)) 100%
-  );
-  border: 1px solid hsl(var(--border));
-  border-top: 2px solid hsl(var(--terminal-amber));
-}
-
-/* 分隔线标题 */
-.panel-title {
-  border-bottom: 1px solid hsl(var(--border));
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-  font-family: 'JetBrains Mono';
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-/* 树形结构 */
-.tree-item::before {
-  content: '├─ ';
-  color: hsl(var(--muted-foreground));
-}
-.tree-item:last-child::before {
-  content: '└─ ';
-}
-
-/* 行内数据 */
-.inline-stat {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.25rem 0;
-  border-bottom: 1px dotted hsl(var(--border) / 0.5);
-}
-```
+| `src/pages/Index.tsx` | 重写左侧视觉区域，添加多层动画效果 |
+| `src/index.css` | 添加雷达扫描、脉冲波等新样式 |
 
 ---
 
-## 视觉对比
+## 视觉效果对比
 
-| 元素 | 当前 | 新方案 |
+| 元素 | 当前 | 增强后 |
 |------|------|--------|
-| 首页布局 | 居中对称 | 左右分屏不对称 |
-| 功能展示 | 3 个均匀卡片 | 编号行列表 |
-| Dashboard | 4 统计卡 + 2 大卡 | 主面板 + 侧边栏 |
-| 数据展示 | 大字体块 | 行内紧凑显示 |
-| 列表 | 垂直堆叠卡片 | 树形/水平滚动 |
-| 按钮 | 并排居中 | 垂直堆叠/固定位置 |
-| 整体感觉 | 展示页/营销站 | 操作界面/控制台 |
+| 六边形层数 | 2层 | 4层，不同大小/速度 |
+| 旋转元素 | 2个缓慢旋转 | 多个不同方向/速度 |
+| 光效 | 简单边框 | 发光+扫描+脉冲 |
+| 数据点 | 3个静态浮动 | 轨道环绕+更多点 |
+| 装饰 | 无 | HUD边角+浮动标签 |
+| 中央盾牌 | 静态 | 呼吸动画+外发光 |
+| 背景 | 空白 | 微妙的网格纹理 |
 
-这个新布局将让界面看起来像真正的控制系统，而不是模板生成的展示页！
+这个增强将让左侧区域看起来像真正的全息防护系统界面！
 

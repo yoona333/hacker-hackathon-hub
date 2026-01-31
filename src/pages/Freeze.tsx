@@ -49,7 +49,7 @@ export default function FreezePage() {
       {/* Header */}
       <header className="sticky top-0 z-50 terminal-card border-x-0 border-t-0" style={{ borderRadius: 0 }}>
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link to="/dashboard">
               <motion.button 
                 whileHover={{ scale: 1.1 }}
@@ -63,16 +63,16 @@ export default function FreezePage() {
               <div className="w-8 h-8 hex-clip gradient-emerald flex items-center justify-center">
                 <Snowflake className="w-4 h-4 text-background" />
               </div>
-              <span className="text-lg font-bold font-mono terminal-text uppercase">Freeze Control</span>
+              <span className="text-sm sm:text-lg font-bold font-mono terminal-text uppercase">Freeze</span>
             </div>
           </div>
           <NetworkBadge connected={isConnected} chainName={kiteTestnet.name} />
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
-        {/* Main Grid - Asymmetric */}
-        <div className="grid lg:grid-cols-[2fr_1fr] gap-4">
+      <main className="container mx-auto px-4 py-4 sm:py-6">
+        {/* Main Grid - Stacked on mobile, asymmetric on desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
           
           {/* Left - Search & Result */}
           <div className="space-y-4">

@@ -1,37 +1,45 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Wallet, Snowflake, Zap, Terminal, Lock, ChevronRight, Shield } from 'lucide-react';
+import { Wallet, Snowflake, Zap, Terminal, ChevronRight, Shield } from 'lucide-react';
 import { useAppKit } from '@reown/appkit/react';
 import { ParticleBackground } from '@/components/3d/ParticleBackground';
 import { HolographicShield } from '@/components/HolographicShield';
 import { NeonButton } from '@/components/ui/neon-button';
 import { NetworkBadge } from '@/components/ui/status-badge';
+import { LanguageToggle } from '@/components/LanguageToggle';
 import { useWallet } from '@/lib/web3/hooks';
+import { useLanguage } from '@/lib/i18n';
 import { kiteTestnet } from '@/lib/web3/config';
 
-const capabilities = [
+const getCapabilities = (t: (key: string) => string) => [
   {
     id: '00',
-    title: 'PAY',
-    description: '发起支付（EOA/AA，后端 API）',
+    title: t('home.cap.pay'),
+    description: t('home.cap.payDesc'),
     href: '/pay',
   },
   {
     id: '01',
-    title: 'MULTI-SIG',
-    description: '2/3 threshold protection',
-    href: '/dashboard',
+    title: t('home.cap.aiPay'),
+    description: t('home.cap.aiPayDesc'),
+    href: '/ai-pay',
   },
   {
     id: '02',
-    title: 'FREEZE',
-    description: 'Emergency address blocking',
-    href: '/freeze',
+    title: t('home.cap.multisig'),
+    description: t('home.cap.multisigDesc'),
+    href: '/dashboard',
   },
   {
     id: '03',
-    title: 'PROPOSALS',
-    description: 'Decentralized governance',
+    title: t('home.cap.freeze'),
+    description: t('home.cap.freezeDesc'),
+    href: '/freeze',
+  },
+  {
+    id: '04',
+    title: t('home.cap.proposals'),
+    description: t('home.cap.proposalsDesc'),
     href: '/proposals',
   },
 ];
@@ -82,6 +90,8 @@ function StatusLine({ label, value, status = 'normal' }: {
 export default function Index() {
   const { open } = useAppKit();
   const { isConnected } = useWallet();
+  const { t } = useLanguage();
+  const capabilities = getCapabilities(t);
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -98,28 +108,20 @@ export default function Index() {
             <div className="w-8 h-8 hex-clip gradient-amber flex items-center justify-center">
               <Terminal className="w-4 h-4 text-background" />
             </div>
-            <span className="text-lg font-bold font-mono terminal-text">AGENT_PAY_GUARD</span>
+            <span className="text-lg font-bold font-mono terminal-text">{t('home.title')}</span>
           </motion.div>
           
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3"
+            className="flex items-center gap-2"
           >
+            <LanguageToggle />
             <NetworkBadge connected={isConnected} chainName={kiteTestnet.name} />
-            {isConnected ? (
-              <Link to="/dashboard">
-                <NeonButton size="sm">
-                  <Lock className="w-4 h-4" />
-                  DASHBOARD
-                </NeonButton>
-              </Link>
-            ) : (
-              <NeonButton onClick={() => open()} size="sm">
-                <Wallet className="w-4 h-4" />
-                CONNECT
-              </NeonButton>
-            )}
+            <NeonButton onClick={() => open()} size="sm">
+              <Wallet className="w-4 h-4" />
+              {t('header.connect')}
+            </NeonButton>
           </motion.div>
         </div>
       </header>
@@ -167,19 +169,19 @@ export default function Index() {
               </h1>
               <div className="h-0.5 w-full bg-gradient-to-r from-primary via-accent to-transparent mb-4" />
               <div className="text-xs font-mono text-muted-foreground">
-                <TypewriterText text=">> SECURITY PROTOCOL v1.0.0" />
+                <TypewriterText text={`>> ${t('home.subtitle')}`} />
               </div>
             </div>
 
             {/* Status Console */}
             <div className="control-panel">
-              <div className="panel-title">System Status</div>
+              <div className="panel-title">{t('home.status')}</div>
               <div className="space-y-1">
-                <StatusLine label="STATUS" value="ONLINE" status="success" />
-                <StatusLine label="SECURITY" value="MAXIMUM" status="success" />
-                <StatusLine label="NETWORK" value={kiteTestnet.name.toUpperCase()} />
-                <StatusLine label="CHAIN_ID" value="2368" />
-                <StatusLine label="THRESHOLD" value="2/3 MULTISIG" status="warning" />
+                <StatusLine label={t('home.status.online').split(' ')[0]} value={t('home.status.online')} status="success" />
+                <StatusLine label={t('home.status.security')} value={t('home.status.maximum')} status="success" />
+                <StatusLine label={t('home.status.network')} value={kiteTestnet.name.toUpperCase()} />
+                <StatusLine label={t('home.status.chainId')} value="2368" />
+                <StatusLine label={t('home.status.threshold')} value={t('home.status.multisig')} status="warning" />
               </div>
             </div>
 
@@ -191,7 +193,7 @@ export default function Index() {
                     <NeonButton size="lg" pulse className="w-full justify-between">
                       <span className="flex items-center gap-2">
                         <Zap className="w-5 h-5" />
-                        ACCESS TERMINAL
+                        {t('home.accessTerminal')}
                       </span>
                       <ChevronRight className="w-5 h-5" />
                     </NeonButton>
@@ -200,7 +202,7 @@ export default function Index() {
                     <NeonButton size="lg" variant="secondary" className="w-full justify-between">
                       <span className="flex items-center gap-2">
                         <Snowflake className="w-5 h-5" />
-                        EMERGENCY FREEZE
+                        {t('home.emergencyFreeze')}
                       </span>
                       <ChevronRight className="w-5 h-5" />
                     </NeonButton>
@@ -209,7 +211,7 @@ export default function Index() {
               ) : (
                 <NeonButton size="lg" onClick={() => open()} pulse className="w-full">
                   <Wallet className="w-5 h-5" />
-                  CONNECT WALLET TO CONTINUE
+                  {t('home.connectWallet')}
                 </NeonButton>
               )}
             </div>
@@ -224,7 +226,7 @@ export default function Index() {
           className="mt-8"
         >
           <div className="control-panel">
-            <div className="panel-title">Capabilities</div>
+            <div className="panel-title">{t('home.capabilities')}</div>
             <div className="space-y-0">
               {capabilities.map((cap, index) => (
                 <Link key={cap.id} to={cap.href}>
@@ -254,10 +256,10 @@ export default function Index() {
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 right-0 py-3 terminal-card border-x-0 border-b-0" style={{ borderRadius: 0 }}>
         <div className="container mx-auto px-4 flex items-center justify-between text-xs font-mono text-muted-foreground">
-          <span>🛡️ HACKATHON 2024</span>
+          <span>{t('home.footer.hackathon')}</span>
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-success animate-pulse" />
-            <span>{kiteTestnet.name} • CHAIN 2368</span>
+            <span>{kiteTestnet.name} • {t('home.footer.chain')}</span>
           </div>
         </div>
       </footer>

@@ -30,9 +30,11 @@ createAppKit({
   projectId: REOWN_PROJECT_ID,
   metadata,
   features: {
-    analytics: true,
+    analytics: false,
     email: false,
     socials: false,
+    swaps: false,
+    onramp: false,
   },
   themeMode: 'dark',
   themeVariables: {

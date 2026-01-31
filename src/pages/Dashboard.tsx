@@ -104,8 +104,8 @@ export default function Dashboard() {
           </motion.div>
         )}
 
-        {/* Main Grid - Asymmetric Layout */}
-        <div className="grid lg:grid-cols-[2fr_1fr] gap-4">
+        {/* Main Grid - Asymmetric Layout (stacked on mobile) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
           
           {/* Left Column - Main Panels */}
           <div className="space-y-4">
@@ -230,8 +230,8 @@ export default function Dashboard() {
             </motion.div>
           </div>
 
-          {/* Right Column - Quick Status & Actions */}
-          <div className="space-y-4">
+          {/* Right Column - Quick Status & Actions (full width on mobile) */}
+          <div className="grid grid-cols-2 lg:grid-cols-1 gap-4 lg:space-y-4 lg:gap-0">
             {/* Quick Status */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}

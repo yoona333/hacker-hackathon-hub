@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Wallet, Snowflake, Zap, Terminal, Lock, ChevronRight } from 'lucide-react';
+import { Wallet, Snowflake, Zap, Terminal, Lock, ChevronRight, Shield } from 'lucide-react';
 import { useAppKit } from '@reown/appkit/react';
 import { ParticleBackground } from '@/components/3d/ParticleBackground';
 import { HolographicShield } from '@/components/HolographicShield';
@@ -122,23 +122,36 @@ export default function Index() {
       <main className="container mx-auto px-4 pt-20 pb-16 min-h-screen">
         <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 items-center min-h-[calc(100vh-10rem)]">
           
-          {/* Left Side - Holographic Shield Visual */}
+          {/* Left Side - Holographic Shield Visual (hidden on mobile, shown on lg+) */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="relative flex items-center justify-center"
+            className="relative hidden lg:flex items-center justify-center"
           >
             <HolographicShield />
           </motion.div>
 
-          {/* Right Side - Terminal Console */}
+          {/* Right Side - Terminal Console (full width on mobile) */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="space-y-6"
+            className="space-y-6 lg:col-start-2"
           >
+            {/* Mobile-only mini shield */}
+            <div className="flex lg:hidden justify-center mb-4">
+              <motion.div 
+                className="w-20 h-20 hex-clip gradient-amber p-0.5"
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <div className="w-full h-full hex-clip bg-background flex items-center justify-center">
+                  <Shield className="w-8 h-8 text-primary" />
+                </div>
+              </motion.div>
+            </div>
+            
             {/* Title Block */}
             <div>
               <h1 className="text-3xl md:text-4xl font-bold font-mono mb-2">

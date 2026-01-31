@@ -1,17 +1,15 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import { 
-  History, ArrowLeft, ExternalLink, Clock, 
-  Filter, CheckCircle, XCircle, Loader2, Terminal
+  History, ExternalLink, Clock, 
+  Filter, CheckCircle, XCircle, Loader2
 } from 'lucide-react';
-import { ParticleBackground } from '@/components/3d/ParticleBackground';
+import { Layout } from '@/components/Layout';
 import { GlassCard } from '@/components/ui/glass-card';
-import { NeonButton } from '@/components/ui/neon-button';
 import { AddressDisplay } from '@/components/ui/address-display';
-import { StatusBadge, TypeBadge, NetworkBadge } from '@/components/ui/status-badge';
-import { useWallet } from '@/lib/web3/hooks';
-import { MOCK_DATA, getExplorerUrl, kiteTestnet, shortenAddress } from '@/lib/web3/config';
+import { StatusBadge, TypeBadge } from '@/components/ui/status-badge';
+import { useWallet, useProposals } from '@/lib/web3/hooks';
+import { getExplorerUrl, shortenAddress, CONTRACTS } from '@/lib/web3/config';
 import { cn } from '@/lib/utils';
 
 type FilterType = 'all' | 'freeze' | 'unfreeze' | 'confirm' | 'execute';
@@ -19,27 +17,32 @@ type StatusType = 'all' | 'success' | 'pending' | 'failed';
 
 export default function HistoryPage() {
   const { isConnected } = useWallet();
+  const { proposals, isLoading: proposalsLoading } = useProposals();
   const [typeFilter, setTypeFilter] = useState<FilterType>('all');
   const [statusFilter, setStatusFilter] = useState<StatusType>('all');
 
-  const filteredTransactions = MOCK_DATA.transactions.filter(tx => {
-    if (typeFilter !== 'all' && tx.type !== typeFilter) return false;
-    if (statusFilter !== 'all' && tx.status !== statusFilter) return false;
-    return true;
-  });
+  const filteredTransactions = useMemo(() => {
+    const list = proposals.map((p) => ({
+      id: p.id,
+      hash: '', // Multisig contract does not store tx hash per proposal
+      type: (p.type === 'freeze' ? 'freeze' : p.type === 'unfreeze' ? 'unfreeze' : 'execute') as FilterType,
+      status: p.executed ? ('success' as const) : ('pending' as const),
+      timestamp: 0,
+      target: p.targetAddress ?? p.to,
+    }));
+    return list.filter(tx => {
+      if (typeFilter !== 'all' && tx.type !== typeFilter) return false;
+      if (statusFilter !== 'all' && tx.status !== statusFilter) return false;
+      return true;
+    });
+  }, [proposals, typeFilter, statusFilter]);
 
-  const formatTime = (timestamp: number) => {
-    const diff = Date.now() - timestamp;
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    
-    if (days > 0) return `${days}d ago`;
-    if (hours > 0) return `${hours}h ago`;
-    return 'Just now';
+  const formatTime = (_timestamp: number) => {
+    return 'On-chain';
   };
 
-  const formatFullTime = (timestamp: number) => {
-    return new Date(timestamp).toLocaleString();
+  const formatFullTime = (_timestamp: number) => {
+    return 'From multisig contract';
   };
 
   const StatusIcon = ({ status }: { status: string }) => {
@@ -71,33 +74,12 @@ export default function HistoryPage() {
   ];
 
   return (
-    <div className="relative min-h-screen">
-      <ParticleBackground />
-      
-      {/* Header */}
-      <header className="sticky top-0 z-50 terminal-card border-x-0 border-t-0" style={{ borderRadius: 0 }}>
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/dashboard">
-              <motion.button 
-                whileHover={{ scale: 1.1 }}
-                className="p-2 hover:bg-muted/50 border border-transparent hover:border-primary/30"
-                style={{ borderRadius: '2px' }}
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </motion.button>
-            </Link>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 hex-clip gradient-amber flex items-center justify-center">
-                <History className="w-5 h-5 text-background" />
-              </div>
-              <span className="text-xl font-bold font-mono terminal-text uppercase">Transaction Log</span>
-            </div>
-          </div>
-          <NetworkBadge connected={isConnected} chainName={kiteTestnet.name} />
-        </div>
-      </header>
-
+    <Layout
+      title="Transaction Log"
+      icon={<History className="w-4 h-4 text-background" />}
+      backTo="/dashboard"
+      headerClass="py-4"
+    >
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Filters */}
@@ -156,20 +138,26 @@ export default function HistoryPage() {
 
             {/* Transactions */}
             <div className="space-y-6">
-              {filteredTransactions.length === 0 ? (
+              {proposalsLoading ? (
+                <GlassCard className="ml-16 text-center py-12">
+                  <Loader2 className="w-16 h-16 mx-auto mb-4 text-primary animate-spin" />
+                  <h3 className="text-lg font-bold mb-2 font-mono uppercase">Loading...</h3>
+                  <p className="text-muted-foreground font-mono text-sm">Fetching on-chain proposals</p>
+                </GlassCard>
+              ) : filteredTransactions.length === 0 ? (
                 <GlassCard className="ml-16 text-center py-12">
                   <History className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
                   <h3 className="text-lg font-bold mb-2 font-mono uppercase">No Transactions</h3>
                   <p className="text-muted-foreground font-mono text-sm">
                     {typeFilter !== 'all' || statusFilter !== 'all' 
                       ? 'Try adjusting your filters'
-                      : 'Transaction history will appear here'}
+                      : 'Transaction history will appear here (from multisig contract)'}
                   </p>
                 </GlassCard>
               ) : (
                 filteredTransactions.map((tx, index) => (
                   <motion.div
-                    key={tx.hash}
+                    key={`${tx.id}-${tx.target}`}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
@@ -210,16 +198,15 @@ export default function HistoryPage() {
 
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">Tx Hash</span>
+                          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">Proposal ID</span>
                           <div className="flex items-center gap-2">
-                            <span className="terminal-text font-mono text-sm">
-                              {shortenAddress(tx.hash, 8)}
-                            </span>
+                            <span className="terminal-text font-mono text-sm">#{tx.id}</span>
                             <motion.button
                               whileHover={{ scale: 1.1 }}
-                              onClick={() => window.open(getExplorerUrl('tx', tx.hash), '_blank')}
+                              onClick={() => window.open(getExplorerUrl('address', CONTRACTS.MULTISIG), '_blank')}
                               className="p-1 hover:bg-muted/50"
                               style={{ borderRadius: '2px' }}
+                              title="View multisig on explorer"
                             >
                               <ExternalLink className="w-4 h-4 text-muted-foreground" />
                             </motion.button>
@@ -237,21 +224,8 @@ export default function HistoryPage() {
             </div>
           </div>
 
-          {/* Load More */}
-          {filteredTransactions.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="mt-8 text-center"
-            >
-              <NeonButton variant="secondary">
-                LOAD MORE
-              </NeonButton>
-            </motion.div>
-          )}
         </div>
       </main>
-    </div>
+    </Layout>
   );
 }

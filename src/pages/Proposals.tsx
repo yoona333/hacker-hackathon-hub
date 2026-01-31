@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import {
-  FileText, ArrowLeft, Plus, Check, Play,
+  FileText, Plus, Check, Play,
   CheckCircle, X, Loader2, ExternalLink, RefreshCw
 } from 'lucide-react';
-import { ParticleBackground } from '@/components/3d/ParticleBackground';
+import { Layout } from '@/components/Layout';
 import { NeonButton } from '@/components/ui/neon-button';
 import { ThresholdProgress } from '@/components/ui/neon-progress';
-import { StatusBadge, TypeBadge, NetworkBadge } from '@/components/ui/status-badge';
+import { StatusBadge, TypeBadge } from '@/components/ui/status-badge';
 import {
   useWallet, useProposals, useIsMultiSigOwner, useSubmitProposal,
   useConfirmTransaction, useExecuteTransaction,
 } from '@/lib/web3/hooks';
-import { kiteTestnet, shortenAddress, getExplorerUrl } from '@/lib/web3/config';
+import { shortenAddress, getExplorerUrl } from '@/lib/web3/config';
 import { cn } from '@/lib/utils';
 
 const REQUIRED = 2;
@@ -82,46 +81,24 @@ export default function ProposalsPage() {
   };
 
   return (
-    <div className="relative min-h-screen">
-      <ParticleBackground />
-
-      {/* Header */}
-      <header className="sticky top-0 z-50 terminal-card border-x-0 border-t-0" style={{ borderRadius: 0 }}>
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link to="/dashboard">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                className="p-2 hover:bg-muted/50 border border-transparent hover:border-primary/30"
-                style={{ borderRadius: '2px' }}
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </motion.button>
-            </Link>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 hex-clip gradient-amber flex items-center justify-center">
-                <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-background" />
-              </div>
-              <span className="text-sm sm:text-lg font-bold font-mono terminal-text uppercase">Proposals</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hidden sm:block">
-              <NetworkBadge connected={isConnected} chainName={kiteTestnet.name} />
-            </div>
-            <NeonButton onClick={() => refetch()} size="sm" variant="secondary">
-              <RefreshCw className="w-4 h-4" />
+    <Layout
+      title="Proposals"
+      icon={<FileText className="w-3 h-3 sm:w-4 sm:h-4 text-background" />}
+      backTo="/dashboard"
+      rightSlot={
+        <>
+          <NeonButton onClick={() => refetch()} size="sm" variant="secondary">
+            <RefreshCw className="w-4 h-4" />
+          </NeonButton>
+          {isOwner && (
+            <NeonButton onClick={() => { setShowNewProposal(true); resetSubmit(); }} size="sm">
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">NEW</span>
             </NeonButton>
-            {isOwner && (
-              <NeonButton onClick={() => { setShowNewProposal(true); resetSubmit(); }} size="sm">
-                <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">NEW</span>
-              </NeonButton>
-            )}
-          </div>
-        </div>
-      </header>
-
+          )}
+        </>
+      }
+    >
       <main className="container mx-auto px-4 py-4 sm:py-6">
         {/* Stats Row */}
         <motion.div
@@ -444,6 +421,6 @@ export default function ProposalsPage() {
           </div>
         )}
       </main>
-    </div>
+    </Layout>
   );
 }

@@ -58,6 +58,7 @@ const translations = {
     'pay.txHash': 'txHash:',
     'pay.userOpHash': 'userOpHash:',
     'pay.walletNotice': 'This page initiates payment via backend API (using .env private key). Wallet connection is only for network status display.',
+    'pay.networkError': 'Request failed. Please ensure backend is running (pnpm server).',
     
     // AI Pay page
     'aiPay.title': 'AI Pay',
@@ -137,6 +138,7 @@ const translations = {
     'pay.txHash': '交易哈希：',
     'pay.userOpHash': '用户操作哈希：',
     'pay.walletNotice': '本页发起支付由后端 API 执行（使用 .env 私钥），连接钱包仅用于展示网络状态。',
+    'pay.networkError': '请求失败，请确认后端已启动（pnpm server）。',
     
     // AI Pay page
     'aiPay.title': 'AI 支付',

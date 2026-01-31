@@ -1,18 +1,30 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   Wallet, Shield, Snowflake, FileText, History,
-  ExternalLink, ArrowLeft, LogOut, Terminal, Loader2
+  ExternalLink, LogOut, Terminal, Loader2, ListFilter
 } from 'lucide-react';
 import { useAppKit } from '@reown/appkit/react';
 import { ParticleBackground } from '@/components/3d/ParticleBackground';
 import { GlassCard } from '@/components/ui/glass-card';
+import { Layout } from '@/components/Layout';
 import { NeonButton } from '@/components/ui/neon-button';
 import { AddressDisplay } from '@/components/ui/address-display';
 import { ThresholdProgress } from '@/components/ui/neon-progress';
-import { NetworkBadge, StatusBadge } from '@/components/ui/status-badge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { useWallet, useMultiSigOwners, useProposals, useIsMultiSigOwner } from '@/lib/web3/hooks';
 import { CONTRACTS, getExplorerUrl, kiteTestnet, shortenAddress } from '@/lib/web3/config';
+
+const API_BASE = import.meta.env.VITE_API_URL ?? '';
+
+type PolicyResponse = {
+  allowlistCount?: number;
+  maxAmount?: string | null;
+  dailyLimit?: string | null;
+  settlementToken?: string;
+  chainId?: number;
+};
 
 const REQUIRED = 2;
 
@@ -22,6 +34,14 @@ export default function Dashboard() {
   const { owners, isLoading: ownersLoading } = useMultiSigOwners();
   const { isOwner } = useIsMultiSigOwner();
   const { proposals, totalCount, isLoading: proposalsLoading } = useProposals();
+  const [policy, setPolicy] = useState<PolicyResponse | null>(null);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/policy`)
+      .then((res) => res.json())
+      .then((data) => setPolicy(data))
+      .catch(() => setPolicy(null));
+  }, []);
 
   const pendingCount = proposals.filter(p => !p.executed).length;
 
@@ -45,53 +65,32 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="relative min-h-screen">
-      <ParticleBackground />
-
-      {/* Header */}
-      <header className="sticky top-0 z-50 terminal-card border-x-0 border-t-0" style={{ borderRadius: 0 }}>
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                className="p-2 hover:bg-muted/50 border border-transparent hover:border-primary/30"
-                style={{ borderRadius: '2px' }}
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </motion.button>
-            </Link>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 hex-clip gradient-amber flex items-center justify-center">
-                <Terminal className="w-4 h-4 text-background" />
-              </div>
-              <span className="text-lg font-bold font-mono terminal-text uppercase">Dashboard</span>
-            </div>
+    <Layout
+      title="Dashboard"
+      icon={<Terminal className="w-4 h-4 text-background" />}
+      backTo="/"
+      rightSlot={
+        <>
+          <div className="hidden md:flex items-center gap-2 terminal-card px-3 py-1.5">
+            <span className="text-xs text-primary font-mono">{shortenAddress(address!)}</span>
+            <span className="text-xs text-muted-foreground font-mono">
+              {parseFloat(balance).toFixed(3)} {symbol}
+            </span>
+            {isOwner && (
+              <span className="text-[10px] text-success font-mono uppercase">OWNER</span>
+            )}
           </div>
-
-          <div className="flex items-center gap-3">
-            <NetworkBadge connected={isCorrectNetwork} chainName={kiteTestnet.name} />
-            <div className="hidden md:flex items-center gap-2 terminal-card px-3 py-1.5">
-              <span className="text-xs text-primary font-mono">{shortenAddress(address!)}</span>
-              <span className="text-xs text-muted-foreground font-mono">
-                {parseFloat(balance).toFixed(3)} {symbol}
-              </span>
-              {isOwner && (
-                <span className="text-[10px] text-success font-mono uppercase">OWNER</span>
-              )}
-            </div>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              onClick={() => open()}
-              className="p-2 hover:bg-muted/50 text-muted-foreground hover:text-foreground"
-              style={{ borderRadius: '2px' }}
-            >
-              <LogOut className="w-4 h-4" />
-            </motion.button>
-          </div>
-        </div>
-      </header>
-
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            onClick={() => open()}
+            className="p-2 hover:bg-muted/50 text-muted-foreground hover:text-foreground"
+            style={{ borderRadius: '2px' }}
+          >
+            <LogOut className="w-4 h-4" />
+          </motion.button>
+        </>
+      }
+    >
       <main className="container mx-auto px-4 py-6">
         {/* Network Warning */}
         {!isCorrectNetwork && (
@@ -280,6 +279,35 @@ export default function Dashboard() {
               </div>
             </motion.div>
 
+            {/* Policy (Backend API) */}
+            {policy != null && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.25 }}
+                className="control-panel"
+              >
+                <div className="panel-title flex items-center gap-2">
+                  <ListFilter className="w-4 h-4" />
+                  Policy (API)
+                </div>
+                <div className="space-y-0">
+                  <div className="inline-stat">
+                    <span className="inline-stat-label">Allowlist</span>
+                    <span className="inline-stat-value">{policy.allowlistCount ?? 0} addresses</span>
+                  </div>
+                  <div className="inline-stat">
+                    <span className="inline-stat-label">Max Amount</span>
+                    <span className="inline-stat-value">{policy.maxAmount ?? '—'}</span>
+                  </div>
+                  <div className="inline-stat">
+                    <span className="inline-stat-label">Daily Limit</span>
+                    <span className="inline-stat-value">{policy.dailyLimit ?? '—'}</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {/* Quick Actions */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -318,6 +346,6 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
-    </div>
+    </Layout>
   );
 }

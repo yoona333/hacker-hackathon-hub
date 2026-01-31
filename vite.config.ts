@@ -11,10 +11,10 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
-    // 本地开发时把 /api 代理到 AgentPayGuard 后端（pnpm server，默认 3000）
+    // 本地开发时把 /api 代理到 AgentPayGuard 后端（pnpm server，默认 3456）
     proxy: {
       "/api": {
-        target: "http://localhost:3000",
+        target: "http://localhost:3456",
         changeOrigin: true,
       },
     },

@@ -39,7 +39,7 @@ export default function ProposalsPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 terminal-card border-x-0 border-t-0" style={{ borderRadius: 0 }}>
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link to="/dashboard">
               <motion.button 
                 whileHover={{ scale: 1.1 }}
@@ -50,43 +50,45 @@ export default function ProposalsPage() {
               </motion.button>
             </Link>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 hex-clip gradient-amber flex items-center justify-center">
-                <FileText className="w-4 h-4 text-background" />
+              <div className="w-6 h-6 sm:w-8 sm:h-8 hex-clip gradient-amber flex items-center justify-center">
+                <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-background" />
               </div>
-              <span className="text-lg font-bold font-mono terminal-text uppercase">Proposals</span>
+              <span className="text-sm sm:text-lg font-bold font-mono terminal-text uppercase">Proposals</span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <NetworkBadge connected={isConnected} chainName={kiteTestnet.name} />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden sm:block">
+              <NetworkBadge connected={isConnected} chainName={kiteTestnet.name} />
+            </div>
             <NeonButton onClick={() => setShowNewProposal(true)} size="sm">
               <Plus className="w-4 h-4" />
-              NEW
+              <span className="hidden sm:inline">NEW</span>
             </NeonButton>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-4 sm:py-6">
         {/* Stats Row */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="control-panel mb-4"
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+            <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto justify-between sm:justify-start">
               <div className="text-center">
-                <div className="text-2xl font-bold terminal-text font-mono">{MOCK_DATA.proposals.length}</div>
+                <div className="text-xl sm:text-2xl font-bold terminal-text font-mono">{MOCK_DATA.proposals.length}</div>
                 <div className="text-[10px] text-muted-foreground font-mono uppercase">Total</div>
               </div>
               <div className="w-px h-8 bg-border" />
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary font-mono">{pendingCount}</div>
+                <div className="text-xl sm:text-2xl font-bold text-primary font-mono">{pendingCount}</div>
                 <div className="text-[10px] text-muted-foreground font-mono uppercase">Pending</div>
               </div>
               <div className="w-px h-8 bg-border" />
               <div className="text-center">
-                <div className="text-2xl font-bold text-success font-mono">{executedCount}</div>
+                <div className="text-xl sm:text-2xl font-bold text-success font-mono">{executedCount}</div>
                 <div className="text-[10px] text-muted-foreground font-mono uppercase">Executed</div>
               </div>
             </div>
@@ -209,9 +211,9 @@ export default function ProposalsPage() {
                 transition={{ delay: index * 0.05 }}
                 className="control-panel"
               >
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-3 sm:gap-4">
                   {/* ID Badge */}
-                  <div className="w-10 h-10 hex-clip gradient-amber flex items-center justify-center text-sm font-bold font-mono text-background flex-shrink-0">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 hex-clip gradient-amber flex items-center justify-center text-xs sm:text-sm font-bold font-mono text-background flex-shrink-0">
                     #{proposal.id}
                   </div>
 
@@ -243,7 +245,7 @@ export default function ProposalsPage() {
                     />
 
                     {!proposal.executed && (
-                      <div className="flex gap-2 mt-3">
+                      <div className="flex flex-col sm:flex-row gap-2 mt-3">
                         <NeonButton 
                           variant="secondary" 
                           size="sm"

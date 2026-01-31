@@ -12,16 +12,16 @@ export const kiteTestnet = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ['https://rpc.kite.testnet'],
+      http: ['https://rpc-testnet.gokite.ai/'],
     },
     public: {
-      http: ['https://rpc.kite.testnet'],
+      http: ['https://rpc-testnet.gokite.ai/'],
     },
   },
   blockExplorers: {
     default: {
-      name: 'Kite Explorer',
-      url: 'https://explorer.kite.testnet',
+      name: 'Kite Scan',
+      url: 'https://testnet.kitescan.ai',
     },
   },
   testnet: true,

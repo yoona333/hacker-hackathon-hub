@@ -11,6 +11,12 @@ import { kiteTestnet } from '@/lib/web3/config';
 
 const capabilities = [
   {
+    id: '00',
+    title: 'PAY',
+    description: '发起支付（EOA/AA，后端 API）',
+    href: '/pay',
+  },
+  {
     id: '01',
     title: 'MULTI-SIG',
     description: '2/3 threshold protection',

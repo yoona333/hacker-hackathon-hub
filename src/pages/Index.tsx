@@ -118,10 +118,17 @@ export default function Index() {
           >
             <LanguageToggle />
             <NetworkBadge connected={isConnected} chainName={kiteTestnet.name} />
-            <NeonButton onClick={() => open()} size="sm">
-              <Wallet className="w-4 h-4" />
-              {t('header.connect')}
-            </NeonButton>
+            {isConnected ? (
+              <NeonButton onClick={() => open()} size="sm">
+                <Wallet className="w-4 h-4" />
+                {t('header.dashboard')}
+              </NeonButton>
+            ) : (
+              <NeonButton onClick={() => open()} size="sm">
+                <Wallet className="w-4 h-4" />
+                {t('header.connect')}
+              </NeonButton>
+            )}
           </motion.div>
         </div>
       </header>

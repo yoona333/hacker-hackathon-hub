@@ -138,14 +138,22 @@ export default function AIPayPage() {
           <p className="text-xs text-muted-foreground mb-4">
             {t('aiPay.description')}
           </p>
+          <div className="text-xs text-primary/80 mb-4 p-2 border border-primary/30 bg-primary/5" style={{ borderRadius: '2px' }}>
+            💡 <strong>Confidence</strong>: AI's certainty in parsing (0-100%). Higher is better.
+            <br />
+            🔧 <strong>Payment Mode</strong>: Uses .env setting (EOA or AA)
+          </div>
 
           <form onSubmit={handleParse} className="space-y-4">
             <div>
+              <label className="block text-sm font-mono text-muted-foreground mb-2">
+                Natural Language Request
+              </label>
               <textarea
                 value={request}
                 onChange={(e) => setRequest(e.target.value)}
                 placeholder={t('aiPay.placeholder')}
-                className="w-full terminal-input font-mono text-sm min-h-[100px] resize-y"
+                className="w-full terminal-input font-mono text-sm min-h-[100px] resize-y bg-background text-foreground"
                 disabled={loading}
               />
             </div>

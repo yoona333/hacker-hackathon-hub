@@ -21,20 +21,20 @@ export function HolographicShield() {
         />
       </div>
 
-      {/* Layer 1: Pulse Energy Waves */}
-      {[0, 1, 2].map((i) => (
+      {/* Layer 1: Pulse Energy Waves - Reduced from 3 to 2 for performance */}
+      {[0, 1].map((i) => (
         <motion.div
           key={`pulse-${i}`}
           className="absolute inset-0 flex items-center justify-center"
         >
           <motion.div
             className="w-64 h-64 border border-primary/30"
-            style={{ clipPath: hexClipPath }}
+            style={{ clipPath: hexClipPath, willChange: 'transform, opacity' }}
             initial={{ scale: 0.4, opacity: 0.6 }}
             animate={{ scale: 1.4, opacity: 0 }}
             transition={{
               duration: 3,
-              delay: i * 1,
+              delay: i * 1.5,
               repeat: Infinity,
               ease: 'easeOut',
             }}
@@ -43,67 +43,66 @@ export function HolographicShield() {
       ))}
 
       {/* Layer 2: Multi-layer Rotating Hexagons */}
-      {/* Outermost - Dashed, slow clockwise */}
-      <motion.div 
+      {/* Outermost - Dashed, slow clockwise - Using CSS animation for better performance */}
+      <div 
         className="absolute inset-0 flex items-center justify-center"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+        style={{ 
+          animation: 'rotate 60s linear infinite',
+          willChange: 'transform'
+        }}
       >
         <div 
           className="w-80 h-80 border border-dashed border-primary/20"
           style={{ clipPath: hexClipPath }}
         />
-      </motion.div>
+      </div>
 
-      {/* Second layer - Solid with glow, counter-clockwise */}
-      <motion.div 
+      {/* Second layer - Solid with glow, counter-clockwise - CSS animation */}
+      <div 
         className="absolute inset-0 flex items-center justify-center"
-        animate={{ rotate: -360 }}
-        transition={{ duration: 45, repeat: Infinity, ease: 'linear' }}
+        style={{ 
+          animation: 'rotate-reverse 45s linear infinite',
+          willChange: 'transform'
+        }}
       >
         <div 
           className="w-64 h-64 border-2 border-primary/40 shadow-[0_0_20px_hsl(var(--primary)/0.3)]"
           style={{ clipPath: hexClipPath }}
         />
-      </motion.div>
+      </div>
 
-      {/* Third layer - Pulsing */}
-      <motion.div 
+      {/* Third layer - Pulsing - Simplified */}
+      <div 
         className="absolute inset-0 flex items-center justify-center"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+        style={{ 
+          animation: 'rotate 30s linear infinite',
+          willChange: 'transform'
+        }}
       >
-        <motion.div 
-          className="w-52 h-52 border border-accent/50"
+        <div 
+          className="w-52 h-52 border border-accent/50 pulse-glow"
           style={{ clipPath: hexClipPath }}
-          animate={{ 
-            boxShadow: [
-              '0 0 10px hsl(var(--accent) / 0.2)',
-              '0 0 30px hsl(var(--accent) / 0.4)',
-              '0 0 10px hsl(var(--accent) / 0.2)',
-            ]
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
         />
-      </motion.div>
+      </div>
 
-      {/* Fourth layer - Breathing effect */}
-      <motion.div 
-        className="absolute inset-0 flex items-center justify-center"
-        animate={{ scale: [1, 1.05, 1] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+      {/* Fourth layer - Breathing effect - CSS animation */}
+      <div 
+        className="absolute inset-0 flex items-center justify-center breathing"
+        style={{ willChange: 'transform' }}
       >
         <div 
           className="w-44 h-44 border border-primary/60"
           style={{ clipPath: hexClipPath }}
         />
-      </motion.div>
+      </div>
 
-      {/* Layer 3: Radar Sweep */}
-      <motion.div
+      {/* Layer 3: Radar Sweep - CSS animation */}
+      <div
         className="absolute inset-0 flex items-center justify-center"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+        style={{ 
+          animation: 'rotate 4s linear infinite',
+          willChange: 'transform'
+        }}
       >
         <div 
           className="w-72 h-72"
@@ -112,11 +111,11 @@ export function HolographicShield() {
             clipPath: hexClipPath,
           }}
         />
-      </motion.div>
+      </div>
 
-      {/* Layer 4: Orbiting Data Points */}
+      {/* Layer 4: Orbiting Data Points - Reduced from 6 to 4 for performance */}
       <div className="absolute inset-0 flex items-center justify-center">
-        {[0, 1, 2, 3, 4, 5].map((i) => {
+        {[0, 1, 2, 3].map((i) => {
           const angle = (i * 60) * (Math.PI / 180);
           const radius = 140;
           return (

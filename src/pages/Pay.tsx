@@ -57,7 +57,7 @@ export default function PayPage() {
       icon={<Send className="w-4 h-4 text-background" />}
       backTo="/"
     >
-      <main className="container mx-auto px-4 py-4 sm:py-6 max-w-2xl">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-2xl">
         {!isConnected && (
           <GlassCard className="p-6 text-center">
             <p className="text-muted-foreground mb-4">{t('pay.walletNotice')}</p>

@@ -56,13 +56,12 @@ function DataCube({ position, size, color, rotationSpeed }: DataCubeProps) {
 }
 
 export function DataCubes() {
+  // Reduced cube count from 6 to 4 for better performance
   const cubes = useMemo(() => [
     { position: [-4, 2, -5] as [number, number, number], size: 0.8, color: '#f59e0b', rotationSpeed: 1 },
     { position: [4, 1, -6] as [number, number, number], size: 0.6, color: '#10b981', rotationSpeed: 1.5 },
     { position: [0, 3, -8] as [number, number, number], size: 1, color: '#f59e0b', rotationSpeed: 0.8 },
     { position: [-3, -1, -4] as [number, number, number], size: 0.5, color: '#10b981', rotationSpeed: 1.2 },
-    { position: [5, 0, -7] as [number, number, number], size: 0.7, color: '#f59e0b', rotationSpeed: 0.9 },
-    { position: [-2, 4, -10] as [number, number, number], size: 0.9, color: '#10b981', rotationSpeed: 1.1 },
   ], []);
 
   return (

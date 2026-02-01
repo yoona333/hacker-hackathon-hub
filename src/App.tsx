@@ -11,6 +11,7 @@ import Proposals from "./pages/Proposals";
 import History from "./pages/History";
 import Pay from "./pages/Pay";
 import AIChat from "./pages/AIChat";
+import StyleShowcase from "./pages/StyleShowcase";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/history" element={<History />} />
             <Route path="/pay" element={<Pay />} />
             <Route path="/ai-chat" element={<AIChat />} />
+            <Route path="/style-showcase" element={<StyleShowcase />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

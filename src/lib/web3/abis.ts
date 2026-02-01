@@ -1,4 +1,4 @@
-// SimpleFreeze contract ABI (deployed at 0x3168a2307a3c272ea6CE2ab0EF1733CA493aa719)
+// SimpleFreeze contract ABI (deployed at 0x2D274B8e53DEF4389a9590A7F6e323D3b8763189)
 export const simpleFreezeAbi = [
   {
     inputs: [{ name: 'account', type: 'address' }],
@@ -62,7 +62,7 @@ export const simpleFreezeAbi = [
   },
 ] as const;
 
-// SimpleMultiSig contract ABI (deployed at 0xA247e042cAE22F0CDab2a197d4c194AfC26CeECA)
+// SimpleMultiSig contract ABI (deployed at 0xa5Ec521A237Eb44F7713399f8ee26FA7F423D4e9)
 export const simpleMultiSigAbi = [
   {
     inputs: [],

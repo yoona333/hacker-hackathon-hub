@@ -30,8 +30,8 @@ export const kiteTestnet = defineChain({
 
 // Contract Addresses
 export const CONTRACTS = {
-  MULTISIG: '0xA247e042cAE22F0CDab2a197d4c194AfC26CeECA' as const,
-  FREEZE: '0x3168a2307a3c272ea6CE2ab0EF1733CA493aa719' as const,
+  MULTISIG: '0xa5Ec521A237Eb44F7713399f8ee26FA7F423D4e9' as const,
+  FREEZE: '0x2D274B8e53DEF4389a9590A7F6e323D3b8763189' as const,
 } as const;
 
 /** Kite testnet chain id - native token is displayed as KITE */

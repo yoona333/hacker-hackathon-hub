@@ -14,6 +14,7 @@ import {
 } from '@/lib/web3/hooks';
 import { shortenAddress, getExplorerUrl } from '@/lib/web3/config';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/lib/i18n';
 
 const REQUIRED = 2;
 const TOTAL_OWNERS = 3;
@@ -22,6 +23,7 @@ export default function ProposalsPage() {
   const { isConnected } = useWallet();
   const { isOwner } = useIsMultiSigOwner();
   const { proposals, totalCount, isLoading, refetch } = useProposals();
+  const { t } = useLanguage();
   const [showNewProposal, setShowNewProposal] = useState(false);
   const [proposalType, setProposalType] = useState<'freeze' | 'unfreeze'>('freeze');
   const [targetAddress, setTargetAddress] = useState('');
@@ -82,7 +84,7 @@ export default function ProposalsPage() {
 
   return (
     <Layout
-      title="Proposals"
+      title={t('proposals.title')}
       icon={<FileText className="w-3 h-3 sm:w-4 sm:h-4 text-background" />}
       backTo="/dashboard"
       rightSlot={
@@ -110,21 +112,21 @@ export default function ProposalsPage() {
             <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto justify-between sm:justify-start">
               <div className="text-center">
                 <div className="text-xl sm:text-2xl font-bold terminal-text font-mono">{totalCount}</div>
-                <div className="text-[10px] text-muted-foreground font-mono uppercase">Total</div>
+                <div className="text-[10px] text-muted-foreground font-mono uppercase">{t('proposals.total')}</div>
               </div>
               <div className="w-px h-8 bg-border" />
               <div className="text-center">
                 <div className="text-xl sm:text-2xl font-bold text-primary font-mono">{pendingCount}</div>
-                <div className="text-[10px] text-muted-foreground font-mono uppercase">Pending</div>
+                <div className="text-[10px] text-muted-foreground font-mono uppercase">{t('proposals.pending')}</div>
               </div>
               <div className="w-px h-8 bg-border" />
               <div className="text-center">
                 <div className="text-xl sm:text-2xl font-bold text-success font-mono">{executedCount}</div>
-                <div className="text-[10px] text-muted-foreground font-mono uppercase">Executed</div>
+                <div className="text-[10px] text-muted-foreground font-mono uppercase">{t('proposals.executed')}</div>
               </div>
             </div>
             <div className="text-xs text-muted-foreground font-mono">
-              Threshold: {REQUIRED}/{TOTAL_OWNERS} | On-chain data
+              {`Threshold: ${REQUIRED}/${TOTAL_OWNERS} | ${t('proposals.thresholdInfo')}`}
             </div>
           </div>
         </motion.div>
@@ -149,7 +151,7 @@ export default function ProposalsPage() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="panel-title border-0 pb-0 mb-0 flex items-center gap-2">
                     <Plus className="w-4 h-4" />
-                    Create Proposal (On-Chain)
+                    {t('proposals.createProposal')}
                   </div>
                   <button onClick={() => setShowNewProposal(false)} className="p-1 hover:bg-muted/50">
                     <X className="w-4 h-4" />
@@ -158,7 +160,7 @@ export default function ProposalsPage() {
 
                 <div className="space-y-4">
                   <div>
-                    <div className="data-label mb-2">Type</div>
+                    <div className="data-label mb-2">{t('proposals.type')}</div>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={() => setProposalType('freeze')}
@@ -170,7 +172,7 @@ export default function ProposalsPage() {
                         )}
                         style={{ borderRadius: '2px' }}
                       >
-                        <div className="font-bold text-destructive font-mono uppercase text-xs">FREEZE</div>
+                        <div className="font-bold text-destructive font-mono uppercase text-xs">{t('proposals.freeze')}</div>
                       </button>
                       <button
                         onClick={() => setProposalType('unfreeze')}
@@ -182,13 +184,13 @@ export default function ProposalsPage() {
                         )}
                         style={{ borderRadius: '2px' }}
                       >
-                        <div className="font-bold text-success font-mono uppercase text-xs">UNFREEZE</div>
+                        <div className="font-bold text-success font-mono uppercase text-xs">{t('proposals.unfreeze')}</div>
                       </button>
                     </div>
                   </div>
 
                   <div>
-                    <div className="data-label mb-2">Target Address</div>
+                    <div className="data-label mb-2">{t('proposals.targetAddress')}</div>
                     <input
                       type="text"
                       placeholder="0x..."
@@ -197,28 +199,27 @@ export default function ProposalsPage() {
                       className="glow-input w-full text-sm"
                     />
                     {!isValidAddress && targetAddress.length > 0 && (
-                      <p className="text-xs text-destructive font-mono mt-1">Invalid address format</p>
+                      <p className="text-xs text-destructive font-mono mt-1">{t('proposals.invalidAddress')}</p>
                     )}
                   </div>
 
                   <p className="text-xs text-muted-foreground font-mono">
-                    This will call <code className="text-primary">submitAndConfirm()</code> on the MultiSig contract,
-                    which submits a proposal to {proposalType} the target address and auto-confirms with your signature.
+                    {t('proposals.submitDesc1')} {proposalType} {t('proposals.submitDesc2')}
                   </p>
 
                   {submitSuccess && submitHash && (
                     <div className="p-2 bg-success/20 border border-success/30 text-success font-mono text-xs flex items-center gap-2" style={{ borderRadius: '2px' }}>
                       <CheckCircle className="w-4 h-4" />
-                      Proposal submitted!{' '}
+                      {t('proposals.submitted')}{' '}
                       <a href={getExplorerUrl('tx', submitHash)} target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">
-                        View TX <ExternalLink className="w-3 h-3" />
+                        {t('proposals.tx')} <ExternalLink className="w-3 h-3" />
                       </a>
                     </div>
                   )}
 
                   {submitError && (
                     <div className="p-2 bg-destructive/20 border border-destructive/30 text-destructive font-mono text-xs" style={{ borderRadius: '2px' }}>
-                      {(submitError as Error).message?.slice(0, 200) || 'Transaction failed'}
+                      {(submitError as Error).message?.slice(0, 200) || t('common.txFailed')}
                     </div>
                   )}
 
@@ -229,7 +230,7 @@ export default function ProposalsPage() {
                       className="flex-1"
                       onClick={() => setShowNewProposal(false)}
                     >
-                      {submitSuccess ? 'CLOSE' : 'CANCEL'}
+                      {submitSuccess ? t('proposals.close') : t('proposals.cancel')}
                     </NeonButton>
                     {!submitSuccess && (
                       <NeonButton
@@ -242,7 +243,7 @@ export default function ProposalsPage() {
                         {(submitPending || submitConfirming) ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
-                          'SUBMIT'
+                          t('proposals.submit')
                         )}
                       </NeonButton>
                     )}
@@ -257,7 +258,7 @@ export default function ProposalsPage() {
         {isLoading && (
           <div className="control-panel text-center py-12">
             <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin text-primary" />
-            <div className="font-mono uppercase text-sm text-muted-foreground">Loading on-chain proposals...</div>
+            <div className="font-mono uppercase text-sm text-muted-foreground">{t('proposals.loadingProposals')}</div>
           </div>
         )}
 
@@ -267,14 +268,14 @@ export default function ProposalsPage() {
             {proposals.length === 0 ? (
               <div className="control-panel text-center py-12">
                 <FileText className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
-                <div className="font-mono uppercase text-sm mb-3">No Proposals Found</div>
+                <div className="font-mono uppercase text-sm mb-3">{t('proposals.noProposals')}</div>
                 <p className="text-xs text-muted-foreground font-mono mb-4">
-                  No transactions found on the MultiSig contract.
+                  {t('proposals.noTxFound')}
                 </p>
                 {isOwner && (
                   <NeonButton onClick={() => { setShowNewProposal(true); resetSubmit(); }} size="sm">
                     <Plus className="w-4 h-4" />
-                    CREATE FIRST
+                    {t('proposals.createFirst')}
                   </NeonButton>
                 )}
               </div>
@@ -305,18 +306,18 @@ export default function ProposalsPage() {
                             <TypeBadge type={proposal.type} />
                           )}
                           {proposal.executed ? (
-                            <StatusBadge status="success">EXECUTED</StatusBadge>
+                            <StatusBadge status="success">{t('proposals.executedStatus')}</StatusBadge>
                           ) : (
-                            <StatusBadge status="pending" pulse>PENDING</StatusBadge>
+                            <StatusBadge status="pending" pulse>{t('proposals.pendingStatus')}</StatusBadge>
                           )}
                           {proposal.type === 'unknown' && (
-                            <span className="text-[10px] text-muted-foreground font-mono">CUSTOM TX</span>
+                            <span className="text-[10px] text-muted-foreground font-mono">{t('proposals.customTx')}</span>
                           )}
                         </div>
 
                         {proposal.targetAddress && (
                           <div className="data-row py-1 border-0">
-                            <span className="data-label">Target</span>
+                            <span className="data-label">{t('proposals.target')}</span>
                             <a
                               href={getExplorerUrl('address', proposal.targetAddress)}
                               target="_blank"
@@ -331,7 +332,7 @@ export default function ProposalsPage() {
 
                         {proposal.type === 'unknown' && (
                           <div className="data-row py-1 border-0">
-                            <span className="data-label">To</span>
+                            <span className="data-label">{t('proposals.to')}</span>
                             <span className="font-mono text-xs text-primary">{shortenAddress(proposal.to)}</span>
                           </div>
                         )}
@@ -357,7 +358,7 @@ export default function ProposalsPage() {
                               ) : (
                                 <Check className="w-3 h-3" />
                               )}
-                              CONFIRM
+                              {t('proposals.confirm')}
                             </NeonButton>
                             <NeonButton
                               variant="success"
@@ -371,7 +372,7 @@ export default function ProposalsPage() {
                               ) : (
                                 <Play className="w-3 h-3" />
                               )}
-                              EXECUTE
+                              {t('proposals.execute')}
                             </NeonButton>
                           </div>
                         )}
@@ -379,7 +380,7 @@ export default function ProposalsPage() {
                         {proposal.executed && (
                           <div className="mt-2 flex items-center gap-1 text-success font-mono text-[10px] uppercase">
                             <CheckCircle className="w-3 h-3" />
-                            Executed on-chain
+                            {t('proposals.executedOnChain')}
                           </div>
                         )}
 
@@ -387,29 +388,29 @@ export default function ProposalsPage() {
                         {isActionTarget && confirmSuccess && confirmHash && activeAction?.type === 'confirm' && (
                           <div className="mt-2 p-2 bg-success/20 border border-success/30 text-success font-mono text-xs flex items-center gap-2" style={{ borderRadius: '2px' }}>
                             <CheckCircle className="w-3 h-3" />
-                            Confirmed.{' '}
+                            {t('proposals.confirmed')}{' '}
                             <a href={getExplorerUrl('tx', confirmHash)} target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">
-                              TX <ExternalLink className="w-3 h-3" />
+                              {t('proposals.tx')} <ExternalLink className="w-3 h-3" />
                             </a>
                           </div>
                         )}
                         {isActionTarget && executeSuccess && executeHash && activeAction?.type === 'execute' && (
                           <div className="mt-2 p-2 bg-success/20 border border-success/30 text-success font-mono text-xs flex items-center gap-2" style={{ borderRadius: '2px' }}>
                             <CheckCircle className="w-3 h-3" />
-                            Executed.{' '}
+                            {t('proposals.executedDone')}{' '}
                             <a href={getExplorerUrl('tx', executeHash)} target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">
-                              TX <ExternalLink className="w-3 h-3" />
+                              {t('proposals.tx')} <ExternalLink className="w-3 h-3" />
                             </a>
                           </div>
                         )}
                         {isActionTarget && confirmError && activeAction?.type === 'confirm' && (
                           <div className="mt-2 p-2 bg-destructive/20 border border-destructive/30 text-destructive font-mono text-xs" style={{ borderRadius: '2px' }}>
-                            {(confirmError as Error).message?.slice(0, 150) || 'Confirm failed'}
+                            {(confirmError as Error).message?.slice(0, 150) || t('proposals.confirmFailed')}
                           </div>
                         )}
                         {isActionTarget && executeError && activeAction?.type === 'execute' && (
                           <div className="mt-2 p-2 bg-destructive/20 border border-destructive/30 text-destructive font-mono text-xs" style={{ borderRadius: '2px' }}>
-                            {(executeError as Error).message?.slice(0, 150) || 'Execute failed'}
+                            {(executeError as Error).message?.slice(0, 150) || t('proposals.executeFailed')}
                           </div>
                         )}
                       </div>

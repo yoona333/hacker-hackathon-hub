@@ -10,7 +10,7 @@ import Freeze from "./pages/Freeze";
 import Proposals from "./pages/Proposals";
 import History from "./pages/History";
 import Pay from "./pages/Pay";
-import AIPay from "./pages/AIPay";
+import AIChat from "./pages/AIChat";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -27,7 +27,7 @@ const App = () => (
             <Route path="/proposals" element={<Proposals />} />
             <Route path="/history" element={<History />} />
             <Route path="/pay" element={<Pay />} />
-            <Route path="/ai-pay" element={<AIPay />} />
+            <Route path="/ai-chat" element={<AIChat />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

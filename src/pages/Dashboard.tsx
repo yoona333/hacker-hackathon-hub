@@ -14,6 +14,7 @@ import { ThresholdProgress } from '@/components/ui/neon-progress';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { useWallet, useMultiSigOwners, useProposals, useIsMultiSigOwner } from '@/lib/web3/hooks';
 import { CONTRACTS, getExplorerUrl, kiteTestnet, shortenAddress } from '@/lib/web3/config';
+import { useLanguage } from '@/lib/i18n';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
@@ -32,6 +33,7 @@ export default function Dashboard() {
   const { owners, isLoading: ownersLoading } = useMultiSigOwners();
   const { isOwner } = useIsMultiSigOwner();
   const { proposals, totalCount, isLoading: proposalsLoading } = useProposals();
+  const { t } = useLanguage();
   const [policy, setPolicy] = useState<PolicyResponse | null>(null);
 
   useEffect(() => {
@@ -49,13 +51,13 @@ export default function Dashboard() {
         <ParticleBackground />
         <GlassCard className="max-w-md text-center">
           <Wallet className="w-16 h-16 mx-auto mb-4 text-primary" />
-          <h2 className="text-2xl font-bold mb-2 font-mono terminal-text uppercase">Access Denied</h2>
+          <h2 className="text-2xl font-bold mb-2 font-mono terminal-text uppercase">{t('dash.accessDenied')}</h2>
           <p className="text-muted-foreground mb-6 font-mono text-sm">
-            Connect your wallet to access the security terminal.
+            {t('dash.connectPrompt')}
           </p>
           <NeonButton onClick={() => window.dispatchEvent(new CustomEvent('open-wallet-modal'))} pulse className="w-full">
             <Wallet className="w-5 h-5" />
-            CONNECT WALLET
+            {t('dash.connectWallet')}
           </NeonButton>
         </GlassCard>
       </div>
@@ -64,7 +66,7 @@ export default function Dashboard() {
 
   return (
     <Layout
-      title="Dashboard"
+      title={t('dash.title')}
       icon={<Terminal className="w-4 h-4 text-background" />}
       backTo="/"
       rightSlot={
@@ -75,7 +77,7 @@ export default function Dashboard() {
               {parseFloat(balance).toFixed(3)} {symbol}
             </span>
             {isOwner && (
-              <span className="text-[10px] text-success font-mono uppercase">OWNER</span>
+              <span className="text-[10px] text-success font-mono uppercase">{t('dash.owner')}</span>
             )}
           </div>
           <motion.button
@@ -99,13 +101,13 @@ export default function Dashboard() {
           >
             <div className="control-panel border-destructive flex items-center justify-between">
               <div>
-                <span className="font-bold text-destructive font-mono uppercase text-sm">NETWORK MISMATCH</span>
+                <span className="font-bold text-destructive font-mono uppercase text-sm">{t('dash.networkMismatch')}</span>
                 <span className="text-xs text-muted-foreground font-mono ml-4">
-                  Switch to {kiteTestnet.name}
+                  {`${t('dash.switchTo')} ${kiteTestnet.name}`}
                 </span>
               </div>
               <NeonButton onClick={switchToKite} variant="danger" size="sm">
-                SWITCH
+                {t('dash.switch')}
               </NeonButton>
             </div>
           </motion.div>
@@ -125,21 +127,21 @@ export default function Dashboard() {
               <div className="flex items-center justify-between mb-4">
                 <div className="panel-title flex items-center gap-2 border-0 pb-0 mb-0">
                   <Shield className="w-4 h-4" />
-                  Multi-Sig Wallet
+                  {t('dash.multisigWallet')}
                 </div>
-                <StatusBadge status="active">ACTIVE</StatusBadge>
+                <StatusBadge status="active">{t('dash.active')}</StatusBadge>
               </div>
 
               <div className="space-y-4">
                 {/* Contract Info */}
                 <div className="data-row">
-                  <span className="data-label">Contract</span>
+                  <span className="data-label">{t('dash.contract')}</span>
                   <AddressDisplay address={CONTRACTS.MULTISIG} short={false} />
                 </div>
 
                 {/* Threshold */}
                 <div>
-                  <div className="data-label mb-2">Threshold</div>
+                  <div className="data-label mb-2">{t('dash.threshold')}</div>
                   <ThresholdProgress
                     current={REQUIRED}
                     threshold={REQUIRED}
@@ -149,10 +151,10 @@ export default function Dashboard() {
 
                 {/* Owners - from chain */}
                 <div>
-                  <div className="data-label mb-2">Authorized Owners (On-Chain)</div>
+                  <div className="data-label mb-2">{t('dash.owners')}</div>
                   {ownersLoading ? (
                     <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
-                      <Loader2 className="w-3 h-3 animate-spin" /> Loading...
+                      <Loader2 className="w-3 h-3 animate-spin" /> {t('dash.loading')}
                     </div>
                   ) : owners ? (
                     <div className="tree-list">
@@ -175,7 +177,7 @@ export default function Dashboard() {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-xs text-muted-foreground font-mono">Failed to load owners</div>
+                    <div className="text-xs text-muted-foreground font-mono">{t('dash.failedOwners')}</div>
                   )}
                 </div>
 
@@ -184,7 +186,7 @@ export default function Dashboard() {
                   <Link to="/proposals" className="flex-1">
                     <NeonButton variant="secondary" size="sm" className="w-full">
                       <FileText className="w-4 h-4" />
-                      PROPOSALS
+                      {t('dash.proposals')}
                     </NeonButton>
                   </Link>
                   <NeonButton
@@ -208,18 +210,18 @@ export default function Dashboard() {
               <div className="flex items-center justify-between mb-4">
                 <div className="panel-title flex items-center gap-2 border-0 pb-0 mb-0">
                   <Snowflake className="w-4 h-4" />
-                  Freeze Contract
+                  {t('dash.freezeContract')}
                 </div>
               </div>
 
               {/* Contract Info */}
               <div className="data-row">
-                <span className="data-label">Contract</span>
+                <span className="data-label">{t('dash.contract')}</span>
                 <AddressDisplay address={CONTRACTS.FREEZE} short={false} />
               </div>
 
               <p className="text-xs text-muted-foreground font-mono mt-3">
-                Use the Freeze page to check any address's on-chain freeze status and submit freeze/unfreeze proposals via the multi-sig.
+                {t('dash.freezeDesc')}
               </p>
 
               {/* Actions */}
@@ -227,7 +229,7 @@ export default function Dashboard() {
                 <Link to="/freeze" className="flex-1">
                   <NeonButton variant="danger" size="sm" className="w-full">
                     <Snowflake className="w-4 h-4" />
-                    FREEZE CONTROL
+                    {t('dash.freezeControl')}
                   </NeonButton>
                 </Link>
                 <NeonButton
@@ -250,28 +252,28 @@ export default function Dashboard() {
               transition={{ delay: 0.2 }}
               className="control-panel"
             >
-              <div className="panel-title">Quick Status</div>
+              <div className="panel-title">{t('dash.quickStatus')}</div>
               <div className="space-y-0">
                 <div className="inline-stat">
-                  <span className="inline-stat-label">Threshold</span>
+                  <span className="inline-stat-label">{t('dash.threshold')}</span>
                   <span className="inline-stat-value">{REQUIRED}/{owners ? owners.length : 3}</span>
                 </div>
                 <div className="inline-stat">
-                  <span className="inline-stat-label">Proposals</span>
+                  <span className="inline-stat-label">{t('dash.proposalCount')}</span>
                   <span className="inline-stat-value">
                     {proposalsLoading ? <Loader2 className="w-3 h-3 animate-spin inline" /> : totalCount}
                   </span>
                 </div>
                 <div className="inline-stat">
-                  <span className="inline-stat-label">Pending</span>
+                  <span className="inline-stat-label">{t('dash.pending')}</span>
                   <span className="inline-stat-value">
                     {proposalsLoading ? <Loader2 className="w-3 h-3 animate-spin inline" /> : pendingCount}
                   </span>
                 </div>
                 <div className="inline-stat">
-                  <span className="inline-stat-label">You are Owner</span>
+                  <span className="inline-stat-label">{t('dash.youAreOwner')}</span>
                   <span className={`inline-stat-value ${isOwner ? 'text-success' : 'text-muted-foreground'}`}>
-                    {isOwner ? 'YES' : 'NO'}
+                    {isOwner ? t('dash.yes') : t('dash.no')}
                   </span>
                 </div>
               </div>
@@ -287,19 +289,19 @@ export default function Dashboard() {
               >
                 <div className="panel-title flex items-center gap-2">
                   <ListFilter className="w-4 h-4" />
-                  Policy (API)
+                  {t('dash.policyApi')}
                 </div>
                 <div className="space-y-0">
                   <div className="inline-stat">
-                    <span className="inline-stat-label">Allowlist</span>
-                    <span className="inline-stat-value">{policy.allowlistCount ?? 0} addresses</span>
+                    <span className="inline-stat-label">{t('dash.allowlist')}</span>
+                    <span className="inline-stat-value">{policy.allowlistCount ?? 0} {t('dash.addresses')}</span>
                   </div>
                   <div className="inline-stat">
-                    <span className="inline-stat-label">Max Amount</span>
+                    <span className="inline-stat-label">{t('dash.maxAmount')}</span>
                     <span className="inline-stat-value">{policy.maxAmount ?? '—'}</span>
                   </div>
                   <div className="inline-stat">
-                    <span className="inline-stat-label">Daily Limit</span>
+                    <span className="inline-stat-label">{t('dash.dailyLimit')}</span>
                     <span className="inline-stat-value">{policy.dailyLimit ?? '—'}</span>
                   </div>
                 </div>
@@ -313,30 +315,30 @@ export default function Dashboard() {
               transition={{ delay: 0.3 }}
               className="control-panel"
             >
-              <div className="panel-title">Quick Actions</div>
+              <div className="panel-title">{t('dash.quickActions')}</div>
               <div className="button-stack">
                 <Link to="/freeze">
                   <NeonButton variant="danger" size="sm" className="w-full justify-start">
                     <Snowflake className="w-4 h-4" />
-                    FREEZE ADDRESS
+                    {t('dash.freezeAddress')}
                   </NeonButton>
                 </Link>
                 <Link to="/proposals">
                   <NeonButton variant="secondary" size="sm" className="w-full justify-start">
                     <FileText className="w-4 h-4" />
-                    VIEW PROPOSALS
+                    {t('dash.viewProposals')}
                   </NeonButton>
                 </Link>
                 <Link to="/pay">
                   <NeonButton variant="secondary" size="sm" className="w-full justify-start">
                     <Wallet className="w-4 h-4" />
-                    PAY
+                    {t('dash.pay')}
                   </NeonButton>
                 </Link>
                 <Link to="/history">
                   <NeonButton variant="secondary" size="sm" className="w-full justify-start">
                     <History className="w-4 h-4" />
-                    VIEW HISTORY
+                    {t('dash.viewHistory')}
                   </NeonButton>
                 </Link>
               </div>

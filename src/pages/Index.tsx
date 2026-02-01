@@ -20,9 +20,9 @@ const getCapabilities = (t: (key: string) => string) => [
   },
   {
     id: '01',
-    title: t('home.cap.aiPay'),
-    description: t('home.cap.aiPayDesc'),
-    href: '/ai-pay',
+    title: t('home.cap.aiChat'),
+    description: t('home.cap.aiChatDesc'),
+    href: '/ai-chat',
   },
   {
     id: '02',

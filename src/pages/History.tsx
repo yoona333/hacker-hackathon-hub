@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  History, ExternalLink, Clock, 
+import {
+  History, ExternalLink, Clock,
   Filter, CheckCircle, XCircle, Loader2
 } from 'lucide-react';
 import { Layout } from '@/components/Layout';
@@ -11,6 +11,7 @@ import { StatusBadge, TypeBadge } from '@/components/ui/status-badge';
 import { useWallet, useProposals } from '@/lib/web3/hooks';
 import { getExplorerUrl, shortenAddress, CONTRACTS } from '@/lib/web3/config';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/lib/i18n';
 
 type FilterType = 'all' | 'freeze' | 'unfreeze' | 'confirm' | 'execute';
 type StatusType = 'all' | 'success' | 'pending' | 'failed';
@@ -20,6 +21,7 @@ export default function HistoryPage() {
   const { proposals, isLoading: proposalsLoading } = useProposals();
   const [typeFilter, setTypeFilter] = useState<FilterType>('all');
   const [statusFilter, setStatusFilter] = useState<StatusType>('all');
+  const { t } = useLanguage();
 
   const filteredTransactions = useMemo(() => {
     const list = proposals.map((p) => ({
@@ -38,11 +40,11 @@ export default function HistoryPage() {
   }, [proposals, typeFilter, statusFilter]);
 
   const formatTime = (_timestamp: number) => {
-    return 'On-chain';
+    return t('history.onChain');
   };
 
   const formatFullTime = (_timestamp: number) => {
-    return 'From multisig contract';
+    return t('history.fromMultisig');
   };
 
   const StatusIcon = ({ status }: { status: string }) => {
@@ -59,23 +61,23 @@ export default function HistoryPage() {
   };
 
   const filterButtons: { value: FilterType; label: string }[] = [
-    { value: 'all', label: 'ALL' },
-    { value: 'freeze', label: '❄️ FREEZE' },
-    { value: 'unfreeze', label: '🔓 UNFREEZE' },
-    { value: 'confirm', label: '✓ CONFIRM' },
-    { value: 'execute', label: '⚡ EXECUTE' },
+    { value: 'all', label: t('history.all') },
+    { value: 'freeze', label: `❄️ ${t('history.freeze')}` },
+    { value: 'unfreeze', label: `🔓 ${t('history.unfreeze')}` },
+    { value: 'confirm', label: `✓ ${t('history.confirmFilter')}` },
+    { value: 'execute', label: `⚡ ${t('history.executeFilter')}` },
   ];
 
   const statusButtons: { value: StatusType; label: string }[] = [
-    { value: 'all', label: 'ALL' },
-    { value: 'success', label: 'SUCCESS' },
-    { value: 'pending', label: 'PENDING' },
-    { value: 'failed', label: 'FAILED' },
+    { value: 'all', label: t('history.all') },
+    { value: 'success', label: t('history.success') },
+    { value: 'pending', label: t('history.pending') },
+    { value: 'failed', label: t('history.failed') },
   ];
 
   return (
     <Layout
-      title="Transaction Log"
+      title={t('history.title')}
       icon={<History className="w-4 h-4 text-background" />}
       backTo="/dashboard"
       headerClass="py-4"
@@ -87,7 +89,7 @@ export default function HistoryPage() {
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">Type:</span>
+                <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">{t('history.typeFilter')}</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {filterButtons.map(({ value, label }) => (
@@ -109,7 +111,7 @@ export default function HistoryPage() {
             </div>
             <div className="flex flex-wrap items-center gap-4 mt-4">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">Status:</span>
+                <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">{t('history.statusFilter')}</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {statusButtons.map(({ value, label }) => (
@@ -141,17 +143,17 @@ export default function HistoryPage() {
               {proposalsLoading ? (
                 <GlassCard className="ml-16 text-center py-12">
                   <Loader2 className="w-16 h-16 mx-auto mb-4 text-primary animate-spin" />
-                  <h3 className="text-lg font-bold mb-2 font-mono uppercase">Loading...</h3>
-                  <p className="text-muted-foreground font-mono text-sm">Fetching on-chain proposals</p>
+                  <h3 className="text-lg font-bold mb-2 font-mono uppercase">{t('history.loading')}</h3>
+                  <p className="text-muted-foreground font-mono text-sm">{t('history.fetchingProposals')}</p>
                 </GlassCard>
               ) : filteredTransactions.length === 0 ? (
                 <GlassCard className="ml-16 text-center py-12">
                   <History className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                  <h3 className="text-lg font-bold mb-2 font-mono uppercase">No Transactions</h3>
+                  <h3 className="text-lg font-bold mb-2 font-mono uppercase">{t('history.noTransactions')}</h3>
                   <p className="text-muted-foreground font-mono text-sm">
-                    {typeFilter !== 'all' || statusFilter !== 'all' 
-                      ? 'Try adjusting your filters'
-                      : 'Transaction history will appear here (from multisig contract)'}
+                    {typeFilter !== 'all' || statusFilter !== 'all'
+                      ? t('history.adjustFilters')
+                      : t('history.historyAppears')}
                   </p>
                 </GlassCard>
               ) : (
@@ -198,7 +200,7 @@ export default function HistoryPage() {
 
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">Proposal ID</span>
+                          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">{t('history.proposalId')}</span>
                           <div className="flex items-center gap-2">
                             <span className="terminal-text font-mono text-sm">#{tx.id}</span>
                             <motion.button
@@ -206,14 +208,14 @@ export default function HistoryPage() {
                               onClick={() => window.open(getExplorerUrl('address', CONTRACTS.MULTISIG), '_blank')}
                               className="p-1 hover:bg-muted/50"
                               style={{ borderRadius: '2px' }}
-                              title="View multisig on explorer"
+                              title={t('history.viewOnExplorer')}
                             >
                               <ExternalLink className="w-4 h-4 text-muted-foreground" />
                             </motion.button>
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">Target</span>
+                          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">{t('history.target')}</span>
                           <AddressDisplay address={tx.target} />
                         </div>
                       </div>

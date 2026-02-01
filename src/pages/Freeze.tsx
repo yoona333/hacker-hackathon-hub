@@ -10,10 +10,12 @@ import { NeonButton } from '@/components/ui/neon-button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { useWallet, useFreezeStatus, useSubmitProposal, useIsMultiSigOwner } from '@/lib/web3/hooks';
 import { shortenAddress, getExplorerUrl } from '@/lib/web3/config';
+import { useLanguage } from '@/lib/i18n';
 
 export default function FreezePage() {
   const { isConnected } = useWallet();
   const { isOwner } = useIsMultiSigOwner();
+  const { t } = useLanguage();
   const [searchAddress, setSearchAddress] = useState('');
   const [checkedAddress, setCheckedAddress] = useState<string | undefined>();
 
@@ -50,9 +52,9 @@ export default function FreezePage() {
 
   return (
     <Layout
-      title="Freeze"
+      title={t('freeze.title')}
       icon={<Snowflake className="w-4 h-4 text-background" />}
-      backTo="/dashboard"
+      backTo="/"
     >
       <main className="container mx-auto px-4 py-4 sm:py-6">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
@@ -67,13 +69,13 @@ export default function FreezePage() {
             >
               <div className="panel-title flex items-center gap-2">
                 <Search className="w-4 h-4" />
-                Address Status Check (On-Chain)
+                {t('freeze.addressCheck')}
               </div>
 
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="0x... Enter address to check on-chain"
+                  placeholder={t('freeze.placeholder')}
                   value={searchAddress}
                   onChange={(e) => {
                     setSearchAddress(e.target.value);
@@ -100,7 +102,7 @@ export default function FreezePage() {
               </div>
 
               {!isValidAddress && searchAddress.length > 0 && (
-                <p className="text-xs text-destructive font-mono mt-2">Invalid Ethereum address format</p>
+                <p className="text-xs text-destructive font-mono mt-2">{t('freeze.invalidAddress')}</p>
               )}
 
               {/* Search Result */}
@@ -118,7 +120,7 @@ export default function FreezePage() {
                         status={isFrozen ? 'frozen' : 'active'}
                         pulse
                       >
-                        {isFrozen ? 'FROZEN' : 'ACTIVE'}
+                        {isFrozen ? t('freeze.frozen') : t('freeze.activeLabel')}
                       </StatusBadge>
                     </div>
 
@@ -127,9 +129,9 @@ export default function FreezePage() {
                         <>
                           <XCircle className="w-8 h-8 text-destructive flex-shrink-0" />
                           <div>
-                            <div className="font-bold text-destructive font-mono uppercase text-sm">Blocked</div>
+                            <div className="font-bold text-destructive font-mono uppercase text-sm">{t('freeze.blocked')}</div>
                             <p className="text-xs text-muted-foreground font-mono">
-                              On-chain freeze detected. All AgentPayGuard transfers blocked.
+                              {t('freeze.blockedDesc')}
                             </p>
                           </div>
                         </>
@@ -137,9 +139,9 @@ export default function FreezePage() {
                         <>
                           <CheckCircle className="w-8 h-8 text-success flex-shrink-0" />
                           <div>
-                            <div className="font-bold text-success font-mono uppercase text-sm">Active</div>
+                            <div className="font-bold text-success font-mono uppercase text-sm">{t('freeze.activeStatus')}</div>
                             <p className="text-xs text-muted-foreground font-mono">
-                              Address is not frozen on-chain. Transactions allowed.
+                              {t('freeze.activeDesc')}
                             </p>
                           </div>
                         </>
@@ -159,22 +161,22 @@ export default function FreezePage() {
                         ) : isFrozen ? (
                           <>
                             <Unlock className="w-4 h-4" />
-                            SUBMIT UNFREEZE PROPOSAL
+                            {t('freeze.submitUnfreeze')}
                           </>
                         ) : (
                           <>
                             <Lock className="w-4 h-4" />
-                            SUBMIT FREEZE PROPOSAL
+                            {t('freeze.submitFreeze')}
                           </>
                         )}
                       </NeonButton>
                     ) : isConnected ? (
                       <div className="text-xs text-muted-foreground font-mono p-2 border border-border/50 text-center" style={{ borderRadius: '2px' }}>
-                        Only multi-sig owners can submit proposals.
+                        {t('freeze.ownerOnly')}
                       </div>
                     ) : (
                       <div className="text-xs text-muted-foreground font-mono p-2 border border-border/50 text-center" style={{ borderRadius: '2px' }}>
-                        Connect wallet to submit proposals.
+                        {t('freeze.connectFirst')}
                       </div>
                     )}
 
@@ -186,14 +188,14 @@ export default function FreezePage() {
                         style={{ borderRadius: '2px' }}
                       >
                         <CheckCircle className="w-4 h-4" />
-                        <span className="uppercase">Proposal submitted & confirmed.</span>
+                        <span className="uppercase">{t('freeze.proposalSubmitted')}</span>
                         <a
                           href={getExplorerUrl('tx', proposalHash)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 underline"
                         >
-                          View TX <ExternalLink className="w-3 h-3" />
+                          {t('freeze.viewTx')} <ExternalLink className="w-3 h-3" />
                         </a>
                       </motion.div>
                     )}
@@ -205,7 +207,7 @@ export default function FreezePage() {
                         className="mt-3 p-2 bg-destructive/20 border border-destructive/30 text-destructive font-mono text-xs"
                         style={{ borderRadius: '2px' }}
                       >
-                        {(submitError as Error).message?.slice(0, 200) || 'Transaction failed'}
+                        {(submitError as Error).message?.slice(0, 200) || t('freeze.txFailed')}
                       </motion.div>
                     )}
                   </motion.div>
@@ -223,11 +225,9 @@ export default function FreezePage() {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-bold text-primary font-mono uppercase text-xs mb-1">Multi-Sig Required</div>
+                  <div className="font-bold text-primary font-mono uppercase text-xs mb-1">{t('freeze.multisigRequired')}</div>
                   <p className="text-xs text-muted-foreground font-mono">
-                    All freeze/unfreeze operations require 2/3 multi-sig confirmations.
-                    Proposals are submitted via SimpleMultiSig and auto-confirmed by the submitter.
-                    A second owner must confirm before execution.
+                    {t('freeze.multisigDesc')}
                   </p>
                 </div>
               </div>
@@ -243,28 +243,28 @@ export default function FreezePage() {
           >
             <div className="panel-title flex items-center gap-2 border-0 pb-0 mb-3">
               <Snowflake className="w-4 h-4" />
-              How It Works
+              {t('freeze.howItWorks')}
             </div>
 
             <div className="space-y-3 text-xs font-mono text-muted-foreground">
               <div className="p-2 border border-border/50" style={{ borderRadius: '2px' }}>
-                <span className="text-primary font-bold">1.</span> Enter an address above to check its on-chain freeze status via the SimpleFreeze contract.
+                <span className="text-primary font-bold">1.</span> {t('freeze.step1')}
               </div>
               <div className="p-2 border border-border/50" style={{ borderRadius: '2px' }}>
-                <span className="text-primary font-bold">2.</span> If you are a multi-sig owner, you can submit a freeze or unfreeze proposal. This calls <code className="text-primary">submitAndConfirm()</code> on the MultiSig.
+                <span className="text-primary font-bold">2.</span> {t('freeze.step2')}
               </div>
               <div className="p-2 border border-border/50" style={{ borderRadius: '2px' }}>
-                <span className="text-primary font-bold">3.</span> Once 2 of 3 owners confirm, any owner can execute. The MultiSig then calls <code className="text-primary">freeze()</code> or <code className="text-primary">unfreeze()</code> on the Freeze contract.
+                <span className="text-primary font-bold">3.</span> {t('freeze.step3')}
               </div>
               <div className="p-2 border border-border/50" style={{ borderRadius: '2px' }}>
-                <span className="text-primary font-bold">4.</span> Frozen addresses are automatically blocked by AgentPayGuard's policy engine when processing payments.
+                <span className="text-primary font-bold">4.</span> {t('freeze.step4')}
               </div>
             </div>
 
             <div className="mt-4 pt-3 border-t border-border">
               <Link to="/proposals">
                 <NeonButton variant="secondary" size="sm" className="w-full">
-                  VIEW ALL PROPOSALS
+                  {t('freeze.viewAllProposals')}
                 </NeonButton>
               </Link>
             </div>

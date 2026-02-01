@@ -1,8 +1,8 @@
 import { useAccount, useBalance, useChainId, useSwitchChain, useReadContract, useReadContracts, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { encodeFunctionData } from 'viem';
-import { useState, useEffect, useCallback } from 'react';
-import { kiteTestnet, CONTRACTS } from './config';
-import { simpleFreezeAbi, simpleMultiSigAbi } from './abis';
+import { encodeFunctionData, formatUnits } from 'viem';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { kiteTestnet, CONTRACTS, KITE_TESTNET_ID, KITE_TESTNET_ERC20 } from './config';
+import { simpleFreezeAbi, simpleMultiSigAbi, erc20BalanceAbi } from './abis';
 
 // Hook to get wallet connection status and info
 export function useWallet() {
@@ -34,6 +34,60 @@ export function useWallet() {
     switchToKite,
     chain: kiteTestnet,
   };
+}
+
+export type WalletBalanceItem = { symbol: string; formatted: string };
+
+/** Real chain balances: native (KITE on Kite testnet) + ERC20 (USDC/USDT etc.). Only items with balance > 0. */
+export function useWalletBalances(
+  walletAddress: `0x${string}` | undefined,
+  chainId: number,
+  extraTokenAddresses: `0x${string}`[] = []
+) {
+  const { data: nativeBalance } = useBalance({ address: walletAddress });
+  const tokenAddresses = useMemo(
+    () => [...KITE_TESTNET_ERC20.map((t) => t.address), ...extraTokenAddresses].filter((a, i, arr) => arr.indexOf(a) === i),
+    [extraTokenAddresses]
+  );
+  const contracts = useMemo(
+    () =>
+      tokenAddresses.length && walletAddress
+        ? tokenAddresses.flatMap((addr) => [
+            { address: addr, abi: erc20BalanceAbi, functionName: 'balanceOf' as const, args: [walletAddress] as const },
+            { address: addr, abi: erc20BalanceAbi, functionName: 'decimals' as const },
+            { address: addr, abi: erc20BalanceAbi, functionName: 'symbol' as const },
+          ])
+        : [],
+    [walletAddress, tokenAddresses]
+  );
+  const { data: tokenResults } = useReadContracts({ contracts, query: { enabled: contracts.length > 0 } });
+
+  return useMemo(() => {
+    const items: WalletBalanceItem[] = [];
+    if (nativeBalance && parseFloat(nativeBalance.formatted) > 0) {
+      const symbol = chainId === KITE_TESTNET_ID ? 'KITE' : nativeBalance.symbol;
+      items.push({ symbol, formatted: parseFloat(nativeBalance.formatted).toFixed(4) });
+    }
+    if (tokenResults && tokenResults.length >= 3) {
+      const n = tokenAddresses.length;
+      for (let i = 0; i < n; i++) {
+        const balanceR = tokenResults[i * 3];
+        const decimalsR = tokenResults[i * 3 + 1];
+        const symbolR = tokenResults[i * 3 + 2];
+        if (balanceR?.status === 'success' && decimalsR?.status === 'success' && symbolR?.status === 'success') {
+          const balance = balanceR.result as bigint;
+          if (balance > 0n) {
+            const decimals = decimalsR.result as number;
+            const symbol = (symbolR.result as string) || 'TOKEN';
+            const formatted = formatUnits(balance, decimals);
+            const num = parseFloat(formatted);
+            items.push({ symbol, formatted: num >= 1e6 ? num.toExponential(2) : num.toFixed(num < 0.01 ? 4 : 2) });
+          }
+        }
+      }
+    }
+    return items;
+  }, [nativeBalance, chainId, tokenResults, tokenAddresses.length]);
 }
 
 // Hook for checking if an address is frozen (real contract call)

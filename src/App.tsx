@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Web3Provider } from "@/lib/web3/appkit";
+import { SimpleWeb3Provider } from "@/lib/web3/simple-provider";
 import { LanguageProvider } from "@/lib/i18n";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -15,7 +15,7 @@ import NotFound from "./pages/NotFound";
 
 const App = () => (
   <LanguageProvider>
-    <Web3Provider>
+    <SimpleWeb3Provider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -33,7 +33,7 @@ const App = () => (
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
-    </Web3Provider>
+    </SimpleWeb3Provider>
   </LanguageProvider>
 );
 

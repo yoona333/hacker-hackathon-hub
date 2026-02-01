@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { ParticleBackground } from '@/components/3d/ParticleBackground';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { NetworkBadge } from '@/components/ui/status-badge';
+import { WalletButton } from '@/components/WalletButton';
 import { useWallet } from '@/lib/web3/hooks';
 import { kiteTestnet } from '@/lib/web3/config';
 
@@ -51,6 +52,7 @@ export function Layout({ title, icon, backTo, children, rightSlot, headerClass =
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             {rightSlot}
+            <WalletButton />
             <NetworkBadge connected={isCorrectNetwork} chainName={kiteTestnet.name} />
             <LanguageToggle />
           </div>

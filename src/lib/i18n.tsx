@@ -14,6 +14,7 @@ const translations = {
   en: {
     // Header
     'header.connect': 'CONNECT',
+    'header.connected': 'Connected',
     'header.dashboard': 'DASHBOARD',
     
     // Home page
@@ -67,6 +68,7 @@ const translations = {
     'aiPay.placeholder': 'e.g., "Pay 50 USDC to 0x... for server hosting"',
     'aiPay.submit': 'Parse & Pay',
     'aiPay.parsing': 'AI Parsing...',
+    'aiPay.onFirstRequest': 'on first request',
     'aiPay.parsed': 'Parsed Intent',
     'aiPay.recipient': 'Recipient',
     'aiPay.amount': 'Amount',
@@ -94,6 +96,7 @@ const translations = {
   zh: {
     // Header
     'header.connect': '连接钱包',
+    'header.connected': '已连接',
     'header.dashboard': '控制台',
     
     // Home page
@@ -147,6 +150,7 @@ const translations = {
     'aiPay.placeholder': '例如："支付 50 USDC 到 0x... 用于服务器托管"',
     'aiPay.submit': '解析并支付',
     'aiPay.parsing': 'AI 解析中...',
+    'aiPay.onFirstRequest': '首次请求时',
     'aiPay.parsed': '解析结果',
     'aiPay.recipient': '收款地址',
     'aiPay.amount': '金额',

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Terminal, ExternalLink, Loader2, Brain, Shield, CheckCircle2, XCircle } from 'lucide-react';
+import { Sparkles, Terminal, ExternalLink, Brain, Shield, CheckCircle2, XCircle } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { GlassCard } from '@/components/ui/glass-card';
 import { NeonButton } from '@/components/ui/neon-button';
@@ -33,6 +33,7 @@ interface PolicyDecision {
   ok: boolean;
   code?: string;
   message?: string;
+  hint?: string;
 }
 
 interface AIPayResponse {
@@ -44,6 +45,8 @@ interface AIPayResponse {
   userOpHash?: string;
   error?: string;
   message?: string;
+  /** Agent wallet (PRIVATE_KEY) — shown when rejected so user can fund it */
+  agentWallet?: string;
 }
 
 export default function AIPayPage() {
@@ -57,8 +60,6 @@ export default function AIPayPage() {
   const handleParse = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!request.trim()) return;
-    
-    setResult(null);
     setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/api/ai-pay`, {
@@ -70,7 +71,7 @@ export default function AIPayPage() {
         }),
       });
       const data = (await res.json()) as AIPayResponse;
-      setResult(data);
+      setResult(data); // replace previous result so layout stays stable (no setResult(null) on submit)
     } catch (err) {
       setResult({
         ok: false,
@@ -97,7 +98,12 @@ export default function AIPayPage() {
       icon={<Sparkles className="w-4 h-4 text-background" />}
       backTo="/"
     >
-      <main className="container mx-auto px-4 py-4 sm:py-6 max-w-3xl">
+      <main className="container mx-auto px-4 py-4 sm:py-6 max-w-3xl relative z-10 min-h-[60vh] bg-background/90">
+        {loading && (
+          <div className="mb-4 p-3 border border-primary/30 bg-primary/5 font-mono text-sm text-primary/90" style={{ borderRadius: '2px' }}>
+            {t('aiPay.parsing')} (10–20 s {t('aiPay.onFirstRequest')})
+          </div>
+        )}
         {!isConnected && (
           <GlassCard className="p-6 text-center mb-4">
             <p className="text-muted-foreground text-sm">{t('pay.walletNotice')}</p>
@@ -149,17 +155,25 @@ export default function AIPayPage() {
               </label>
             </div>
             <NeonButton type="submit" disabled={loading || !request.trim()} className="w-full">
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-              {loading ? t('aiPay.parsing') : t('aiPay.submit')}
+              {loading ? (
+                <span className="inline-flex items-center gap-2">
+                  <span className="inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" aria-hidden />
+                  {t('aiPay.parsing')}
+                </span>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  {t('aiPay.submit')}
+                </>
+              )}
             </NeonButton>
           </form>
         </motion.div>
 
         {result && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-4 space-y-4"
+          <div
+            className="mt-4 space-y-4 relative z-10 min-h-[280px]"
+            style={{ contain: 'layout' }}
           >
             {/* Parsed Intent */}
             {result.intent && (
@@ -254,7 +268,18 @@ export default function AIPayPage() {
                   {result.policy.message && (
                     <p className="text-xs text-muted-foreground mt-2">{result.policy.message}</p>
                   )}
+                  {result.policy.hint && (
+                    <p className="text-xs text-primary/90 mt-2 border border-primary/30 bg-primary/5 p-2" style={{ borderRadius: '2px' }}>
+                      {result.policy.hint}
+                    </p>
+                  )}
                 </div>
+              </div>
+            )}
+            {result.agentWallet && (
+              <div className="control-panel border-primary/30">
+                <div className="panel-title text-primary text-xs uppercase font-mono">Agent 钱包 (PRIVATE_KEY)</div>
+                <p className="text-sm font-mono break-all text-foreground mt-1">{result.agentWallet}</p>
               </div>
             )}
 
@@ -291,7 +316,7 @@ export default function AIPayPage() {
                 <p className="text-sm text-destructive font-mono">{result.message}</p>
               </div>
             )}
-          </motion.div>
+          </div>
         )}
       </main>
     </Layout>

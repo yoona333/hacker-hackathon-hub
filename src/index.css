@@ -626,3 +626,17 @@
 .hex-clip {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
+
+/* Reown AppKit wallet modal: hide Fund wallet, Send, Activity; keep Disconnect only */
+w3m-modal wui-list-item:nth-child(1),
+w3m-modal wui-list-item:nth-child(2),
+w3m-modal wui-list-item:nth-child(3) {
+  display: none !important;
+}
+/* Fallback for different AppKit versions */
+w3m-account-actions wui-list-item:not(:last-of-type),
+w3m-modal [data-testid="fund-wallet"],
+w3m-modal [data-testid="send"],
+w3m-modal [data-testid="activity"] {
+  display: none !important;
+}

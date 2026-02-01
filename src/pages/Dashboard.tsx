@@ -5,7 +5,6 @@ import {
   Wallet, Shield, Snowflake, FileText, History,
   ExternalLink, LogOut, Terminal, Loader2, ListFilter
 } from 'lucide-react';
-import { useAppKit } from '@reown/appkit/react';
 import { ParticleBackground } from '@/components/3d/ParticleBackground';
 import { GlassCard } from '@/components/ui/glass-card';
 import { Layout } from '@/components/Layout';
@@ -29,7 +28,6 @@ type PolicyResponse = {
 const REQUIRED = 2;
 
 export default function Dashboard() {
-  const { open } = useAppKit();
   const { isConnected, address, balance, symbol, isCorrectNetwork, switchToKite } = useWallet();
   const { owners, isLoading: ownersLoading } = useMultiSigOwners();
   const { isOwner } = useIsMultiSigOwner();
@@ -55,7 +53,7 @@ export default function Dashboard() {
           <p className="text-muted-foreground mb-6 font-mono text-sm">
             Connect your wallet to access the security terminal.
           </p>
-          <NeonButton onClick={() => open()} pulse className="w-full">
+          <NeonButton onClick={() => window.dispatchEvent(new CustomEvent('open-wallet-modal'))} pulse className="w-full">
             <Wallet className="w-5 h-5" />
             CONNECT WALLET
           </NeonButton>
@@ -82,7 +80,7 @@ export default function Dashboard() {
           </div>
           <motion.button
             whileHover={{ scale: 1.1 }}
-            onClick={() => open()}
+            onClick={() => window.dispatchEvent(new CustomEvent('open-wallet-modal'))}
             className="p-2 hover:bg-muted/50 text-muted-foreground hover:text-foreground"
             style={{ borderRadius: '2px' }}
           >

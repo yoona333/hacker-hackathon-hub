@@ -13,12 +13,12 @@ export function GlassCard({ children, className, hover = true, glow }: GlassCard
   const glowClasses = {
     amber: 'hover:shadow-terminal-amber hover:border-primary/40',
     emerald: 'hover:shadow-terminal-emerald hover:border-accent/40',
-    red: 'hover:shadow-[0_0_30px_hsl(0_72%_51%/0.4)] hover:border-destructive/40',
+    red: 'hover:shadow-[0_0_30px_hsl(0_55%_48%/0.3)] hover:border-destructive/40',
     // Legacy support
     purple: 'hover:shadow-terminal-amber hover:border-primary/40',
     blue: 'hover:shadow-terminal-amber hover:border-primary/40',
     cyan: 'hover:shadow-terminal-emerald hover:border-accent/40',
-    pink: 'hover:shadow-[0_0_30px_hsl(0_72%_51%/0.4)] hover:border-destructive/40',
+    pink: 'hover:shadow-[0_0_30px_hsl(0_55%_48%/0.3)] hover:border-destructive/40',
     green: 'hover:shadow-terminal-emerald hover:border-accent/40',
   };
 

@@ -124,12 +124,27 @@ export default function FreezePage() {
                       </StatusBadge>
                     </div>
 
-                    <div className="flex items-center gap-3 p-3 bg-muted/30 border border-border/50 mb-3" style={{ borderRadius: '2px' }}>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className={`flex items-center gap-4 p-4 rounded-lg border-2 mb-3 ${
+                        isFrozen 
+                          ? 'border-destructive/50 bg-destructive/10 shadow-glow-red' 
+                          : 'border-success/50 bg-success/10 shadow-glow-emerald'
+                      }`}
+                    >
                       {isFrozen ? (
                         <>
-                          <XCircle className="w-8 h-8 text-destructive flex-shrink-0" />
-                          <div>
-                            <div className="font-bold text-destructive font-mono uppercase text-sm">{t('freeze.blocked')}</div>
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: 'spring', stiffness: 200 }}
+                            className="w-16 h-16 rounded-full gradient-danger flex items-center justify-center flex-shrink-0"
+                          >
+                            <XCircle className="w-8 h-8 text-background" />
+                          </motion.div>
+                          <div className="flex-1">
+                            <div className="font-bold text-destructive font-mono uppercase text-lg mb-1">{t('freeze.blocked')}</div>
                             <p className="text-xs text-muted-foreground font-mono">
                               {t('freeze.blockedDesc')}
                             </p>
@@ -137,16 +152,23 @@ export default function FreezePage() {
                         </>
                       ) : (
                         <>
-                          <CheckCircle className="w-8 h-8 text-success flex-shrink-0" />
-                          <div>
-                            <div className="font-bold text-success font-mono uppercase text-sm">{t('freeze.activeStatus')}</div>
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: 'spring', stiffness: 200 }}
+                            className="w-16 h-16 rounded-full gradient-emerald flex items-center justify-center flex-shrink-0"
+                          >
+                            <CheckCircle className="w-8 h-8 text-background" />
+                          </motion.div>
+                          <div className="flex-1">
+                            <div className="font-bold text-success font-mono uppercase text-lg mb-1">{t('freeze.activeStatus')}</div>
                             <p className="text-xs text-muted-foreground font-mono">
                               {t('freeze.activeDesc')}
                             </p>
                           </div>
                         </>
                       )}
-                    </div>
+                    </motion.div>
 
                     {isConnected && isOwner ? (
                       <NeonButton
@@ -215,18 +237,25 @@ export default function FreezePage() {
               </AnimatePresence>
             </motion.div>
 
-            {/* Warning */}
+            {/* Warning - Enhanced */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="control-panel border-primary/30"
+              whileHover={{ scale: 1.01 }}
+              className="control-panel border-warning/50 bg-warning/5"
             >
               <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <div>
-                  <div className="font-bold text-primary font-mono uppercase text-xs mb-1">{t('freeze.multisigRequired')}</div>
-                  <p className="text-xs text-muted-foreground font-mono">
+                <motion.div
+                  animate={{ rotate: [0, -5, 5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="w-10 h-10 rounded-lg gradient-amber flex items-center justify-center flex-shrink-0"
+                >
+                  <AlertTriangle className="w-5 h-5 text-background" />
+                </motion.div>
+                <div className="flex-1">
+                  <div className="font-bold text-warning font-mono uppercase text-sm mb-2">{t('freeze.multisigRequired')}</div>
+                  <p className="text-xs text-muted-foreground font-mono leading-relaxed">
                     {t('freeze.multisigDesc')}
                   </p>
                 </div>
@@ -241,24 +270,36 @@ export default function FreezePage() {
             transition={{ delay: 0.2 }}
             className="control-panel"
           >
-            <div className="panel-title flex items-center gap-2 border-0 pb-0 mb-3">
-              <Snowflake className="w-4 h-4" />
-              {t('freeze.howItWorks')}
-            </div>
+              <div className="panel-title flex items-center gap-2 border-0 pb-0 mb-3">
+                <motion.div
+                  className="w-8 h-8 rounded-lg gradient-danger flex items-center justify-center"
+                  whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Snowflake className="w-4 h-4 text-background" />
+                </motion.div>
+                {t('freeze.howItWorks')}
+              </div>
 
-            <div className="space-y-3 text-xs font-mono text-muted-foreground">
-              <div className="p-2 border border-border/50" style={{ borderRadius: '2px' }}>
-                <span className="text-primary font-bold">1.</span> {t('freeze.step1')}
-              </div>
-              <div className="p-2 border border-border/50" style={{ borderRadius: '2px' }}>
-                <span className="text-primary font-bold">2.</span> {t('freeze.step2')}
-              </div>
-              <div className="p-2 border border-border/50" style={{ borderRadius: '2px' }}>
-                <span className="text-primary font-bold">3.</span> {t('freeze.step3')}
-              </div>
-              <div className="p-2 border border-border/50" style={{ borderRadius: '2px' }}>
-                <span className="text-primary font-bold">4.</span> {t('freeze.step4')}
-              </div>
+            <div className="space-y-3">
+              {[
+                { num: 1, text: t('freeze.step1') },
+                { num: 2, text: t('freeze.step2') },
+                { num: 3, text: t('freeze.step3') },
+                { num: 4, text: t('freeze.step4') },
+              ].map((step, idx) => (
+                <motion.div
+                  key={step.num}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + idx * 0.1 }}
+                  whileHover={{ x: 4, borderColor: 'hsl(var(--primary) / 0.5)' }}
+                  className="p-3 rounded-lg border border-border/50 bg-muted/20 transition-all"
+                >
+                  <span className="text-primary font-bold font-mono mr-2">{step.num}.</span>
+                  <span className="text-xs font-mono text-muted-foreground">{step.text}</span>
+                </motion.div>
+              ))}
             </div>
 
             <div className="mt-4 pt-3 border-t border-border">

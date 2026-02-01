@@ -43,9 +43,13 @@ export function Layout({ title, icon, backTo, children, rightSlot, headerClass =
               </motion.button>
             </Link>
             <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 hex-clip gradient-amber flex items-center justify-center shrink-0">
+              <motion.div
+                className="w-7 h-7 sm:w-9 sm:h-9 rounded-xl gradient-amber flex items-center justify-center shrink-0 shadow-glow-primary"
+                whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+                transition={{ duration: 0.3 }}
+              >
                 {icon}
-              </div>
+              </motion.div>
               <span className="text-xs sm:text-sm md:text-lg font-bold font-mono terminal-text uppercase truncate">
                 {title}
               </span>

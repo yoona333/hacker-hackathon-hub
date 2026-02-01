@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   Wallet, Shield, Snowflake, FileText, History,
-  ExternalLink, LogOut, Terminal, Loader2, ListFilter
+  ExternalLink, LogOut, Terminal, Loader2, ListFilter, Users, CheckCircle2, AlertCircle
 } from 'lucide-react';
 import { ParticleBackground } from '@/components/3d/ParticleBackground';
 import { GlassCard } from '@/components/ui/glass-card';
@@ -13,6 +13,8 @@ import { AddressDisplay } from '@/components/ui/address-display';
 import { ThresholdProgress } from '@/components/ui/neon-progress';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Skeleton, SkeletonCard, SkeletonText } from '@/components/ui/skeleton';
+import { StatCard } from '@/components/ui/stat-card';
+import { RadialProgress } from '@/components/ui/radial-progress';
 import { useWallet, useMultiSigOwners, useProposals, useIsMultiSigOwner } from '@/lib/web3/hooks';
 import { CONTRACTS, getExplorerUrl, kiteTestnet, shortenAddress } from '@/lib/web3/config';
 import { useLanguage } from '@/lib/i18n';
@@ -119,18 +121,25 @@ export default function Dashboard() {
 
           {/* Left Column */}
           <div className="space-y-4">
-            {/* Multi-Sig Wallet Panel */}
+            {/* Multi-Sig Wallet Panel - Enhanced */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="control-panel"
+              whileHover={{ scale: 1.01 }}
+              className="control-panel group"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="panel-title flex items-center gap-2 border-0 pb-0 mb-0">
-                  <Shield className="w-4 h-4" />
+                  <motion.div
+                    className="w-8 h-8 rounded-lg gradient-emerald flex items-center justify-center"
+                    whileHover={{ rotate: [0, -5, 5, 0], scale: 1.1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Shield className="w-4 h-4 text-background" />
+                  </motion.div>
                   {t('dash.multisigWallet')}
                 </div>
-                <StatusBadge status="active">{t('dash.active')}</StatusBadge>
+                <StatusBadge status="active" pulse>{t('dash.active')}</StatusBadge>
               </div>
 
               <div className="space-y-4">
@@ -199,16 +208,23 @@ export default function Dashboard() {
               </div>
             </motion.div>
 
-            {/* Freeze Contract Panel */}
+            {/* Freeze Contract Panel - Enhanced */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="control-panel"
+              whileHover={{ scale: 1.01 }}
+              className="control-panel group border-danger/20"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="panel-title flex items-center gap-2 border-0 pb-0 mb-0">
-                  <Snowflake className="w-4 h-4" />
+                  <motion.div
+                    className="w-8 h-8 rounded-lg gradient-danger flex items-center justify-center"
+                    whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Snowflake className="w-4 h-4 text-background" />
+                  </motion.div>
                   {t('dash.freezeContract')}
                 </div>
               </div>
@@ -244,65 +260,108 @@ export default function Dashboard() {
 
           {/* Right Column */}
           <div className="grid grid-cols-2 lg:grid-cols-1 gap-4 lg:space-y-4 lg:gap-0">
-            {/* Quick Status */}
+            {/* Quick Status - Enhanced with StatCards */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="control-panel"
+              className="space-y-3"
             >
-              <div className="panel-title">{t('dash.quickStatus')}</div>
-              <div className="space-y-0">
-                <div className="inline-stat">
-                  <span className="inline-stat-label">{t('dash.threshold')}</span>
-                  <span className="inline-stat-value">{REQUIRED}/{owners ? owners.length : 3}</span>
-                </div>
-                <div className="inline-stat">
-                  <span className="inline-stat-label">{t('dash.proposalCount')}</span>
-                  <span className="inline-stat-value">
-                    {proposalsLoading ? <Loader2 className="w-3 h-3 animate-spin inline" /> : totalCount}
-                  </span>
-                </div>
-                <div className="inline-stat">
-                  <span className="inline-stat-label">{t('dash.pending')}</span>
-                  <span className="inline-stat-value">
-                    {proposalsLoading ? <Skeleton className="h-5 w-8 inline-block" /> : pendingCount}
-                  </span>
-                </div>
-                <div className="inline-stat">
-                  <span className="inline-stat-label">{t('dash.youAreOwner')}</span>
-                  <span className={`inline-stat-value ${isOwner ? 'text-success' : 'text-muted-foreground'}`}>
-                    {isOwner ? t('dash.yes') : t('dash.no')}
-                  </span>
-                </div>
+              <div className="grid grid-cols-2 gap-3">
+                <StatCard
+                  label={t('dash.proposalCount')}
+                  value={proposalsLoading ? '...' : totalCount}
+                  icon={<FileText className="w-4 h-4" />}
+                  color="primary"
+                />
+                <StatCard
+                  label={t('dash.pending')}
+                  value={proposalsLoading ? '...' : pendingCount}
+                  icon={<AlertCircle className="w-4 h-4" />}
+                  color="warning"
+                  pulse={pendingCount > 0}
+                />
               </div>
+              
+              {/* Threshold Visualization */}
+              <motion.div
+                whileHover={{ scale: 1.02, borderColor: 'hsl(var(--primary) / 0.5)' }}
+                className="control-panel p-4 border border-primary/30 bg-primary/5 cursor-pointer transition-all"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-mono uppercase text-muted-foreground">{t('dash.threshold')}</span>
+                  <span className="text-sm font-bold text-primary">{REQUIRED}/{owners ? owners.length : 3}</span>
+                </div>
+                <RadialProgress 
+                  value={(REQUIRED / (owners ? owners.length : 3)) * 100} 
+                  size="sm" 
+                  color="success" 
+                  showLabel={false} 
+                  className="mx-auto"
+                />
+                <div className="mt-3 flex items-center gap-2 text-xs">
+                  {isOwner ? (
+                    <>
+                      <CheckCircle2 className="w-3 h-3 text-success" />
+                      <span className="text-success font-mono">{t('dash.youAreOwner')}: {t('dash.yes')}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Users className="w-3 h-3 text-muted-foreground" />
+                      <span className="text-muted-foreground font-mono">{t('dash.youAreOwner')}: {t('dash.no')}</span>
+                    </>
+                  )}
+                </div>
+              </motion.div>
             </motion.div>
 
-            {/* Policy (Backend API) */}
+            {/* Policy (Backend API) - Enhanced */}
             {policy != null && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.25 }}
-                className="control-panel"
+                whileHover={{ scale: 1.01 }}
+                className="control-panel group"
               >
                 <div className="panel-title flex items-center gap-2">
-                  <ListFilter className="w-4 h-4" />
+                  <motion.div
+                    className="w-6 h-6 rounded gradient-terminal flex items-center justify-center"
+                    whileHover={{ rotate: 90 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ListFilter className="w-3 h-3 text-background" />
+                  </motion.div>
                   {t('dash.policyApi')}
                 </div>
-                <div className="space-y-0">
-                  <div className="inline-stat">
-                    <span className="inline-stat-label">{t('dash.allowlist')}</span>
-                    <span className="inline-stat-value">{policy.allowlistCount ?? 0} {t('dash.addresses')}</span>
-                  </div>
-                  <div className="inline-stat">
-                    <span className="inline-stat-label">{t('dash.maxAmount')}</span>
-                    <span className="inline-stat-value">{policy.maxAmount ?? '—'}</span>
-                  </div>
-                  <div className="inline-stat">
-                    <span className="inline-stat-label">{t('dash.dailyLimit')}</span>
-                    <span className="inline-stat-value">{policy.dailyLimit ?? '—'}</span>
-                  </div>
+                <div className="space-y-2 mt-3">
+                  <motion.div 
+                    whileHover={{ x: 4, borderColor: 'hsl(var(--primary) / 0.5)' }}
+                    className="p-2 rounded border border-border/50 bg-muted/20 transition-all"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground font-mono">{t('dash.allowlist')}</span>
+                      <span className="text-sm font-bold text-primary font-mono">{policy.allowlistCount ?? 0} {t('dash.addresses')}</span>
+                    </div>
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ x: 4, borderColor: 'hsl(var(--primary) / 0.5)' }}
+                    className="p-2 rounded border border-border/50 bg-muted/20 transition-all"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground font-mono">{t('dash.maxAmount')}</span>
+                      <span className="text-sm font-bold text-primary font-mono">{policy.maxAmount ?? '—'}</span>
+                    </div>
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ x: 4, borderColor: 'hsl(var(--primary) / 0.5)' }}
+                    className="p-2 rounded border border-border/50 bg-muted/20 transition-all"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground font-mono">{t('dash.dailyLimit')}</span>
+                      <span className="text-sm font-bold text-primary font-mono">{policy.dailyLimit ?? '—'}</span>
+                    </div>
+                  </motion.div>
                 </div>
               </motion.div>
             )}
@@ -317,28 +376,36 @@ export default function Dashboard() {
               <div className="panel-title">{t('dash.quickActions')}</div>
               <div className="button-stack">
                 <Link to="/freeze">
-                  <NeonButton variant="danger" size="sm" className="w-full justify-start">
-                    <Snowflake className="w-4 h-4" />
-                    {t('dash.freezeAddress')}
-                  </NeonButton>
+                  <motion.div whileHover={{ scale: 1.02, x: 4 }} whileTap={{ scale: 0.98 }}>
+                    <NeonButton variant="danger" size="sm" className="w-full justify-start">
+                      <Snowflake className="w-4 h-4" />
+                      {t('dash.freezeAddress')}
+                    </NeonButton>
+                  </motion.div>
                 </Link>
                 <Link to="/proposals">
-                  <NeonButton variant="secondary" size="sm" className="w-full justify-start">
-                    <FileText className="w-4 h-4" />
-                    {t('dash.viewProposals')}
-                  </NeonButton>
+                  <motion.div whileHover={{ scale: 1.02, x: 4 }} whileTap={{ scale: 0.98 }}>
+                    <NeonButton variant="secondary" size="sm" className="w-full justify-start">
+                      <FileText className="w-4 h-4" />
+                      {t('dash.viewProposals')}
+                    </NeonButton>
+                  </motion.div>
                 </Link>
                 <Link to="/pay">
-                  <NeonButton variant="secondary" size="sm" className="w-full justify-start">
-                    <Wallet className="w-4 h-4" />
-                    {t('dash.pay')}
-                  </NeonButton>
+                  <motion.div whileHover={{ scale: 1.02, x: 4 }} whileTap={{ scale: 0.98 }}>
+                    <NeonButton variant="secondary" size="sm" className="w-full justify-start">
+                      <Wallet className="w-4 h-4" />
+                      {t('dash.pay')}
+                    </NeonButton>
+                  </motion.div>
                 </Link>
                 <Link to="/history">
-                  <NeonButton variant="secondary" size="sm" className="w-full justify-start">
-                    <History className="w-4 h-4" />
-                    {t('dash.viewHistory')}
-                  </NeonButton>
+                  <motion.div whileHover={{ scale: 1.02, x: 4 }} whileTap={{ scale: 0.98 }}>
+                    <NeonButton variant="secondary" size="sm" className="w-full justify-start">
+                      <History className="w-4 h-4" />
+                      {t('dash.viewHistory')}
+                    </NeonButton>
+                  </motion.div>
                 </Link>
               </div>
             </motion.div>

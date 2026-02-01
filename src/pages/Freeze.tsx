@@ -1,79 +1,64 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { 
-  Snowflake, Search, ArrowLeft, 
-  CheckCircle, XCircle, AlertTriangle, Lock, Unlock
+import {
+  Snowflake, Search,
+  CheckCircle, XCircle, AlertTriangle, Lock, Unlock, Loader2, ExternalLink
 } from 'lucide-react';
-import { ParticleBackground } from '@/components/3d/ParticleBackground';
+import { Layout } from '@/components/Layout';
 import { NeonButton } from '@/components/ui/neon-button';
-import { StatusBadge, NetworkBadge } from '@/components/ui/status-badge';
-import { useWallet } from '@/lib/web3/hooks';
-import { MOCK_DATA, kiteTestnet, shortenAddress } from '@/lib/web3/config';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { useWallet, useFreezeStatus, useSubmitProposal, useIsMultiSigOwner } from '@/lib/web3/hooks';
+import { shortenAddress, getExplorerUrl } from '@/lib/web3/config';
+import { useLanguage } from '@/lib/i18n';
 
 export default function FreezePage() {
   const { isConnected } = useWallet();
+  const { isOwner } = useIsMultiSigOwner();
+  const { t } = useLanguage();
   const [searchAddress, setSearchAddress] = useState('');
-  const [searchResult, setSearchResult] = useState<{
-    address: string;
-    isFrozen: boolean;
-  } | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
-  const [actionStatus, setActionStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
+  const [checkedAddress, setCheckedAddress] = useState<string | undefined>();
 
-  const handleSearch = async () => {
-    if (!searchAddress || searchAddress.length < 10) return;
-    
-    setIsSearching(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const isFrozen = MOCK_DATA.frozenAddresses.some(
-      addr => addr.toLowerCase() === searchAddress.toLowerCase()
-    );
-    
-    setSearchResult({ address: searchAddress, isFrozen });
-    setIsSearching(false);
+  const { isFrozen, isLoading: freezeLoading, refetch: refetchFreeze } = useFreezeStatus(checkedAddress);
+  const {
+    submitFreeze, submitUnfreeze,
+    hash: proposalHash, isPending, isConfirming, isSuccess,
+    error: submitError, reset: resetSubmit,
+  } = useSubmitProposal();
+
+  const isValidAddress = /^0x[a-fA-F0-9]{40}$/.test(searchAddress);
+
+  const handleSearch = () => {
+    if (!isValidAddress) return;
+    setCheckedAddress(searchAddress);
   };
 
-  const handleAction = async () => {
-    setActionStatus('pending');
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setActionStatus('success');
-    setTimeout(() => setActionStatus('idle'), 2000);
+  const handleAction = () => {
+    if (!checkedAddress || !isValidAddress) return;
+    resetSubmit();
+    if (isFrozen) {
+      submitUnfreeze(checkedAddress as `0x${string}`);
+    } else {
+      submitFreeze(checkedAddress as `0x${string}`);
+    }
   };
+
+  // Refetch freeze status after successful proposal submission
+  useEffect(() => {
+    if (isSuccess) {
+      refetchFreeze();
+    }
+  }, [isSuccess, refetchFreeze]);
 
   return (
-    <div className="relative min-h-screen">
-      <ParticleBackground />
-      
-      {/* Header */}
-      <header className="sticky top-0 z-50 terminal-card border-x-0 border-t-0" style={{ borderRadius: 0 }}>
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link to="/dashboard">
-              <motion.button 
-                whileHover={{ scale: 1.1 }}
-                className="p-2 hover:bg-muted/50 border border-transparent hover:border-primary/30"
-                style={{ borderRadius: '2px' }}
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </motion.button>
-            </Link>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 hex-clip gradient-emerald flex items-center justify-center">
-                <Snowflake className="w-4 h-4 text-background" />
-              </div>
-              <span className="text-sm sm:text-lg font-bold font-mono terminal-text uppercase">Freeze</span>
-            </div>
-          </div>
-          <NetworkBadge connected={isConnected} chainName={kiteTestnet.name} />
-        </div>
-      </header>
-
+    <Layout
+      title={t('freeze.title')}
+      icon={<Snowflake className="w-4 h-4 text-background" />}
+      backTo="/"
+    >
       <main className="container mx-auto px-4 py-4 sm:py-6">
-        {/* Main Grid - Stacked on mobile, asymmetric on desktop */}
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
-          
+
           {/* Left - Search & Result */}
           <div className="space-y-4">
             {/* Search Panel */}
@@ -84,25 +69,29 @@ export default function FreezePage() {
             >
               <div className="panel-title flex items-center gap-2">
                 <Search className="w-4 h-4" />
-                Address Status Check
+                {t('freeze.addressCheck')}
               </div>
-              
+
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="0x... Enter address to scan"
+                  placeholder={t('freeze.placeholder')}
                   value={searchAddress}
-                  onChange={(e) => setSearchAddress(e.target.value)}
+                  onChange={(e) => {
+                    setSearchAddress(e.target.value);
+                    setCheckedAddress(undefined);
+                    resetSubmit();
+                  }}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   className="glow-input flex-1 text-sm"
                 />
-                <NeonButton 
-                  onClick={handleSearch} 
-                  disabled={isSearching || !searchAddress}
+                <NeonButton
+                  onClick={handleSearch}
+                  disabled={freezeLoading || !isValidAddress}
                   size="sm"
                 >
-                  {isSearching ? (
-                    <div className="neon-spinner w-4 h-4" />
+                  {freezeLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <>
                       <Search className="w-4 h-4" />
@@ -112,9 +101,13 @@ export default function FreezePage() {
                 </NeonButton>
               </div>
 
+              {!isValidAddress && searchAddress.length > 0 && (
+                <p className="text-xs text-destructive font-mono mt-2">{t('freeze.invalidAddress')}</p>
+              )}
+
               {/* Search Result */}
               <AnimatePresence mode="wait">
-                {searchResult && (
+                {checkedAddress && !freezeLoading && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
@@ -122,23 +115,23 @@ export default function FreezePage() {
                     className="mt-4 pt-4 border-t border-border"
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <span className="font-mono text-sm text-primary">{shortenAddress(searchResult.address, 8)}</span>
-                      <StatusBadge 
-                        status={searchResult.isFrozen ? 'frozen' : 'active'}
+                      <span className="font-mono text-sm text-primary">{shortenAddress(checkedAddress, 8)}</span>
+                      <StatusBadge
+                        status={isFrozen ? 'frozen' : 'active'}
                         pulse
                       >
-                        {searchResult.isFrozen ? 'FROZEN' : 'ACTIVE'}
+                        {isFrozen ? t('freeze.frozen') : t('freeze.activeLabel')}
                       </StatusBadge>
                     </div>
 
                     <div className="flex items-center gap-3 p-3 bg-muted/30 border border-border/50 mb-3" style={{ borderRadius: '2px' }}>
-                      {searchResult.isFrozen ? (
+                      {isFrozen ? (
                         <>
                           <XCircle className="w-8 h-8 text-destructive flex-shrink-0" />
                           <div>
-                            <div className="font-bold text-destructive font-mono uppercase text-sm">Blocked</div>
+                            <div className="font-bold text-destructive font-mono uppercase text-sm">{t('freeze.blocked')}</div>
                             <p className="text-xs text-muted-foreground font-mono">
-                              All transactions blocked
+                              {t('freeze.blockedDesc')}
                             </p>
                           </div>
                         </>
@@ -146,38 +139,48 @@ export default function FreezePage() {
                         <>
                           <CheckCircle className="w-8 h-8 text-success flex-shrink-0" />
                           <div>
-                            <div className="font-bold text-success font-mono uppercase text-sm">Active</div>
+                            <div className="font-bold text-success font-mono uppercase text-sm">{t('freeze.activeStatus')}</div>
                             <p className="text-xs text-muted-foreground font-mono">
-                              Transactions allowed
+                              {t('freeze.activeDesc')}
                             </p>
                           </div>
                         </>
                       )}
                     </div>
 
-                    <NeonButton 
-                      variant={searchResult.isFrozen ? 'success' : 'danger'}
-                      onClick={handleAction}
-                      disabled={actionStatus === 'pending'}
-                      className="w-full"
-                      size="sm"
-                    >
-                      {actionStatus === 'pending' ? (
-                        <div className="neon-spinner w-4 h-4" />
-                      ) : searchResult.isFrozen ? (
-                        <>
-                          <Unlock className="w-4 h-4" />
-                          SUBMIT UNFREEZE PROPOSAL
-                        </>
-                      ) : (
-                        <>
-                          <Lock className="w-4 h-4" />
-                          SUBMIT FREEZE PROPOSAL
-                        </>
-                      )}
-                    </NeonButton>
+                    {isConnected && isOwner ? (
+                      <NeonButton
+                        variant={isFrozen ? 'success' : 'danger'}
+                        onClick={handleAction}
+                        disabled={isPending || isConfirming}
+                        className="w-full"
+                        size="sm"
+                      >
+                        {(isPending || isConfirming) ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : isFrozen ? (
+                          <>
+                            <Unlock className="w-4 h-4" />
+                            {t('freeze.submitUnfreeze')}
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="w-4 h-4" />
+                            {t('freeze.submitFreeze')}
+                          </>
+                        )}
+                      </NeonButton>
+                    ) : isConnected ? (
+                      <div className="text-xs text-muted-foreground font-mono p-2 border border-border/50 text-center" style={{ borderRadius: '2px' }}>
+                        {t('freeze.ownerOnly')}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-muted-foreground font-mono p-2 border border-border/50 text-center" style={{ borderRadius: '2px' }}>
+                        {t('freeze.connectFirst')}
+                      </div>
+                    )}
 
-                    {actionStatus === 'success' && (
+                    {isSuccess && proposalHash && (
                       <motion.div
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -185,7 +188,26 @@ export default function FreezePage() {
                         style={{ borderRadius: '2px' }}
                       >
                         <CheckCircle className="w-4 h-4" />
-                        <span className="uppercase">Proposal submitted</span>
+                        <span className="uppercase">{t('freeze.proposalSubmitted')}</span>
+                        <a
+                          href={getExplorerUrl('tx', proposalHash)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 underline"
+                        >
+                          {t('freeze.viewTx')} <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </motion.div>
+                    )}
+
+                    {submitError && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-3 p-2 bg-destructive/20 border border-destructive/30 text-destructive font-mono text-xs"
+                        style={{ borderRadius: '2px' }}
+                      >
+                        {(submitError as Error).message?.slice(0, 200) || t('freeze.txFailed')}
                       </motion.div>
                     )}
                   </motion.div>
@@ -203,61 +225,52 @@ export default function FreezePage() {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-bold text-primary font-mono uppercase text-xs mb-1">Multi-Sig Required</div>
+                  <div className="font-bold text-primary font-mono uppercase text-xs mb-1">{t('freeze.multisigRequired')}</div>
                   <p className="text-xs text-muted-foreground font-mono">
-                    All operations require {MOCK_DATA.threshold}/{MOCK_DATA.owners.length} confirmations.
+                    {t('freeze.multisigDesc')}
                   </p>
                 </div>
               </div>
             </motion.div>
           </div>
 
-          {/* Right - Frozen Registry */}
+          {/* Right - Info Panel */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
             className="control-panel"
           >
-            <div className="flex items-center justify-between mb-3">
-              <div className="panel-title flex items-center gap-2 border-0 pb-0 mb-0">
-                <Snowflake className="w-4 h-4" />
-                Frozen Registry
-              </div>
-              <StatusBadge status="frozen">
-                {MOCK_DATA.frozenAddresses.length}
-              </StatusBadge>
+            <div className="panel-title flex items-center gap-2 border-0 pb-0 mb-3">
+              <Snowflake className="w-4 h-4" />
+              {t('freeze.howItWorks')}
             </div>
 
-            <div className="space-y-1 max-h-96 overflow-y-auto">
-              {MOCK_DATA.frozenAddresses.length === 0 ? (
-                <div className="text-center py-8">
-                  <Snowflake className="w-10 h-10 mx-auto mb-2 text-muted-foreground opacity-50" />
-                  <p className="text-xs text-muted-foreground font-mono uppercase">No frozen addresses</p>
-                </div>
-              ) : (
-                MOCK_DATA.frozenAddresses.map((address, index) => (
-                  <motion.div
-                    key={address}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="flex items-center justify-between p-2 bg-muted/20 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
-                    style={{ borderRadius: '2px' }}
-                    onClick={() => {
-                      setSearchAddress(address);
-                      setSearchResult({ address, isFrozen: true });
-                    }}
-                  >
-                    <span className="font-mono text-xs text-primary">{shortenAddress(address)}</span>
-                    <span className="text-[10px] text-destructive font-mono uppercase">frozen</span>
-                  </motion.div>
-                ))
-              )}
+            <div className="space-y-3 text-xs font-mono text-muted-foreground">
+              <div className="p-2 border border-border/50" style={{ borderRadius: '2px' }}>
+                <span className="text-primary font-bold">1.</span> {t('freeze.step1')}
+              </div>
+              <div className="p-2 border border-border/50" style={{ borderRadius: '2px' }}>
+                <span className="text-primary font-bold">2.</span> {t('freeze.step2')}
+              </div>
+              <div className="p-2 border border-border/50" style={{ borderRadius: '2px' }}>
+                <span className="text-primary font-bold">3.</span> {t('freeze.step3')}
+              </div>
+              <div className="p-2 border border-border/50" style={{ borderRadius: '2px' }}>
+                <span className="text-primary font-bold">4.</span> {t('freeze.step4')}
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-border">
+              <Link to="/proposals">
+                <NeonButton variant="secondary" size="sm" className="w-full">
+                  {t('freeze.viewAllProposals')}
+                </NeonButton>
+              </Link>
             </div>
           </motion.div>
         </div>
       </main>
-    </div>
+    </Layout>
   );
 }

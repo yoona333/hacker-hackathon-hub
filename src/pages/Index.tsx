@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Wallet, Snowflake, Zap, Terminal, ChevronRight, Shield } from 'lucide-react';
-import { useAppKit } from '@reown/appkit/react';
 import { ParticleBackground } from '@/components/3d/ParticleBackground';
 import { HolographicShield } from '@/components/HolographicShield';
 import { NeonButton } from '@/components/ui/neon-button';
 import { NetworkBadge } from '@/components/ui/status-badge';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { WalletButton } from '@/components/WalletButton';
 import { useWallet } from '@/lib/web3/hooks';
 import { useLanguage } from '@/lib/i18n';
 import { kiteTestnet } from '@/lib/web3/config';
@@ -20,9 +20,9 @@ const getCapabilities = (t: (key: string) => string) => [
   },
   {
     id: '01',
-    title: t('home.cap.aiPay'),
-    description: t('home.cap.aiPayDesc'),
-    href: '/ai-pay',
+    title: t('home.cap.aiChat'),
+    description: t('home.cap.aiChatDesc'),
+    href: '/ai-chat',
   },
   {
     id: '02',
@@ -88,7 +88,6 @@ function StatusLine({ label, value, status = 'normal' }: {
 }
 
 export default function Index() {
-  const { open } = useAppKit();
   const { isConnected } = useWallet();
   const { t } = useLanguage();
   const capabilities = getCapabilities(t);
@@ -118,17 +117,7 @@ export default function Index() {
           >
             <LanguageToggle />
             <NetworkBadge connected={isConnected} chainName={kiteTestnet.name} />
-            {isConnected ? (
-              <NeonButton onClick={() => open()} size="sm">
-                <Wallet className="w-4 h-4" />
-                {t('header.dashboard')}
-              </NeonButton>
-            ) : (
-              <NeonButton onClick={() => open()} size="sm">
-                <Wallet className="w-4 h-4" />
-                {t('header.connect')}
-              </NeonButton>
-            )}
+            <WalletButton />
           </motion.div>
         </div>
       </header>
@@ -216,7 +205,7 @@ export default function Index() {
                   </Link>
                 </>
               ) : (
-                <NeonButton size="lg" onClick={() => open()} pulse className="w-full">
+                <NeonButton size="lg" onClick={() => window.dispatchEvent(new CustomEvent('open-wallet-modal'))} pulse className="w-full">
                   <Wallet className="w-5 h-5" />
                   {t('home.connectWallet')}
                 </NeonButton>

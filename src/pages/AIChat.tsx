@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo, useCallback, memo } from 'react';
 import { motion } from 'framer-motion';
-import { MessageCircle, Send, Sparkles, Terminal, Shield, CheckCircle2, XCircle, ExternalLink, Settings } from 'lucide-react';
+import { MessageCircle, Send, Sparkles, Terminal, Shield, CheckCircle2, XCircle, ExternalLink, Settings, Loader2 } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { ErrorAlert } from '@/components/ui/error-alert';
 import { useLanguage } from '@/lib/i18n';
@@ -67,6 +67,11 @@ interface AIChatResponse {
   dryRun?: boolean;
   autoExecuted?: boolean;
   paymentMode?: 'eoa' | 'aa';
+  progress?: {
+    stage: 'parsing' | 'risk_assessment' | 'policy_check' | 'execution' | 'complete';
+    message: string;
+    percentage: number;
+  };
 }
 
 type ChatMessage =
@@ -236,6 +241,7 @@ export default function AIChatPage() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState<{ stage: string; message: string; percentage: number } | null>(null);
   const [dryRun, setDryRun] = useState(false);
   const [paymentMode, setPaymentMode] = useState<'eoa' | 'aa'>('eoa');
   const [autoExecute, setAutoExecute] = useState(true);
@@ -262,6 +268,22 @@ export default function AIChatPage() {
     setMessages(prev => [...prev, { id: `u-${Date.now()}`, role: 'user', text }]);
     setInput('');
     setLoading(true);
+    
+    // 模拟进度更新（实际应该从服务器端 SSE 或 WebSocket 获取）
+    const progressStages = [
+      { stage: 'parsing', message: t('aiChat.progress.parsing'), percentage: 20 },
+      { stage: 'risk_assessment', message: t('aiChat.progress.riskAssessment'), percentage: 50 },
+      { stage: 'policy_check', message: t('aiChat.progress.policyCheck'), percentage: 80 },
+      { stage: 'execution', message: t('aiChat.progress.execution'), percentage: 95 },
+    ];
+    
+    let currentStage = 0;
+    const progressInterval = setInterval(() => {
+      if (currentStage < progressStages.length) {
+        setProgress(progressStages[currentStage]);
+        currentStage++;
+      }
+    }, 500);
 
     try {
       const res = await fetch(`${API_BASE}/api/ai-chat`, {
@@ -276,15 +298,29 @@ export default function AIChatPage() {
         }),
       });
       const data = (await res.json()) as AIChatResponse;
-      setMessages(prev => [...prev, { id: `a-${Date.now()}`, role: 'assistant', data }]);
+      
+      // 如果响应包含进度信息，使用它
+      if (data.progress) {
+        setProgress(data.progress);
+      } else {
+        setProgress({ stage: 'complete', message: t('aiChat.progress.complete'), percentage: 100 });
+      }
+      
+      setTimeout(() => {
+        setProgress(null);
+        setMessages(prev => [...prev, { id: `a-${Date.now()}`, role: 'assistant', data }]);
+      }, 300);
     } catch (err) {
+      setProgress(null);
       setMessages(prev => [...prev, {
         id: `a-${Date.now()}`,
         role: 'assistant',
         data: { text: err instanceof Error ? err.message : t('aiChat.networkError'), action: 'conversation' },
       }]);
     } finally {
+      clearInterval(progressInterval);
       setLoading(false);
+      setTimeout(() => setProgress(null), 500);
     }
   }, [input, loading, dryRun, paymentMode, autoExecute, buildHistory, t]);
 
@@ -332,9 +368,35 @@ export default function AIChatPage() {
       backTo="/"
     >
       <main className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 relative z-10 min-h-[70vh] flex flex-col bg-background/90 max-w-5xl">
+        {/* Progress indicator */}
+        {progress && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="mb-4 p-4 rounded-lg border border-primary/30 bg-primary/5"
+          >
+            <div className="flex items-center gap-3">
+              <Loader2 className="w-5 h-5 text-primary animate-spin" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">{progress.message}</p>
+                <div className="mt-2 w-full bg-muted rounded-full h-2 overflow-hidden">
+                  <motion.div
+                    className="h-full bg-primary"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress.percentage}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground">{progress.percentage}%</span>
+            </div>
+          </motion.div>
+        )}
+
         {/* Message list */}
         <div ref={listRef} className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 min-h-[200px] max-h-[50vh] sm:max-h-[60vh] pr-1 sm:pr-2 mb-3 sm:mb-4">
-          {messages.length === 0 && !loading && (
+          {messages.length === 0 && !loading && !progress && (
             <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
               <Sparkles className="w-10 h-10 mb-3 opacity-60" />
               <p className="text-sm">{t('aiChat.emptyHint')}</p>

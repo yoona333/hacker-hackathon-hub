@@ -245,6 +245,11 @@ const translations = {
     'history.viewOnExplorer': 'View multisig on explorer',
     'aiChat.networkError': 'Network error. Is the backend running?',
     'aiChat.paymentFailed': 'Payment execution failed.',
+    'aiChat.progress.parsing': 'Parsing payment intent...',
+    'aiChat.progress.riskAssessment': 'Assessing payment risk...',
+    'aiChat.progress.policyCheck': 'Checking policy rules...',
+    'aiChat.progress.execution': 'Executing payment...',
+    'aiChat.progress.complete': 'Complete',
   },
   zh: {
     // Header
@@ -480,6 +485,11 @@ const translations = {
     'history.viewOnExplorer': '在区块浏览器中查看多签合约',
     'aiChat.networkError': '网络错误，请确认后端已启动。',
     'aiChat.paymentFailed': '支付执行失败。',
+    'aiChat.progress.parsing': '解析支付意图...',
+    'aiChat.progress.riskAssessment': '评估支付风险...',
+    'aiChat.progress.policyCheck': '检查策略规则...',
+    'aiChat.progress.execution': '执行支付...',
+    'aiChat.progress.complete': '完成',
   },
 };
 

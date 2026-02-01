@@ -60,34 +60,77 @@ export function useWalletBalances(
         : [],
     [walletAddress, tokenAddresses]
   );
-  const { data: tokenResults } = useReadContracts({ contracts, query: { enabled: contracts.length > 0 } });
+  const { data: tokenResults, error: tokenError } = useReadContracts({ 
+    contracts, 
+    query: { 
+      enabled: contracts.length > 0,
+      // Suppress errors for invalid token addresses - just skip them
+      retry: false,
+      retryOnMount: false,
+    } 
+  });
 
   return useMemo(() => {
     const items: WalletBalanceItem[] = [];
+    
+    // Always show native balance (KITE) if available
     if (nativeBalance && parseFloat(nativeBalance.formatted) > 0) {
       const symbol = chainId === KITE_TESTNET_ID ? 'KITE' : nativeBalance.symbol;
-      items.push({ symbol, formatted: parseFloat(nativeBalance.formatted).toFixed(4) });
+      items.push({ symbol, formatted: parseFloat(nativeBalance.formatted).toFixed(6) });
     }
+    
+    // Process token results - only include successful calls
     if (tokenResults && tokenResults.length >= 3) {
       const n = tokenAddresses.length;
       for (let i = 0; i < n; i++) {
         const balanceR = tokenResults[i * 3];
         const decimalsR = tokenResults[i * 3 + 1];
         const symbolR = tokenResults[i * 3 + 2];
+        
+        // Only process if all three calls succeeded
         if (balanceR?.status === 'success' && decimalsR?.status === 'success' && symbolR?.status === 'success') {
-          const balance = balanceR.result as bigint;
-          if (balance > 0n) {
-            const decimals = decimalsR.result as number;
-            const symbol = (symbolR.result as string) || 'TOKEN';
-            const formatted = formatUnits(balance, decimals);
-            const num = parseFloat(formatted);
-            items.push({ symbol, formatted: num >= 1e6 ? num.toExponential(2) : num.toFixed(num < 0.01 ? 4 : 2) });
+          try {
+            const balance = balanceR.result as bigint;
+            if (balance > 0n) {
+              const decimals = decimalsR.result as number;
+              const symbol = (symbolR.result as string) || 'TOKEN';
+              const formatted = formatUnits(balance, decimals);
+              const num = parseFloat(formatted);
+              items.push({ 
+                symbol, 
+                formatted: num >= 1e6 ? num.toExponential(2) : num.toFixed(6) 
+              });
+            }
+          } catch (err) {
+            // Silently skip tokens that fail to parse (invalid decimals, etc.)
+            console.warn(`[useWalletBalances] Failed to process token ${tokenAddresses[i]}:`, err);
+          }
+        } else {
+          // Log failed token calls for debugging (but don't throw)
+          const failedCalls = [
+            balanceR?.status !== 'success' && 'balanceOf',
+            decimalsR?.status !== 'success' && 'decimals',
+            symbolR?.status !== 'success' && 'symbol'
+          ].filter(Boolean);
+          if (failedCalls.length > 0) {
+            // Check if this might be a non-ERC20 address (e.g., MultiSig contract)
+            const isDecimalsFailed = decimalsR?.status !== 'success';
+            const errorMsg = isDecimalsFailed 
+              ? `⚠️ 地址 ${tokenAddresses[i]} 可能不是有效的 ERC20 代币合约（缺少 decimals() 函数）。请检查 SETTLEMENT_TOKEN_ADDRESS 配置是否正确。`
+              : `[useWalletBalances] Token ${tokenAddresses[i]} calls failed: ${failedCalls.join(', ')}`;
+            console.warn(errorMsg);
           }
         }
       }
     }
+    
+    // Log error if any, but don't throw - just return what we have
+    if (tokenError) {
+      console.debug('[useWalletBalances] Token query error (non-fatal):', tokenError);
+    }
+    
     return items;
-  }, [nativeBalance, chainId, tokenResults, tokenAddresses.length]);
+  }, [nativeBalance, chainId, tokenResults, tokenAddresses.length, tokenError]);
 }
 
 // Hook for checking if an address is frozen (real contract call)

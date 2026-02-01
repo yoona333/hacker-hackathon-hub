@@ -18,6 +18,7 @@ import { RadialProgress } from '@/components/ui/radial-progress';
 import { useWallet, useMultiSigOwners, useProposals, useIsMultiSigOwner } from '@/lib/web3/hooks';
 import { CONTRACTS, getExplorerUrl, kiteTestnet, shortenAddress } from '@/lib/web3/config';
 import { useLanguage } from '@/lib/i18n';
+import { useConnect } from 'wagmi';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
@@ -47,6 +48,7 @@ export default function Dashboard() {
   }, []);
 
   const pendingCount = useMemo(() => proposals.filter(p => !p.executed).length, [proposals]);
+  const { connect, connectors, isPending: isConnecting } = useConnect();
 
   if (!isConnected) {
     return (
@@ -58,9 +60,28 @@ export default function Dashboard() {
           <p className="text-muted-foreground mb-6 font-mono text-sm">
             {t('dash.connectPrompt')}
           </p>
-          <NeonButton onClick={() => window.dispatchEvent(new CustomEvent('open-wallet-modal'))} pulse className="w-full">
-            <Wallet className="w-5 h-5" />
-            {t('dash.connectWallet')}
+          <NeonButton 
+            onClick={() => {
+              const c = connectors[0];
+              if (c) {
+                connect({ connector: c });
+              }
+            }}
+            disabled={isConnecting || connectors.length === 0}
+            pulse 
+            className="w-full"
+          >
+            {isConnecting ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Connecting...
+              </>
+            ) : (
+              <>
+                <Wallet className="w-5 h-5" />
+                {t('dash.connectWallet')}
+              </>
+            )}
           </NeonButton>
         </GlassCard>
       </div>

@@ -56,7 +56,7 @@ export default function FreezePage() {
       icon={<Snowflake className="w-4 h-4 text-background" />}
       backTo="/"
     >
-      <main className="container mx-auto px-4 py-4 sm:py-6">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
 
           {/* Left - Search & Result */}

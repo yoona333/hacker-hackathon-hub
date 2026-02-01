@@ -7,7 +7,8 @@ export function ParticleStream() {
   const ref = useRef<THREE.Points>(null);
   
   const particles = useMemo(() => {
-    const count = 800;
+    // Reduced particle count for better performance (from 800 to 300)
+    const count = 300;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const speeds = new Float32Array(count);

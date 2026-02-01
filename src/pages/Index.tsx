@@ -98,7 +98,7 @@ export default function Index() {
       
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 terminal-card border-x-0 border-t-0" style={{ borderRadius: 0 }}>
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="container mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -123,7 +123,7 @@ export default function Index() {
       </header>
 
       {/* Main Content - Split Screen Layout */}
-      <main className="container mx-auto px-4 pt-20 pb-16 min-h-screen">
+      <main className="container mx-auto px-3 sm:px-4 pt-16 sm:pt-20 pb-12 sm:pb-16 min-h-screen">
         <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 items-center min-h-[calc(100vh-10rem)]">
           
           {/* Left Side - Holographic Shield Visual (hidden on mobile, shown on lg+) */}
@@ -251,7 +251,7 @@ export default function Index() {
 
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 right-0 py-3 terminal-card border-x-0 border-b-0" style={{ borderRadius: 0 }}>
-        <div className="container mx-auto px-4 flex items-center justify-between text-xs font-mono text-muted-foreground">
+        <div className="container mx-auto px-3 sm:px-4 flex items-center justify-between text-xs font-mono text-muted-foreground">
           <span>{t('home.footer.hackathon')}</span>
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-success animate-pulse" />

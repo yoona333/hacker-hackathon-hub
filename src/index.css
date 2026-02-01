@@ -68,6 +68,32 @@
     --terminal-red: 0 72% 51%;
     --terminal-steel: 240 4% 35%;
     --terminal-dark: 240 6% 4%;
+
+    /* Spacing system (optimized for Web3 UX) */
+    --spacing-xs: 0.25rem;   /* 4px */
+    --spacing-sm: 0.5rem;    /* 8px */
+    --spacing-md: 1rem;      /* 16px */
+    --spacing-lg: 1.5rem;    /* 24px */
+    --spacing-xl: 2rem;      /* 32px */
+    --spacing-2xl: 3rem;     /* 48px */
+
+    /* Card spacing */
+    --card-padding: 1.5rem;  /* Unified card padding */
+    --card-gap: 1.5rem;      /* Gap between cards */
+    --card-radius: 0.5rem;    /* 8px - unified border radius */
+
+    /* Typography */
+    --line-height-base: 1.6;
+    --line-height-tight: 1.4;
+    --line-height-loose: 1.8;
+
+    /* Shadow system */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+    --shadow-glow-amber: 0 0 20px hsl(38 92% 50% / 0.3);
+    --shadow-glow-emerald: 0 0 20px hsl(158 64% 52% / 0.3);
   }
 
   /* No light mode - terminal is always dark */
@@ -119,6 +145,8 @@
     background: hsl(var(--terminal-dark));
     min-height: 100vh;
     font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    line-height: var(--line-height-base);
+    letter-spacing: 0.01em;
   }
 
   /* Custom scrollbar with amber glow */
@@ -142,7 +170,7 @@
 }
 
 @layer components {
-  /* Terminal card with scan line */
+  /* Terminal card with scan line - optimized spacing */
   .terminal-card {
     @apply relative overflow-hidden;
     background: linear-gradient(
@@ -151,10 +179,18 @@
       hsl(var(--terminal-dark)) 100%
     );
     border: 1px solid hsl(var(--terminal-amber) / 0.2);
-    border-radius: var(--radius);
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
     box-shadow: 
       inset 0 1px 0 hsl(0 0% 100% / 0.02),
-      0 4px 24px hsl(0 0% 0% / 0.5);
+      var(--shadow-md);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .terminal-card:hover {
+    box-shadow: 
+      inset 0 1px 0 hsl(0 0% 100% / 0.02),
+      var(--shadow-lg);
   }
 
   .terminal-card::before {
@@ -187,12 +223,13 @@
     pointer-events: none;
   }
 
-  /* Glass card legacy */
+  /* Glass card legacy - using unified spacing */
   .glass-card {
-    @apply terminal-card p-6;
+    @apply terminal-card;
+    padding: var(--card-padding);
   }
 
-  /* Cyber button with clip-path */
+  /* Cyber button with clip-path - optimized for touch targets */
   .cyber-button {
     @apply relative font-bold uppercase tracking-wider transition-all duration-200;
     clip-path: polygon(
@@ -206,17 +243,34 @@
     background: linear-gradient(135deg, hsl(var(--terminal-amber)) 0%, hsl(38 92% 40%) 100%);
     color: hsl(0 0% 5%);
     padding: 12px 24px;
+    min-height: 44px; /* Minimum touch target for accessibility */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
   }
 
-  .cyber-button:hover {
+  .cyber-button:hover:not(:disabled) {
     filter: brightness(1.1);
-    box-shadow: 0 0 20px hsl(var(--terminal-amber) / 0.5);
+    box-shadow: var(--shadow-glow-amber);
+    transform: translateY(-1px);
+  }
+
+  .cyber-button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: var(--shadow-md);
+  }
+
+  .cyber-button:focus-visible {
+    outline: 2px solid hsl(var(--terminal-amber));
+    outline-offset: 2px;
   }
 
   .cyber-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     filter: grayscale(0.5);
+    transform: none;
   }
 
   .cyber-button-secondary {
@@ -278,14 +332,89 @@
   /* Floating animation */
   .float {
     animation: float 6s ease-in-out infinite;
+    will-change: transform;
   }
 
-  /* Glow input */
+  /* Rotate animations for HolographicShield - CSS for better performance */
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes rotate-reverse {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 10px hsl(var(--accent) / 0.2);
+    }
+    50% {
+      box-shadow: 0 0 30px hsl(var(--accent) / 0.4);
+    }
+  }
+
+  @keyframes breathing {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .breathing {
+    animation: breathing 4s ease-in-out infinite;
+  }
+
+  /* Performance optimizations */
+  .terminal-card,
+  .control-panel {
+    will-change: transform;
+    transform: translateZ(0); /* Force GPU acceleration */
+  }
+
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Glow input - mobile optimized */
   .glow-input {
-    @apply bg-muted/50 border border-border px-4 py-3 text-foreground;
+    @apply bg-muted/50 border border-border px-3 sm:px-4 py-2.5 sm:py-3 text-foreground;
     font-family: 'JetBrains Mono', monospace;
     border-radius: 2px;
     transition: all 0.2s ease;
+    min-height: 44px; /* Touch target */
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  /* Touch target helper */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .glow-input:focus {
@@ -347,7 +476,7 @@
 
   /* ===== MISSION CONTROL LAYOUT SYSTEM ===== */
   
-  /* Control Panel - main container with amber top accent */
+  /* Control Panel - main container with amber top accent - optimized spacing */
   .control-panel {
     @apply relative;
     background: linear-gradient(
@@ -357,16 +486,25 @@
     );
     border: 1px solid hsl(var(--border));
     border-top: 2px solid hsl(var(--terminal-amber));
-    padding: 1.5rem;
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
+    margin-bottom: var(--card-gap);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
   }
 
-  /* Panel Title with underline */
+  .control-panel:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Panel Title with underline - improved spacing */
   .panel-title {
     @apply font-mono uppercase tracking-widest text-sm font-bold;
     border-bottom: 1px solid hsl(var(--border));
-    padding-bottom: 0.75rem;
-    margin-bottom: 1rem;
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
     color: hsl(var(--terminal-amber));
+    line-height: var(--line-height-tight);
   }
 
   /* Tree structure for lists */
@@ -442,10 +580,32 @@
     @apply flex flex-col gap-2;
   }
 
-  /* Data row for key-value display */
+  /* Data row for key-value display - mobile responsive */
   .data-row {
-    @apply grid grid-cols-[120px_1fr] gap-4 py-2 text-sm;
+    @apply grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] gap-2 sm:gap-4 py-2 text-xs sm:text-sm;
     border-bottom: 1px solid hsl(var(--border) / 0.3);
+  }
+
+  /* Large number display for stats */
+  .stat-number {
+    @apply text-2xl sm:text-3xl md:text-4xl font-bold terminal-text font-mono;
+    line-height: 1.2;
+  }
+
+  /* Color-coded status text */
+  .status-success {
+    color: hsl(var(--terminal-emerald));
+    text-shadow: 0 0 10px hsl(var(--terminal-emerald) / 0.5);
+  }
+
+  .status-warning {
+    color: hsl(var(--terminal-amber));
+    text-shadow: 0 0 10px hsl(var(--terminal-amber) / 0.5);
+  }
+
+  .status-error {
+    color: hsl(var(--destructive));
+    text-shadow: 0 0 10px hsl(var(--destructive) / 0.5);
   }
 
   .data-row:last-child {

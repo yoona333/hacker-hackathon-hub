@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -6,10 +6,10 @@ export function CyberGrid() {
   const gridRef = useRef<THREE.LineSegments>(null);
   const mousePosition = useRef({ x: 0, y: 0 });
 
-  // Create grid geometry
+  // Create grid geometry - reduced complexity for performance
   const gridGeometry = useMemo(() => {
     const size = 40;
-    const divisions = 40;
+    const divisions = 30; // Reduced from 40 to 30 for better performance
     const step = size / divisions;
     const halfSize = size / 2;
 
@@ -43,27 +43,40 @@ export function CyberGrid() {
     return geometry;
   }, []);
 
-  // Mouse interaction
-  useMemo(() => {
+  // Mouse interaction - throttled for performance
+  useEffect(() => {
+    let rafId: number;
     const handleMouseMove = (event: MouseEvent) => {
-      mousePosition.current = {
-        x: (event.clientX / window.innerWidth) * 2 - 1,
-        y: -(event.clientY / window.innerHeight) * 2 + 1,
-      };
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        mousePosition.current = {
+          x: (event.clientX / window.innerWidth) * 2 - 1,
+          y: -(event.clientY / window.innerHeight) * 2 + 1,
+        };
+      });
     };
     
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
-  // Animation
+  // Animation - optimized with frame skipping for performance
+  const frameSkip = useRef(0);
   useFrame((state) => {
+    // Skip frames on low-end devices (render every 2nd frame)
+    frameSkip.current = (frameSkip.current + 1) % 2;
+    if (frameSkip.current !== 0) return;
+
     if (gridRef.current) {
-      // Subtle wave animation
+      // Subtle wave animation - reduced complexity
       const positions = gridRef.current.geometry.attributes.position.array as Float32Array;
       const time = state.clock.getElapsedTime();
       
-      for (let i = 1; i < positions.length; i += 3) {
+      // Process every 2nd vertex for better performance
+      for (let i = 1; i < positions.length; i += 6) {
         const x = positions[i - 1];
         const z = positions[i + 1];
         const distance = Math.sqrt(x * x + z * z);

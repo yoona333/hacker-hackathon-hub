@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileText, Plus, Check, Play,
@@ -8,6 +8,8 @@ import { Layout } from '@/components/Layout';
 import { NeonButton } from '@/components/ui/neon-button';
 import { ThresholdProgress } from '@/components/ui/neon-progress';
 import { StatusBadge, TypeBadge } from '@/components/ui/status-badge';
+import { SkeletonCard, SkeletonText } from '@/components/ui/skeleton';
+import { ErrorAlert } from '@/components/ui/error-alert';
 import {
   useWallet, useProposals, useIsMultiSigOwner, useSubmitProposal,
   useConfirmTransaction, useExecuteTransaction,
@@ -64,8 +66,8 @@ export default function ProposalsPage() {
     }
   };
 
-  const pendingCount = proposals.filter(p => !p.executed).length;
-  const executedCount = proposals.filter(p => p.executed).length;
+  const pendingCount = useMemo(() => proposals.filter(p => !p.executed).length, [proposals]);
+  const executedCount = useMemo(() => proposals.filter(p => p.executed).length, [proposals]);
 
   // Track which proposal is being acted on
   const [activeAction, setActiveAction] = useState<{ id: number; type: 'confirm' | 'execute' } | null>(null);
@@ -101,7 +103,7 @@ export default function ProposalsPage() {
         </>
       }
     >
-      <main className="container mx-auto px-4 py-4 sm:py-6">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {/* Stats Row */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -109,20 +111,20 @@ export default function ProposalsPage() {
           className="control-panel mb-4"
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
-            <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto justify-between sm:justify-start">
+            <div className="flex items-center gap-3 sm:gap-4 md:gap-6 w-full sm:w-auto justify-between sm:justify-start">
               <div className="text-center">
-                <div className="text-xl sm:text-2xl font-bold terminal-text font-mono">{totalCount}</div>
-                <div className="text-[10px] text-muted-foreground font-mono uppercase">{t('proposals.total')}</div>
+                <div className="stat-number">{totalCount}</div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground font-mono uppercase mt-1">{t('proposals.total')}</div>
               </div>
-              <div className="w-px h-8 bg-border" />
+              <div className="w-px h-6 sm:h-8 bg-border" />
               <div className="text-center">
-                <div className="text-xl sm:text-2xl font-bold text-primary font-mono">{pendingCount}</div>
-                <div className="text-[10px] text-muted-foreground font-mono uppercase">{t('proposals.pending')}</div>
+                <div className="stat-number status-warning">{pendingCount}</div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground font-mono uppercase mt-1">{t('proposals.pending')}</div>
               </div>
-              <div className="w-px h-8 bg-border" />
+              <div className="w-px h-6 sm:h-8 bg-border" />
               <div className="text-center">
-                <div className="text-xl sm:text-2xl font-bold text-success font-mono">{executedCount}</div>
-                <div className="text-[10px] text-muted-foreground font-mono uppercase">{t('proposals.executed')}</div>
+                <div className="stat-number status-success">{executedCount}</div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground font-mono uppercase mt-1">{t('proposals.executed')}</div>
               </div>
             </div>
             <div className="text-xs text-muted-foreground font-mono">
@@ -218,9 +220,11 @@ export default function ProposalsPage() {
                   )}
 
                   {submitError && (
-                    <div className="p-2 bg-destructive/20 border border-destructive/30 text-destructive font-mono text-xs" style={{ borderRadius: '2px' }}>
-                      {(submitError as Error).message?.slice(0, 200) || t('common.txFailed')}
-                    </div>
+                    <ErrorAlert
+                      message={(submitError as Error).message?.slice(0, 200) || t('common.txFailed')}
+                      variant="error"
+                      className="mt-2"
+                    />
                   )}
 
                   <div className="flex gap-2 pt-2">
@@ -256,9 +260,10 @@ export default function ProposalsPage() {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="control-panel text-center py-12">
-            <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin text-primary" />
-            <div className="font-mono uppercase text-sm text-muted-foreground">{t('proposals.loadingProposals')}</div>
+          <div className="space-y-2">
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
           </div>
         )}
 
@@ -404,14 +409,18 @@ export default function ProposalsPage() {
                           </div>
                         )}
                         {isActionTarget && confirmError && activeAction?.type === 'confirm' && (
-                          <div className="mt-2 p-2 bg-destructive/20 border border-destructive/30 text-destructive font-mono text-xs" style={{ borderRadius: '2px' }}>
-                            {(confirmError as Error).message?.slice(0, 150) || t('proposals.confirmFailed')}
-                          </div>
+                          <ErrorAlert
+                            message={(confirmError as Error).message?.slice(0, 150) || t('proposals.confirmFailed')}
+                            variant="error"
+                            className="mt-2"
+                          />
                         )}
                         {isActionTarget && executeError && activeAction?.type === 'execute' && (
-                          <div className="mt-2 p-2 bg-destructive/20 border border-destructive/30 text-destructive font-mono text-xs" style={{ borderRadius: '2px' }}>
-                            {(executeError as Error).message?.slice(0, 150) || t('proposals.executeFailed')}
-                          </div>
+                          <ErrorAlert
+                            message={(executeError as Error).message?.slice(0, 150) || t('proposals.executeFailed')}
+                            variant="error"
+                            className="mt-2"
+                          />
                         )}
                       </div>
                     </div>

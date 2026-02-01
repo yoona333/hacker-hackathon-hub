@@ -101,6 +101,13 @@ const translations = {
     'aiChat.thinking': 'Thinking',
     'aiChat.confirmPayment': 'Confirm & Execute On-chain',
     'aiChat.paymentPending': 'Review the details above and click Confirm to execute.',
+    'aiChat.dryRunMode': 'Dry-run mode: Payment parsed and assessed, but not executed on-chain.',
+    'aiChat.autoExecuted': 'Auto-executed',
+    'aiChat.settings': 'Settings',
+    'aiChat.dryRunLabel': 'Dry-run mode (parse only, no on-chain execution)',
+    'aiChat.autoExecuteLabel': 'Auto-execute (low risk payments execute automatically)',
+    'aiChat.paymentMode': 'Payment Mode',
+    'aiChat.transactionEvidence': 'Transaction Evidence',
 
     // Dashboard
     'dash.title': 'Dashboard',
@@ -329,6 +336,13 @@ const translations = {
     'aiChat.thinking': '思考中',
     'aiChat.confirmPayment': '确认并上链执行',
     'aiChat.paymentPending': '请查看以上详情，点击确认执行支付。',
+    'aiChat.dryRunMode': '🔍 Dry-run 模式：已解析和评估，但未上链执行。',
+    'aiChat.autoExecuted': '✅ 已自动执行',
+    'aiChat.settings': '设置',
+    'aiChat.dryRunLabel': 'Dry-run 模式（仅解析，不上链执行）',
+    'aiChat.autoExecuteLabel': '自动执行（低风险支付自动上链）',
+    'aiChat.paymentMode': '支付模式',
+    'aiChat.transactionEvidence': '交易证据',
 
     // Dashboard
     'dash.title': '控制台',

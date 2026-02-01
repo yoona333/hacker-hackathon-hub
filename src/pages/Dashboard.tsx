@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -12,6 +12,7 @@ import { NeonButton } from '@/components/ui/neon-button';
 import { AddressDisplay } from '@/components/ui/address-display';
 import { ThresholdProgress } from '@/components/ui/neon-progress';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { Skeleton, SkeletonCard, SkeletonText } from '@/components/ui/skeleton';
 import { useWallet, useMultiSigOwners, useProposals, useIsMultiSigOwner } from '@/lib/web3/hooks';
 import { CONTRACTS, getExplorerUrl, kiteTestnet, shortenAddress } from '@/lib/web3/config';
 import { useLanguage } from '@/lib/i18n';
@@ -43,7 +44,7 @@ export default function Dashboard() {
       .catch(() => setPolicy(null));
   }, []);
 
-  const pendingCount = proposals.filter(p => !p.executed).length;
+  const pendingCount = useMemo(() => proposals.filter(p => !p.executed).length, [proposals]);
 
   if (!isConnected) {
     return (
@@ -91,7 +92,7 @@ export default function Dashboard() {
         </>
       }
     >
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {/* Network Warning */}
         {!isCorrectNetwork && (
           <motion.div
@@ -114,7 +115,7 @@ export default function Dashboard() {
         )}
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-3 sm:gap-4">
 
           {/* Left Column */}
           <div className="space-y-4">
@@ -153,9 +154,7 @@ export default function Dashboard() {
                 <div>
                   <div className="data-label mb-2">{t('dash.owners')}</div>
                   {ownersLoading ? (
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
-                      <Loader2 className="w-3 h-3 animate-spin" /> {t('dash.loading')}
-                    </div>
+                    <SkeletonText lines={3} className="space-y-2" />
                   ) : owners ? (
                     <div className="tree-list">
                       {owners.map((owner, index) => (
@@ -267,7 +266,7 @@ export default function Dashboard() {
                 <div className="inline-stat">
                   <span className="inline-stat-label">{t('dash.pending')}</span>
                   <span className="inline-stat-value">
-                    {proposalsLoading ? <Loader2 className="w-3 h-3 animate-spin inline" /> : pendingCount}
+                    {proposalsLoading ? <Skeleton className="h-5 w-8 inline-block" /> : pendingCount}
                   </span>
                 </div>
                 <div className="inline-stat">

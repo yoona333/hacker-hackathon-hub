@@ -13,7 +13,7 @@ import { ErrorAlert } from '@/components/ui/error-alert';
 import { StatCard } from '@/components/ui/stat-card';
 import {
   useWallet, useProposals, useIsMultiSigOwner, useSubmitProposal,
-  useConfirmTransaction, useExecuteTransaction,
+  useConfirmTransaction, useExecuteTransaction, useHasConfirmed,
 } from '@/lib/web3/hooks';
 import { shortenAddress, getExplorerUrl } from '@/lib/web3/config';
 import { cn } from '@/lib/utils';
@@ -21,6 +21,207 @@ import { useLanguage } from '@/lib/i18n';
 
 const REQUIRED = 2;
 const TOTAL_OWNERS = 3;
+
+// Proposal item component to use hooks inside map
+type Proposal = {
+  id: number;
+  to: string;
+  value: bigint;
+  data: string;
+  executed: boolean;
+  numConfirmations: number;
+  type: 'freeze' | 'unfreeze' | 'unknown';
+  targetAddress?: string;
+};
+
+type ProposalItemProps = {
+  proposal: Proposal;
+  index: number;
+  isOwner: boolean;
+  activeAction: { id: number; type: 'confirm' | 'execute' } | null;
+  confirmPending: boolean;
+  confirmConfirming: boolean;
+  executePending: boolean;
+  executeConfirming: boolean;
+  confirmSuccess: boolean;
+  confirmHash?: `0x${string}`;
+  executeSuccess: boolean;
+  executeHash?: `0x${string}`;
+  confirmError: Error | null;
+  executeError: Error | null;
+  onConfirm: (txId: number) => void;
+  onExecute: (txId: number) => void;
+};
+
+function ProposalItem({
+  proposal,
+  index,
+  isOwner,
+  activeAction,
+  confirmPending,
+  confirmConfirming,
+  executePending,
+  executeConfirming,
+  confirmSuccess,
+  confirmHash,
+  executeSuccess,
+  executeHash,
+  confirmError,
+  executeError,
+  onConfirm,
+  onExecute,
+}: ProposalItemProps) {
+  const { t } = useLanguage();
+  const { confirmed: hasConfirmed } = useHasConfirmed(proposal.id);
+  
+  const isActionTarget = activeAction?.id === proposal.id;
+  const isConfirmingThis = isActionTarget && activeAction?.type === 'confirm' && (confirmPending || confirmConfirming);
+  const isExecutingThis = isActionTarget && activeAction?.type === 'execute' && (executePending || executeConfirming);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+      whileHover={{ scale: 1.01, y: -2 }}
+      className="control-panel cursor-pointer"
+    >
+      <div className="flex items-start gap-3 sm:gap-4">
+        {/* ID Badge - Enhanced */}
+        <motion.div
+          whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+          transition={{ duration: 0.3 }}
+          className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg gradient-amber flex items-center justify-center text-xs sm:text-sm font-bold font-mono text-background flex-shrink-0 shadow-glow-primary"
+        >
+          #{proposal.id}
+        </motion.div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            {proposal.type !== 'unknown' && (
+              <TypeBadge type={proposal.type} />
+            )}
+            {proposal.executed ? (
+              <StatusBadge status="success">{t('proposals.executedStatus')}</StatusBadge>
+            ) : (
+              <StatusBadge status="pending" pulse>{t('proposals.pendingStatus')}</StatusBadge>
+            )}
+            {proposal.type === 'unknown' && (
+              <span className="text-[10px] text-muted-foreground font-mono">{t('proposals.customTx')}</span>
+            )}
+          </div>
+
+          {proposal.targetAddress && (
+            <div className="data-row py-1 border-0">
+              <span className="data-label">{t('proposals.target')}</span>
+              <motion.a
+                href={getExplorerUrl('address', proposal.targetAddress)}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.05 }}
+                className="font-mono text-xs text-primary hover:underline inline-flex items-center gap-1 transition-colors"
+              >
+                {shortenAddress(proposal.targetAddress)}
+                <ExternalLink className="w-3 h-3" />
+              </motion.a>
+            </div>
+          )}
+
+          {proposal.type === 'unknown' && (
+            <div className="data-row py-1 border-0">
+              <span className="data-label">{t('proposals.to')}</span>
+              <span className="font-mono text-xs text-primary">{shortenAddress(proposal.to)}</span>
+            </div>
+          )}
+
+          <ThresholdProgress
+            current={proposal.numConfirmations}
+            threshold={REQUIRED}
+            total={TOTAL_OWNERS}
+            className="mt-2"
+          />
+
+          {!proposal.executed && isOwner && (
+            <div className="flex flex-col sm:flex-row gap-2 mt-3">
+              <NeonButton
+                variant="secondary"
+                size="sm"
+                className="flex-1"
+                disabled={proposal.numConfirmations >= REQUIRED || isConfirmingThis || hasConfirmed}
+                onClick={() => onConfirm(proposal.id)}
+              >
+                {isConfirmingThis ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : hasConfirmed ? (
+                  <CheckCircle className="w-3 h-3" />
+                ) : (
+                  <Check className="w-3 h-3" />
+                )}
+                {hasConfirmed ? t('proposals.confirmed') : t('proposals.confirm')}
+              </NeonButton>
+              <NeonButton
+                variant="success"
+                size="sm"
+                className="flex-1"
+                disabled={proposal.numConfirmations < REQUIRED || isExecutingThis}
+                onClick={() => onExecute(proposal.id)}
+              >
+                {isExecutingThis ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <Play className="w-3 h-3" />
+                )}
+                {t('proposals.execute')}
+              </NeonButton>
+            </div>
+          )}
+
+          {proposal.executed && (
+            <div className="mt-2 flex items-center gap-1 text-success font-mono text-[10px] uppercase">
+              <CheckCircle className="w-3 h-3" />
+              {t('proposals.executedOnChain')}
+            </div>
+          )}
+
+          {/* Show tx hash for confirm/execute if this proposal was just acted on */}
+          {isActionTarget && confirmSuccess && confirmHash && activeAction?.type === 'confirm' && (
+            <div className="mt-2 p-2 bg-success/20 border border-success/30 text-success font-mono text-xs flex items-center gap-2" style={{ borderRadius: '2px' }}>
+              <CheckCircle className="w-3 h-3" />
+              {t('proposals.confirmed')}{' '}
+              <a href={getExplorerUrl('tx', confirmHash)} target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">
+                {t('proposals.tx')} <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          )}
+          {isActionTarget && executeSuccess && executeHash && activeAction?.type === 'execute' && (
+            <div className="mt-2 p-2 bg-success/20 border border-success/30 text-success font-mono text-xs flex items-center gap-2" style={{ borderRadius: '2px' }}>
+              <CheckCircle className="w-3 h-3" />
+              {t('proposals.executedDone')}{' '}
+              <a href={getExplorerUrl('tx', executeHash)} target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">
+                {t('proposals.tx')} <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          )}
+          {isActionTarget && confirmError && activeAction?.type === 'confirm' && (
+            <ErrorAlert
+              message={(confirmError as Error).message?.slice(0, 150) || t('proposals.confirmFailed')}
+              variant="error"
+              className="mt-2"
+            />
+          )}
+          {isActionTarget && executeError && activeAction?.type === 'execute' && (
+            <ErrorAlert
+              message={(executeError as Error).message?.slice(0, 150) || t('proposals.executeFailed')}
+              variant="error"
+              className="mt-2"
+            />
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function ProposalsPage() {
   const { isConnected } = useWallet();
@@ -305,154 +506,27 @@ export default function ProposalsPage() {
                 )}
               </div>
             ) : (
-              proposals.map((proposal, index) => {
-                const isActionTarget = activeAction?.id === proposal.id;
-                const isConfirmingThis = isActionTarget && activeAction?.type === 'confirm' && (confirmPending || confirmConfirming);
-                const isExecutingThis = isActionTarget && activeAction?.type === 'execute' && (executePending || executeConfirming);
-
-                return (
-                  <motion.div
-                    key={proposal.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    whileHover={{ scale: 1.01, y: -2 }}
-                    className="control-panel cursor-pointer"
-                  >
-                    <div className="flex items-start gap-3 sm:gap-4">
-                      {/* ID Badge - Enhanced */}
-                      <motion.div
-                        whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
-                        transition={{ duration: 0.3 }}
-                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg gradient-amber flex items-center justify-center text-xs sm:text-sm font-bold font-mono text-background flex-shrink-0 shadow-glow-primary"
-                      >
-                        #{proposal.id}
-                      </motion.div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2 flex-wrap">
-                          {proposal.type !== 'unknown' && (
-                            <TypeBadge type={proposal.type} />
-                          )}
-                          {proposal.executed ? (
-                            <StatusBadge status="success">{t('proposals.executedStatus')}</StatusBadge>
-                          ) : (
-                            <StatusBadge status="pending" pulse>{t('proposals.pendingStatus')}</StatusBadge>
-                          )}
-                          {proposal.type === 'unknown' && (
-                            <span className="text-[10px] text-muted-foreground font-mono">{t('proposals.customTx')}</span>
-                          )}
-                        </div>
-
-                        {proposal.targetAddress && (
-                          <div className="data-row py-1 border-0">
-                            <span className="data-label">{t('proposals.target')}</span>
-                            <motion.a
-                              href={getExplorerUrl('address', proposal.targetAddress)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              whileHover={{ scale: 1.05 }}
-                              className="font-mono text-xs text-primary hover:underline inline-flex items-center gap-1 transition-colors"
-                            >
-                              {shortenAddress(proposal.targetAddress)}
-                              <ExternalLink className="w-3 h-3" />
-                            </motion.a>
-                          </div>
-                        )}
-
-                        {proposal.type === 'unknown' && (
-                          <div className="data-row py-1 border-0">
-                            <span className="data-label">{t('proposals.to')}</span>
-                            <span className="font-mono text-xs text-primary">{shortenAddress(proposal.to)}</span>
-                          </div>
-                        )}
-
-                        <ThresholdProgress
-                          current={proposal.numConfirmations}
-                          threshold={REQUIRED}
-                          total={TOTAL_OWNERS}
-                          className="mt-2"
-                        />
-
-                        {!proposal.executed && isOwner && (
-                          <div className="flex flex-col sm:flex-row gap-2 mt-3">
-                            <NeonButton
-                              variant="secondary"
-                              size="sm"
-                              className="flex-1"
-                              disabled={proposal.numConfirmations >= REQUIRED || isConfirmingThis}
-                              onClick={() => handleConfirm(proposal.id)}
-                            >
-                              {isConfirmingThis ? (
-                                <Loader2 className="w-3 h-3 animate-spin" />
-                              ) : (
-                                <Check className="w-3 h-3" />
-                              )}
-                              {t('proposals.confirm')}
-                            </NeonButton>
-                            <NeonButton
-                              variant="success"
-                              size="sm"
-                              className="flex-1"
-                              disabled={proposal.numConfirmations < REQUIRED || isExecutingThis}
-                              onClick={() => handleExecute(proposal.id)}
-                            >
-                              {isExecutingThis ? (
-                                <Loader2 className="w-3 h-3 animate-spin" />
-                              ) : (
-                                <Play className="w-3 h-3" />
-                              )}
-                              {t('proposals.execute')}
-                            </NeonButton>
-                          </div>
-                        )}
-
-                        {proposal.executed && (
-                          <div className="mt-2 flex items-center gap-1 text-success font-mono text-[10px] uppercase">
-                            <CheckCircle className="w-3 h-3" />
-                            {t('proposals.executedOnChain')}
-                          </div>
-                        )}
-
-                        {/* Show tx hash for confirm/execute if this proposal was just acted on */}
-                        {isActionTarget && confirmSuccess && confirmHash && activeAction?.type === 'confirm' && (
-                          <div className="mt-2 p-2 bg-success/20 border border-success/30 text-success font-mono text-xs flex items-center gap-2" style={{ borderRadius: '2px' }}>
-                            <CheckCircle className="w-3 h-3" />
-                            {t('proposals.confirmed')}{' '}
-                            <a href={getExplorerUrl('tx', confirmHash)} target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">
-                              {t('proposals.tx')} <ExternalLink className="w-3 h-3" />
-                            </a>
-                          </div>
-                        )}
-                        {isActionTarget && executeSuccess && executeHash && activeAction?.type === 'execute' && (
-                          <div className="mt-2 p-2 bg-success/20 border border-success/30 text-success font-mono text-xs flex items-center gap-2" style={{ borderRadius: '2px' }}>
-                            <CheckCircle className="w-3 h-3" />
-                            {t('proposals.executedDone')}{' '}
-                            <a href={getExplorerUrl('tx', executeHash)} target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">
-                              {t('proposals.tx')} <ExternalLink className="w-3 h-3" />
-                            </a>
-                          </div>
-                        )}
-                        {isActionTarget && confirmError && activeAction?.type === 'confirm' && (
-                          <ErrorAlert
-                            message={(confirmError as Error).message?.slice(0, 150) || t('proposals.confirmFailed')}
-                            variant="error"
-                            className="mt-2"
-                          />
-                        )}
-                        {isActionTarget && executeError && activeAction?.type === 'execute' && (
-                          <ErrorAlert
-                            message={(executeError as Error).message?.slice(0, 150) || t('proposals.executeFailed')}
-                            variant="error"
-                            className="mt-2"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })
+              proposals.map((proposal, index) => (
+                <ProposalItem
+                  key={proposal.id}
+                  proposal={proposal}
+                  index={index}
+                  isOwner={isOwner}
+                  activeAction={activeAction}
+                  confirmPending={confirmPending}
+                  confirmConfirming={confirmConfirming}
+                  executePending={executePending}
+                  executeConfirming={executeConfirming}
+                  confirmSuccess={confirmSuccess}
+                  confirmHash={confirmHash}
+                  executeSuccess={executeSuccess}
+                  executeHash={executeHash}
+                  confirmError={confirmError}
+                  executeError={executeError}
+                  onConfirm={handleConfirm}
+                  onExecute={handleExecute}
+                />
+              ))
             )}
           </div>
         )}

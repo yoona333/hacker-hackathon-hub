@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback, memo } from 'react';
+import { motion } from 'framer-motion';
 import { MessageCircle, Send, Sparkles, Terminal, Shield, CheckCircle2, XCircle, ExternalLink, Settings } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { ErrorAlert } from '@/components/ui/error-alert';
@@ -203,14 +204,16 @@ const AssistantBlock = memo(function AssistantBlock({ data, t, onConfirm, loadin
       {data.pendingConfirmation && data.pendingPayment && onConfirm && !data.autoExecuted && (
         <div className="mt-2 space-y-1">
           <p className="text-xs text-muted-foreground">{t('aiChat.paymentPending')}</p>
-          <button
+          <motion.button
             onClick={() => onConfirm(data.pendingPayment!)}
             disabled={loading}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded border border-green-500 bg-green-500/10 text-green-500 font-mono text-sm hover:bg-green-500/20 disabled:opacity-50 disabled:pointer-events-none"
+            whileHover={!loading ? { scale: 1.05, backgroundColor: 'hsl(var(--success) / 0.2)' } : {}}
+            whileTap={!loading ? { scale: 0.95 } : {}}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded border border-green-500 bg-green-500/10 text-green-500 font-mono text-sm transition-all disabled:opacity-50 disabled:pointer-events-none"
           >
             <CheckCircle2 className="w-4 h-4" />
             {t('aiChat.confirmPayment')}
-          </button>
+          </motion.button>
         </div>
       )}
 
@@ -345,97 +348,137 @@ export default function AIChatPage() {
 
           {messages.map(msg =>
             msg.role === 'user' ? (
-              <div key={msg.id} className="flex justify-end">
-                <div className="max-w-[85%] rounded-lg px-4 py-2 bg-primary/20 border border-primary/40 text-foreground font-mono text-sm">
+              <motion.div
+                key={msg.id}
+                initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                className="flex justify-end"
+              >
+                <div className="max-w-[85%] rounded-lg px-4 py-2.5 bg-primary/20 border border-primary/40 text-foreground font-mono text-sm shadow-glow-primary">
                   {msg.text}
                 </div>
-              </div>
+              </motion.div>
             ) : (
-              <div key={msg.id} className="flex justify-start">
-                <div className="max-w-[95%] rounded-lg px-4 py-3 bg-card border border-border text-foreground">
+              <motion.div
+                key={msg.id}
+                initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                className="flex justify-start"
+              >
+                <div className="max-w-[95%] rounded-lg px-4 py-3 bg-card border border-border/50 text-foreground shadow-card">
                   <AssistantBlock data={msg.data} t={t} onConfirm={confirmPayment} loading={loading} />
                 </div>
-              </div>
+              </motion.div>
             )
           )}
 
           {loading && (
-            <div className="flex justify-start">
-              <div className="rounded-lg px-4 py-3 bg-card border border-primary/30 text-muted-foreground text-sm flex items-center gap-2">
-                <span className="inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                {t('aiChat.thinking')}...
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-start"
+            >
+              <div className="rounded-lg px-4 py-3 bg-card border border-primary/30 text-muted-foreground text-sm flex items-center gap-3 shadow-glow-primary">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full"
+                />
+                <span className="font-mono">{t('aiChat.thinking')}...</span>
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
 
         {/* Bottom bar: Settings + Input */}
         <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 sticky bottom-0 bg-background/95 backdrop-blur-sm py-2 border-t border-border/50 items-end">
-          {/* Settings Panel */}
+          {/* Settings Panel - Enhanced */}
           <aside className="w-full lg:w-64 flex-shrink-0 order-2 lg:order-1">
-            <div className="p-2.5 sm:p-3 rounded border border-border bg-card font-mono text-xs sm:text-sm">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.01 }}
+              className="p-3 rounded-lg border border-border/50 bg-card shadow-card font-mono text-xs sm:text-sm"
+            >
               <div className="flex items-center justify-between mb-2">
                 <span className="font-semibold text-primary text-xs">{t('aiChat.settings')}</span>
-                <button
+                <motion.button
                   onClick={() => setShowSettings(!showSettings)}
-                  className="text-muted-foreground hover:text-foreground"
+                  whileHover={{ scale: 1.1, color: 'hsl(var(--foreground))' }}
+                  whileTap={{ scale: 0.9 }}
+                  className="text-muted-foreground transition-colors"
                   title={showSettings ? 'Hide settings' : 'Show settings'}
                 >
                   <Settings className="w-3 h-3" />
-                </button>
+                </motion.button>
               </div>
               {showSettings && (
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 cursor-pointer">
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-3 pt-2 border-t border-border/50"
+                >
+                  <motion.label
+                    whileHover={{ x: 4 }}
+                    className="flex items-center gap-2 cursor-pointer p-2 rounded border border-border/50 bg-muted/20 transition-all"
+                  >
                     <input
                       type="checkbox"
                       checked={dryRun}
                       onChange={(e) => setDryRun(e.target.checked)}
-                      className="accent-primary"
+                      className="accent-primary w-4 h-4"
                     />
                     <span className="text-xs">{t('aiChat.dryRunLabel')}</span>
-                  </label>
+                  </motion.label>
                   {!dryRun && (
                     <>
-                      <label className="flex items-center gap-2 cursor-pointer">
+                      <motion.label
+                        whileHover={{ x: 4 }}
+                        className="flex items-center gap-2 cursor-pointer p-2 rounded border border-border/50 bg-muted/20 transition-all"
+                      >
                         <input
                           type="checkbox"
                           checked={autoExecute}
                           onChange={(e) => setAutoExecute(e.target.checked)}
-                          className="accent-primary"
+                          className="accent-primary w-4 h-4"
                         />
                         <span className="text-xs">{t('aiChat.autoExecuteLabel')}</span>
-                      </label>
+                      </motion.label>
                       <div>
-                        <span className="text-muted-foreground text-xs mb-1 block">{t('aiChat.paymentMode')}:</span>
-                        <div className="flex gap-2">
-                          <button
+                        <span className="text-muted-foreground text-xs mb-2 block">{t('aiChat.paymentMode')}:</span>
+                        <div className="grid grid-cols-2 gap-2">
+                          <motion.button
                             onClick={() => setPaymentMode('eoa')}
-                            className={`px-2 py-1 rounded border text-xs transition-all ${
+                            whileHover={{ scale: 1.05, y: -2 }}
+                            whileTap={{ scale: 0.95 }}
+                            className={`px-3 py-2 rounded-lg border-2 text-xs font-mono font-bold transition-all ${
                               paymentMode === 'eoa'
-                                ? 'border-primary bg-primary/10 text-primary'
-                                : 'border-border hover:border-muted-foreground'
+                                ? 'border-primary bg-primary/10 text-primary shadow-glow-primary'
+                                : 'border-border hover:border-primary/50 hover:bg-primary/5'
                             }`}
                           >
                             EOA
-                          </button>
-                          <button
+                          </motion.button>
+                          <motion.button
                             onClick={() => setPaymentMode('aa')}
-                            className={`px-2 py-1 rounded border text-xs transition-all ${
+                            whileHover={{ scale: 1.05, y: -2 }}
+                            whileTap={{ scale: 0.95 }}
+                            className={`px-3 py-2 rounded-lg border-2 text-xs font-mono font-bold transition-all ${
                               paymentMode === 'aa'
-                                ? 'border-primary bg-primary/10 text-primary'
-                                : 'border-border hover:border-muted-foreground'
+                                ? 'border-primary bg-primary/10 text-primary shadow-glow-primary'
+                                : 'border-border hover:border-primary/50 hover:bg-primary/5'
                             }`}
                           >
                             AA
-                          </button>
+                          </motion.button>
                         </div>
                       </div>
                     </>
                   )}
-                </div>
+                </motion.div>
               )}
-            </div>
+            </motion.div>
           </aside>
 
           {/* Input area */}
@@ -449,14 +492,16 @@ export default function AIChatPage() {
               disabled={loading}
               rows={1}
             />
-            <button
+            <motion.button
               type="submit"
               disabled={loading || !input.trim()}
-              className="self-end inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded border border-primary bg-primary/10 text-primary font-mono text-sm hover:bg-primary/20 disabled:opacity-50 disabled:pointer-events-none touch-target min-w-[44px]"
+              whileHover={!loading && input.trim() ? { scale: 1.05, backgroundColor: 'hsl(var(--primary) / 0.2)' } : {}}
+              whileTap={!loading && input.trim() ? { scale: 0.95 } : {}}
+              className="self-end inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded border border-primary bg-primary/10 text-primary font-mono text-sm transition-all disabled:opacity-50 disabled:pointer-events-none touch-target min-w-[44px]"
             >
               <Send className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">{t('aiChat.send')}</span>
-            </button>
+            </motion.button>
           </form>
         </div>
       </main>

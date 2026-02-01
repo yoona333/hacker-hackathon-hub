@@ -37,13 +37,21 @@
     --accent: 158 64% 52%;
     --accent-foreground: 0 0% 5%;
 
-    /* Blood red for destructive/freeze */
-    --destructive: 0 72% 51%;
+    /* Blood red for destructive/freeze - 降低饱和度 */
+    --destructive: 0 55% 48%;
     --destructive-foreground: 0 0% 100%;
 
     /* Emerald green for success/unfreeze */
     --success: 158 64% 42%;
     --success-foreground: 0 0% 100%;
+
+    /* Warning orange */
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 5%;
+
+    /* Info blue */
+    --info: 200 90% 50%;
+    --info-foreground: 0 0% 100%;
 
     /* Titanium borders */
     --border: 240 4% 20%;
@@ -65,7 +73,7 @@
     /* Terminal palette */
     --terminal-amber: 38 92% 50%;
     --terminal-emerald: 158 64% 52%;
-    --terminal-red: 0 72% 51%;
+    --terminal-red: 0 55% 48%;
     --terminal-steel: 240 4% 35%;
     --terminal-dark: 240 6% 4%;
 
@@ -94,6 +102,68 @@
     --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
     --shadow-glow-amber: 0 0 20px hsl(38 92% 50% / 0.3);
     --shadow-glow-emerald: 0 0 20px hsl(158 64% 52% / 0.3);
+    --shadow-glow-red: 0 0 20px hsl(0 55% 48% / 0.25);
+    
+    /* Enhanced shadow system - 多层阴影增加深度 */
+    --shadow-card: 
+      0 4px 6px rgba(0, 0, 0, 0.3),
+      0 10px 20px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    
+    --shadow-card-hover: 
+      0 8px 12px rgba(0, 0, 0, 0.4),
+      0 20px 40px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 30px hsl(38 92% 50% / 0.2);
+    
+    /* Enhanced glow effects */
+    --shadow-glow-primary: 
+      0 0 20px hsl(38 92% 50% / 0.3),
+      0 0 40px hsl(38 92% 50% / 0.2),
+      0 0 60px hsl(38 92% 50% / 0.1);
+    
+    --shadow-glow-accent: 
+      0 0 20px hsl(158 64% 52% / 0.3),
+      0 0 40px hsl(158 64% 52% / 0.2);
+    
+    /* Color gradients - 增加视觉层次 */
+    --primary-gradient: linear-gradient(135deg, 
+      hsl(38 92% 50%) 0%, 
+      hsl(38 92% 60%) 50%, 
+      hsl(38 92% 45%) 100%);
+    
+    --accent-gradient: linear-gradient(135deg, 
+      hsl(158 64% 52%) 0%, 
+      hsl(158 64% 62%) 50%, 
+      hsl(158 64% 42%) 100%);
+    
+    /* Background gradients - 增加深度 */
+    --background-gradient: radial-gradient(
+      ellipse at top,
+      hsl(240 6% 8%) 0%,
+      hsl(240 6% 4%) 100%
+    );
+    
+    --card-gradient: linear-gradient(
+      135deg,
+      hsl(var(--card)) 0%,
+      hsl(240 6% 11%) 50%,
+      hsl(var(--card)) 100%
+    );
+    
+    /* Color variations - 中间色调 */
+    --primary-light: 38 92% 65%;
+    --primary-dark: 38 92% 35%;
+    --accent-light: 158 64% 65%;
+    --accent-dark: 158 64% 35%;
+    
+    /* Info color - 辅助色 */
+    --info: 210 70% 55%;
+    --info-foreground: 0 0% 100%;
+    
+    /* Warning color - 警告色 */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 5%;
   }
 
   /* No light mode - terminal is always dark */
@@ -112,7 +182,7 @@
     --muted-foreground: 240 5% 55%;
     --accent: 158 64% 52%;
     --accent-foreground: 0 0% 5%;
-    --destructive: 0 72% 51%;
+    --destructive: 0 55% 48%;
     --destructive-foreground: 0 0% 100%;
     --success: 158 64% 42%;
     --success-foreground: 0 0% 100%;
@@ -129,7 +199,7 @@
     --sidebar-ring: 38 92% 50%;
     --terminal-amber: 38 92% 50%;
     --terminal-emerald: 158 64% 52%;
-    --terminal-red: 0 72% 51%;
+    --terminal-red: 0 55% 48%;
     --terminal-steel: 240 4% 35%;
     --terminal-dark: 240 6% 4%;
   }
@@ -142,7 +212,16 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    background: hsl(var(--terminal-dark));
+    /* 使用渐变背景增加深度 */
+    background: 
+      radial-gradient(circle at 20% 50%, hsl(240 6% 8%) 0%, transparent 50%),
+      radial-gradient(circle at 80% 50%, hsl(38 92% 10% / 0.1) 0%, transparent 50%),
+      hsl(var(--terminal-dark));
+    /* 添加微妙的网格纹理 */
+    background-image: 
+      linear-gradient(hsl(var(--border) / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
     min-height: 100vh;
     font-family: 'IBM Plex Sans', system-ui, sans-serif;
     line-height: var(--line-height-base);
@@ -170,27 +249,33 @@
 }
 
 @layer components {
-  /* Terminal card with scan line - optimized spacing */
+  /* Terminal card with scan line - optimized spacing + enhanced visuals */
   .terminal-card {
     @apply relative overflow-hidden;
-    background: linear-gradient(
-      135deg,
-      hsl(var(--card)) 0%,
-      hsl(var(--terminal-dark)) 100%
-    );
+    background: var(--card-gradient);
     border: 1px solid hsl(var(--terminal-amber) / 0.2);
     border-radius: var(--card-radius);
     padding: var(--card-padding);
-    box-shadow: 
-      inset 0 1px 0 hsl(0 0% 100% / 0.02),
-      var(--shadow-md);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    box-shadow: var(--shadow-card);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+  
+  /* 添加噪点纹理 */
+  .terminal-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.3;
+    border-radius: var(--card-radius);
   }
 
   .terminal-card:hover {
-    box-shadow: 
-      inset 0 1px 0 hsl(0 0% 100% / 0.02),
-      var(--shadow-lg);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-4px) scale(1.01);
+    border-color: hsl(var(--terminal-amber) / 0.5);
   }
 
   .terminal-card::before {
@@ -213,14 +298,19 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      hsl(0 0% 0% / 0.03) 2px,
-      hsl(0 0% 0% / 0.03) 4px
-    );
+    /* 扫描线纹理 + 噪点纹理 */
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        hsl(0 0% 0% / 0.03) 2px,
+        hsl(0 0% 0% / 0.03) 4px
+      ),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
     pointer-events: none;
+    opacity: 0.3;
+    border-radius: var(--card-radius);
   }
 
   /* Glass card legacy - using unified spacing */
@@ -229,7 +319,7 @@
     padding: var(--card-padding);
   }
 
-  /* Cyber button with clip-path - optimized for touch targets */
+  /* Cyber button with clip-path - optimized for touch targets + enhanced micro-interactions */
   .cyber-button {
     @apply relative font-bold uppercase tracking-wider transition-all duration-200;
     clip-path: polygon(
@@ -240,7 +330,7 @@
       8px 100%,
       0 calc(100% - 8px)
     );
-    background: linear-gradient(135deg, hsl(var(--terminal-amber)) 0%, hsl(38 92% 40%) 100%);
+    background: var(--primary-gradient);
     color: hsl(0 0% 5%);
     padding: 12px 24px;
     min-height: 44px; /* Minimum touch target for accessibility */
@@ -248,16 +338,62 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  /* 悬停时的光效扫过 */
+  .cyber-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s ease;
+    z-index: 1;
+  }
+  
+  .cyber-button:hover:not(:disabled)::before {
+    left: 100%;
+  }
+  
+  /* 点击时的波纹效果 */
+  .cyber-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;
+    opacity: 0;
+    z-index: 0;
+  }
+  
+  .cyber-button:active:not(:disabled)::after {
+    width: 300px;
+    height: 300px;
+    opacity: 1;
   }
 
   .cyber-button:hover:not(:disabled) {
-    filter: brightness(1.1);
-    box-shadow: var(--shadow-glow-amber);
-    transform: translateY(-1px);
+    filter: brightness(1.15);
+    box-shadow: var(--shadow-glow-primary);
+    transform: translateY(-2px) scale(1.02);
   }
 
   .cyber-button:active:not(:disabled) {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
     box-shadow: var(--shadow-md);
   }
 
@@ -280,7 +416,7 @@
   }
 
   .cyber-button-danger {
-    background: linear-gradient(135deg, hsl(var(--destructive)) 0%, hsl(0 72% 40%) 100%);
+    background: linear-gradient(135deg, hsl(var(--destructive)) 0%, hsl(0 55% 38%) 100%);
     color: hsl(var(--foreground));
   }
 
@@ -429,6 +565,28 @@
     color: hsl(var(--muted-foreground));
   }
 
+  /* Terminal input - 优化样式，避免红色边框 */
+  .terminal-input {
+    @apply bg-input border border-border px-3 py-2.5 text-foreground;
+    font-family: 'JetBrains Mono', monospace;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .terminal-input:focus {
+    @apply outline-none;
+    border-color: hsl(var(--primary) / 0.6);
+    box-shadow: 
+      0 0 10px hsl(var(--primary) / 0.2),
+      inset 0 0 3px hsl(var(--primary) / 0.1);
+  }
+
+  .terminal-input::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+
   /* Grid pattern overlay */
   .grid-overlay {
     background-image: 
@@ -526,10 +684,16 @@
     content: '└─';
   }
 
-  /* Inline stat row */
+  /* Inline stat row - with hover animation */
   .inline-stat {
     @apply flex justify-between items-center py-2 text-sm font-mono;
     border-bottom: 1px dotted hsl(var(--border) / 0.5);
+    transition: all 0.2s ease;
+  }
+  
+  .inline-stat:hover {
+    background-color: hsl(var(--primary) / 0.05);
+    border-color: hsl(var(--primary) / 0.3);
   }
 
   .inline-stat:last-child {
@@ -627,12 +791,17 @@
     background: linear-gradient(135deg, hsl(var(--terminal-amber)) 0%, hsl(38 92% 40%) 100%);
   }
 
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%);
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.4);
+  }
+
   .gradient-emerald {
     background: linear-gradient(135deg, hsl(var(--terminal-emerald)) 0%, hsl(158 64% 35%) 100%);
   }
 
   .gradient-danger {
-    background: linear-gradient(135deg, hsl(var(--destructive)) 0%, hsl(0 72% 40%) 100%);
+    background: linear-gradient(135deg, hsl(var(--destructive)) 0%, hsl(0 55% 38%) 100%);
   }
 
   .gradient-terminal {
@@ -662,7 +831,12 @@
   }
 
   .text-glow-red {
-    text-shadow: 0 0 20px hsl(var(--destructive) / 0.8);
+    text-shadow: 0 0 20px hsl(var(--destructive) / 0.5);
+  }
+
+  /* Shadow glow utilities */
+  .shadow-glow-red {
+    box-shadow: var(--shadow-glow-red);
   }
 
   /* Legacy text glow support */
@@ -782,9 +956,19 @@
     inset 0 0 10px hsl(var(--terminal-emerald) / 0.2);
 }
 
-/* Hexagon clip path for icons */
+/* Shape variations - Mix hexagon, circle, rounded square for visual diversity */
 .hex-clip {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Rounded square variant - for icons and decorative elements */
+.shape-rounded-square {
+  border-radius: 0.5rem;
+}
+
+/* Diamond variant - alternative decorative shape */
+.shape-diamond {
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
 
 /* Reown AppKit wallet modal: hide Fund wallet, Send, Activity; keep Disconnect only */

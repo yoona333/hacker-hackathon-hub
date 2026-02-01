@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileText, Plus, Check, Play,
-  CheckCircle, X, Loader2, ExternalLink, RefreshCw
+  CheckCircle, X, Loader2, ExternalLink, RefreshCw, AlertCircle
 } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { NeonButton } from '@/components/ui/neon-button';
@@ -10,6 +10,7 @@ import { ThresholdProgress } from '@/components/ui/neon-progress';
 import { StatusBadge, TypeBadge } from '@/components/ui/status-badge';
 import { SkeletonCard, SkeletonText } from '@/components/ui/skeleton';
 import { ErrorAlert } from '@/components/ui/error-alert';
+import { StatCard } from '@/components/ui/stat-card';
 import {
   useWallet, useProposals, useIsMultiSigOwner, useSubmitProposal,
   useConfirmTransaction, useExecuteTransaction,
@@ -104,33 +105,43 @@ export default function ProposalsPage() {
       }
     >
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
-        {/* Stats Row */}
+        {/* Stats Row - Enhanced with StatCards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="control-panel mb-4"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4"
         >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
-            <div className="flex items-center gap-3 sm:gap-4 md:gap-6 w-full sm:w-auto justify-between sm:justify-start">
-              <div className="text-center">
-                <div className="stat-number">{totalCount}</div>
-                <div className="text-[10px] sm:text-xs text-muted-foreground font-mono uppercase mt-1">{t('proposals.total')}</div>
-              </div>
-              <div className="w-px h-6 sm:h-8 bg-border" />
-              <div className="text-center">
-                <div className="stat-number status-warning">{pendingCount}</div>
-                <div className="text-[10px] sm:text-xs text-muted-foreground font-mono uppercase mt-1">{t('proposals.pending')}</div>
-              </div>
-              <div className="w-px h-6 sm:h-8 bg-border" />
-              <div className="text-center">
-                <div className="stat-number status-success">{executedCount}</div>
-                <div className="text-[10px] sm:text-xs text-muted-foreground font-mono uppercase mt-1">{t('proposals.executed')}</div>
-              </div>
-            </div>
-            <div className="text-xs text-muted-foreground font-mono">
-              {`Threshold: ${REQUIRED}/${TOTAL_OWNERS} | ${t('proposals.thresholdInfo')}`}
-            </div>
-          </div>
+          <StatCard
+            label={t('proposals.total')}
+            value={isLoading ? '...' : totalCount}
+            icon={<FileText className="w-4 h-4" />}
+            color="primary"
+          />
+          <StatCard
+            label={t('proposals.pending')}
+            value={isLoading ? '...' : pendingCount}
+            icon={<AlertCircle className="w-4 h-4" />}
+            color="warning"
+            pulse={pendingCount > 0}
+          />
+          <StatCard
+            label={t('proposals.executed')}
+            value={isLoading ? '...' : executedCount}
+            icon={<CheckCircle className="w-4 h-4" />}
+            color="success"
+          />
+        </motion.div>
+        
+        {/* Threshold Info */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="mb-4 text-center"
+        >
+          <span className="text-xs text-muted-foreground font-mono">
+            {`Threshold: ${REQUIRED}/${TOTAL_OWNERS} | ${t('proposals.thresholdInfo')}`}
+          </span>
         </motion.div>
 
         {/* New Proposal Modal */}
@@ -155,39 +166,48 @@ export default function ProposalsPage() {
                     <Plus className="w-4 h-4" />
                     {t('proposals.createProposal')}
                   </div>
-                  <button onClick={() => setShowNewProposal(false)} className="p-1 hover:bg-muted/50">
+                  <motion.button 
+                    onClick={() => setShowNewProposal(false)} 
+                    whileHover={{ scale: 1.1, backgroundColor: 'hsl(var(--muted) / 0.5)' }}
+                    whileTap={{ scale: 0.9 }}
+                    className="p-1 transition-colors"
+                  >
                     <X className="w-4 h-4" />
-                  </button>
+                  </motion.button>
                 </div>
 
                 <div className="space-y-4">
                   <div>
                     <div className="data-label mb-2">{t('proposals.type')}</div>
                     <div className="grid grid-cols-2 gap-2">
-                      <button
+                      <motion.button
                         onClick={() => setProposalType('freeze')}
+                        whileHover={{ scale: 1.02, borderColor: 'hsl(var(--destructive) / 0.5)' }}
+                        whileTap={{ scale: 0.98 }}
                         className={cn(
                           'p-3 border transition-all text-left',
                           proposalType === 'freeze'
                             ? 'border-destructive bg-destructive/10'
-                            : 'border-border hover:border-muted-foreground'
+                            : 'border-border hover:border-destructive/50 hover:bg-destructive/5'
                         )}
                         style={{ borderRadius: '2px' }}
                       >
                         <div className="font-bold text-destructive font-mono uppercase text-xs">{t('proposals.freeze')}</div>
-                      </button>
-                      <button
+                      </motion.button>
+                      <motion.button
                         onClick={() => setProposalType('unfreeze')}
+                        whileHover={{ scale: 1.02, borderColor: 'hsl(var(--success) / 0.5)' }}
+                        whileTap={{ scale: 0.98 }}
                         className={cn(
                           'p-3 border transition-all text-left',
                           proposalType === 'unfreeze'
                             ? 'border-success bg-success/10'
-                            : 'border-border hover:border-muted-foreground'
+                            : 'border-border hover:border-success/50 hover:bg-success/5'
                         )}
                         style={{ borderRadius: '2px' }}
                       >
                         <div className="font-bold text-success font-mono uppercase text-xs">{t('proposals.unfreeze')}</div>
-                      </button>
+                      </motion.button>
                     </div>
                   </div>
 
@@ -296,13 +316,18 @@ export default function ProposalsPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="control-panel"
+                    whileHover={{ scale: 1.01, y: -2 }}
+                    className="control-panel cursor-pointer"
                   >
                     <div className="flex items-start gap-3 sm:gap-4">
-                      {/* ID Badge */}
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 hex-clip gradient-amber flex items-center justify-center text-xs sm:text-sm font-bold font-mono text-background flex-shrink-0">
+                      {/* ID Badge - Enhanced */}
+                      <motion.div
+                        whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+                        transition={{ duration: 0.3 }}
+                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg gradient-amber flex items-center justify-center text-xs sm:text-sm font-bold font-mono text-background flex-shrink-0 shadow-glow-primary"
+                      >
                         #{proposal.id}
-                      </div>
+                      </motion.div>
 
                       {/* Content */}
                       <div className="flex-1 min-w-0">
@@ -323,15 +348,16 @@ export default function ProposalsPage() {
                         {proposal.targetAddress && (
                           <div className="data-row py-1 border-0">
                             <span className="data-label">{t('proposals.target')}</span>
-                            <a
+                            <motion.a
                               href={getExplorerUrl('address', proposal.targetAddress)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="font-mono text-xs text-primary hover:underline inline-flex items-center gap-1"
+                              whileHover={{ scale: 1.05 }}
+                              className="font-mono text-xs text-primary hover:underline inline-flex items-center gap-1 transition-colors"
                             >
                               {shortenAddress(proposal.targetAddress)}
                               <ExternalLink className="w-3 h-3" />
-                            </a>
+                            </motion.a>
                           </div>
                         )}
 

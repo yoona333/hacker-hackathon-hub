@@ -87,8 +87,9 @@ export function NetworkBadge({ connected = false, chainName = 'Kite Testnet' }: 
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      whileHover={{ scale: 1.05, borderColor: connected ? 'hsl(var(--success) / 0.5)' : undefined }}
       className={cn(
-        'flex items-center gap-2 px-3 py-1.5 text-xs font-mono font-medium border',
+        'flex items-center gap-2 px-3 py-1.5 text-xs font-mono font-medium border transition-all',
         connected 
           ? 'bg-success/10 text-success border-success/30' 
           : 'bg-muted text-muted-foreground border-border'

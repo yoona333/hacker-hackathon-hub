@@ -93,19 +93,21 @@ export default function HistoryPage() {
               </div>
               <div className="flex flex-wrap gap-2">
                 {filterButtons.map(({ value, label }) => (
-                  <button
+                  <motion.button
                     key={value}
                     onClick={() => setTypeFilter(value)}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
                     className={cn(
                       'px-3 py-1.5 text-xs font-mono font-medium transition-all uppercase tracking-wider',
                       typeFilter === value
                         ? 'gradient-amber text-background'
-                        : 'bg-muted text-muted-foreground hover:text-foreground border border-border'
+                        : 'bg-muted text-muted-foreground hover:text-foreground border border-border hover:border-primary/50'
                     )}
                     style={{ borderRadius: '2px' }}
                   >
                     {label}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -115,19 +117,21 @@ export default function HistoryPage() {
               </div>
               <div className="flex flex-wrap gap-2">
                 {statusButtons.map(({ value, label }) => (
-                  <button
+                  <motion.button
                     key={value}
                     onClick={() => setStatusFilter(value)}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
                     className={cn(
                       'px-3 py-1.5 text-xs font-mono font-medium transition-all uppercase tracking-wider',
                       statusFilter === value
                         ? 'gradient-emerald text-background'
-                        : 'bg-muted text-muted-foreground hover:text-foreground border border-border'
+                        : 'bg-muted text-muted-foreground hover:text-foreground border border-border hover:border-accent/50'
                     )}
                     style={{ borderRadius: '2px' }}
                   >
                     {label}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -157,75 +161,80 @@ export default function HistoryPage() {
                   </p>
                 </GlassCard>
               ) : (
-                filteredTransactions.map((tx, index) => (
-                  <motion.div
-                    key={`${tx.id}-${tx.target}`}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="relative flex items-start gap-4"
-                  >
-                    {/* Timeline Dot */}
-                    <div className={cn(
-                      'relative z-10 w-12 h-12 flex items-center justify-center border-2',
-                      tx.status === 'success' && 'bg-success/20 border-success',
-                      tx.status === 'pending' && 'bg-primary/20 border-primary',
-                      tx.status === 'failed' && 'bg-destructive/20 border-destructive',
-                    )} style={{ borderRadius: '2px' }}>
-                      <StatusIcon status={tx.status} />
-                    </div>
-
-                    {/* Transaction Card */}
-                    <GlassCard 
-                      className="flex-1"
-                      glow={tx.status === 'success' ? 'emerald' : tx.status === 'pending' ? 'amber' : 'red'}
+                <>
+                  {filteredTransactions.map((tx, index) => (
+                    <motion.div
+                      key={`${tx.id}-${tx.target}`}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="relative flex items-start gap-4"
                     >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <TypeBadge type={tx.type as 'freeze' | 'unfreeze' | 'confirm' | 'execute'} />
-                          <StatusBadge 
-                            status={tx.status as 'success' | 'pending' | 'failed'}
-                            pulse={tx.status === 'pending'}
-                          >
-                            {tx.status.toUpperCase()}
-                          </StatusBadge>
-                        </div>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
-                          <Clock className="w-3 h-3" />
-                          <span title={formatFullTime(tx.timestamp)}>
-                            {formatTime(tx.timestamp)}
-                          </span>
-                        </div>
+                      {/* Timeline Dot */}
+                      <div className={cn(
+                        'relative z-10 w-12 h-12 flex items-center justify-center border-2',
+                        tx.status === 'success' && 'bg-success/20 border-success',
+                        tx.status === 'pending' && 'bg-primary/20 border-primary',
+                        tx.status === 'failed' && 'bg-destructive/20 border-destructive',
+                      )} style={{ borderRadius: '2px' }}>
+                        <StatusIcon status={tx.status} />
                       </div>
 
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">{t('history.proposalId')}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="terminal-text font-mono text-sm">#{tx.id}</span>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              onClick={() => window.open(getExplorerUrl('address', CONTRACTS.MULTISIG), '_blank')}
-                              className="p-1 hover:bg-muted/50"
-                              style={{ borderRadius: '2px' }}
-                              title={t('history.viewOnExplorer')}
-                            >
-                              <ExternalLink className="w-4 h-4 text-muted-foreground" />
-                            </motion.button>
+                      {/* Transaction Card */}
+                      <motion.div
+                        whileHover={{ scale: 1.01, y: -2 }}
+                        className="flex-1"
+                      >
+                        <GlassCard 
+                          glow={tx.status === 'success' ? 'emerald' : tx.status === 'pending' ? 'amber' : 'red'}
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <TypeBadge type={tx.type as 'freeze' | 'unfreeze' | 'confirm' | 'execute'} />
+                              <StatusBadge 
+                                status={tx.status as 'success' | 'pending' | 'failed'}
+                                pulse={tx.status === 'pending'}
+                              >
+                                {tx.status.toUpperCase()}
+                              </StatusBadge>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
+                              <Clock className="w-3 h-3" />
+                              <span title={formatFullTime(tx.timestamp)}>
+                                {formatTime(tx.timestamp)}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">{t('history.target')}</span>
-                          <AddressDisplay address={tx.target} />
-                        </div>
-                      </div>
-                    </GlassCard>
-                  </motion.div>
-                ))
+
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">{t('history.proposalId')}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="terminal-text font-mono text-sm">#{tx.id}</span>
+                                <motion.button
+                                  whileHover={{ scale: 1.1 }}
+                                  onClick={() => window.open(getExplorerUrl('address', CONTRACTS.MULTISIG), '_blank')}
+                                  className="p-1 hover:bg-muted/50"
+                                  style={{ borderRadius: '2px' }}
+                                  title={t('history.viewOnExplorer')}
+                                >
+                                  <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                                </motion.button>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">{t('history.target')}</span>
+                              <AddressDisplay address={tx.target} />
+                            </div>
+                          </div>
+                        </GlassCard>
+                      </motion.div>
+                    </motion.div>
+                  ))}
+                </>
               )}
             </div>
           </div>
-
         </div>
       </main>
     </Layout>

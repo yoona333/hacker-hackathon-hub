@@ -95,60 +95,140 @@
     --line-height-tight: 1.4;
     --line-height-loose: 1.8;
 
-    /* Shadow system */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
-    --shadow-glow-amber: 0 0 20px hsl(38 92% 50% / 0.3);
-    --shadow-glow-emerald: 0 0 20px hsl(158 64% 52% / 0.3);
-    --shadow-glow-red: 0 0 20px hsl(0 55% 48% / 0.25);
+    /* 5-Level Shadow System - 渐进式深度层级 */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.08);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.24), 0 8px 16px rgba(0, 0, 0, 0.12);
+    --shadow-2xl: 0 24px 48px rgba(0, 0, 0, 0.3), 0 12px 24px rgba(0, 0, 0, 0.15);
+
+    /* Enhanced glow shadows - 超强发光效果 */
+    --shadow-glow-amber:
+      0 0 30px hsl(38 92% 50% / 0.6),
+      0 0 60px hsl(38 92% 50% / 0.4),
+      0 0 90px hsl(38 92% 50% / 0.2),
+      0 0 120px hsl(38 92% 50% / 0.1);
+
+    --shadow-glow-emerald:
+      0 0 30px hsl(158 64% 52% / 0.6),
+      0 0 60px hsl(158 64% 52% / 0.4),
+      0 0 90px hsl(158 64% 52% / 0.2),
+      0 0 120px hsl(158 64% 52% / 0.1);
+
+    --shadow-glow-red:
+      0 0 30px hsl(0 55% 48% / 0.5),
+      0 0 60px hsl(0 55% 48% / 0.3),
+      0 0 90px hsl(0 55% 48% / 0.15),
+      0 0 120px hsl(0 55% 48% / 0.08);
+
+    /* Enhanced card shadows - 超强深度阴影 + 发光 */
+    --shadow-card:
+      0 6px 12px rgba(0, 0, 0, 0.4),
+      0 15px 30px rgba(0, 0, 0, 0.3),
+      0 2px 6px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 20px hsl(38 92% 50% / 0.05);
+
+    --shadow-card-hover:
+      0 12px 24px rgba(0, 0, 0, 0.45),
+      0 30px 60px rgba(0, 0, 0, 0.35),
+      0 4px 12px rgba(0, 0, 0, 0.25),
+      inset 0 2px 0 rgba(255, 255, 255, 0.15),
+      0 0 60px hsl(38 92% 50% / 0.3),
+      0 0 90px hsl(38 92% 50% / 0.15);
+
+    /* Premium glow effects - 超强发光组合 */
+    --shadow-glow-primary:
+      0 0 30px hsl(38 92% 50% / 0.7),
+      0 0 60px hsl(38 92% 50% / 0.5),
+      0 0 90px hsl(38 92% 50% / 0.3),
+      0 0 120px hsl(38 92% 50% / 0.15),
+      0 0 150px hsl(38 92% 50% / 0.08);
+
+    --shadow-glow-accent:
+      0 0 30px hsl(158 64% 52% / 0.7),
+      0 0 60px hsl(158 64% 52% / 0.5),
+      0 0 90px hsl(158 64% 52% / 0.3),
+      0 0 120px hsl(158 64% 52% / 0.15);
+
+    --shadow-glow-danger:
+      0 0 30px hsl(0 55% 48% / 0.6),
+      0 0 60px hsl(0 55% 48% / 0.4),
+      0 0 90px hsl(0 55% 48% / 0.2),
+      0 0 120px hsl(0 55% 48% / 0.1);
+
+    /* Inner shadows for depth */
+    --shadow-inset:
+      inset 0 2px 4px rgba(0, 0, 0, 0.2),
+      inset 0 1px 2px rgba(0, 0, 0, 0.1);
+
+    --shadow-inset-glow:
+      inset 0 0 20px hsl(38 92% 50% / 0.1),
+      inset 0 2px 4px rgba(0, 0, 0, 0.15);
     
-    /* Enhanced shadow system - 多层阴影增加深度 */
-    --shadow-card: 
-      0 4px 6px rgba(0, 0, 0, 0.3),
-      0 10px 20px rgba(0, 0, 0, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    
-    --shadow-card-hover: 
-      0 8px 12px rgba(0, 0, 0, 0.4),
-      0 20px 40px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      0 0 30px hsl(38 92% 50% / 0.2);
-    
-    /* Enhanced glow effects */
-    --shadow-glow-primary: 
-      0 0 20px hsl(38 92% 50% / 0.3),
-      0 0 40px hsl(38 92% 50% / 0.2),
-      0 0 60px hsl(38 92% 50% / 0.1);
-    
-    --shadow-glow-accent: 
-      0 0 20px hsl(158 64% 52% / 0.3),
-      0 0 40px hsl(158 64% 52% / 0.2);
-    
-    /* Color gradients - 增加视觉层次 */
-    --primary-gradient: linear-gradient(135deg, 
-      hsl(38 92% 50%) 0%, 
-      hsl(38 92% 60%) 50%, 
-      hsl(38 92% 45%) 100%);
-    
-    --accent-gradient: linear-gradient(135deg, 
-      hsl(158 64% 52%) 0%, 
-      hsl(158 64% 62%) 50%, 
-      hsl(158 64% 42%) 100%);
-    
-    /* Background gradients - 增加深度 */
+    /* Enhanced Color gradients - 增强视觉层次 + 多层渐变 */
+    --primary-gradient: linear-gradient(135deg,
+      hsl(38 100% 55%) 0%,
+      hsl(38 92% 50%) 30%,
+      hsl(42 95% 58%) 60%,
+      hsl(38 92% 50%) 100%);
+
+    --accent-gradient: linear-gradient(135deg,
+      hsl(158 70% 58%) 0%,
+      hsl(158 64% 52%) 30%,
+      hsl(165 68% 55%) 60%,
+      hsl(158 64% 52%) 100%);
+
+    --danger-gradient: linear-gradient(135deg,
+      hsl(0 65% 55%) 0%,
+      hsl(0 55% 48%) 30%,
+      hsl(5 60% 52%) 60%,
+      hsl(0 55% 48%) 100%);
+
+    /* Animated gradient background */
+    --animated-gradient: linear-gradient(
+      135deg,
+      hsl(38 92% 50% / 0.1) 0%,
+      hsl(158 64% 52% / 0.05) 25%,
+      hsl(240 6% 4%) 50%,
+      hsl(158 64% 52% / 0.05) 75%,
+      hsl(38 92% 50% / 0.1) 100%
+    );
+
+    /* Background gradients - 增加深度 + 多层次 */
     --background-gradient: radial-gradient(
+      ellipse at 20% 30%,
+      hsl(38 92% 10% / 0.08) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 70%,
+      hsl(158 64% 15% / 0.06) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
       ellipse at top,
       hsl(240 6% 8%) 0%,
       hsl(240 6% 4%) 100%
     );
-    
+
+    /* Enhanced card gradient with shimmer */
     --card-gradient: linear-gradient(
       135deg,
-      hsl(var(--card)) 0%,
-      hsl(240 6% 11%) 50%,
-      hsl(var(--card)) 100%
+      hsl(240 6% 9%) 0%,
+      hsl(240 6% 11%) 25%,
+      hsl(240 6% 10%) 50%,
+      hsl(240 6% 11%) 75%,
+      hsl(240 6% 9%) 100%
+    );
+
+    /* Glass morphism gradient */
+    --glass-gradient: linear-gradient(
+      135deg,
+      hsl(240 6% 12% / 0.7) 0%,
+      hsl(240 6% 9% / 0.5) 50%,
+      hsl(240 6% 12% / 0.7) 100%
     );
     
     /* Color variations - 中间色调 */
@@ -212,20 +292,22 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    /* 使用渐变背景增加深度 */
-    background: 
-      radial-gradient(circle at 20% 50%, hsl(240 6% 8%) 0%, transparent 50%),
-      radial-gradient(circle at 80% 50%, hsl(38 92% 10% / 0.1) 0%, transparent 50%),
-      hsl(var(--terminal-dark));
-    /* 添加微妙的网格纹理 */
-    background-image: 
+    /* 使用增强的多层渐变背景 */
+    background:
+      radial-gradient(circle at 20% 30%, hsl(38 92% 10% / 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, hsl(158 64% 15% / 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at top, hsl(240 6% 8%) 0%, hsl(240 6% 4%) 100%);
+    /* 添加微妙的网格纹理 + 动态渐变 */
+    background-image:
       linear-gradient(hsl(var(--border) / 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.03) 1px, transparent 1px);
-    background-size: 50px 50px;
+      linear-gradient(90deg, hsl(var(--border) / 0.03) 1px, transparent 1px),
+      radial-gradient(ellipse at 50% 50%, hsl(38 92% 50% / 0.02) 0%, transparent 70%);
+    background-size: 50px 50px, 50px 50px, 100% 100%;
     min-height: 100vh;
     font-family: 'IBM Plex Sans', system-ui, sans-serif;
     line-height: var(--line-height-base);
     letter-spacing: 0.01em;
+    animation: background-pulse 20s ease-in-out infinite;
   }
 
   /* Custom scrollbar with amber glow */
@@ -274,8 +356,8 @@
 
   .terminal-card:hover {
     box-shadow: var(--shadow-card-hover);
-    transform: translateY(-4px) scale(1.01);
-    border-color: hsl(var(--terminal-amber) / 0.5);
+    transform: translateY(-8px) scale(1.03);
+    border-color: hsl(var(--terminal-amber) / 0.7);
   }
 
   .terminal-card::before {
@@ -313,10 +395,45 @@
     border-radius: var(--card-radius);
   }
 
-  /* Glass card legacy - using unified spacing */
+  /* Glass card legacy - using unified spacing + enhanced glassmorphism */
   .glass-card {
     @apply terminal-card;
     padding: var(--card-padding);
+    background: var(--glass-gradient);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid hsl(var(--border) / 0.3);
+  }
+
+  /* Premium glass card - 高级玻璃态效果 */
+  .glass-premium {
+    background: linear-gradient(
+      135deg,
+      hsl(240 6% 12% / 0.8) 0%,
+      hsl(240 6% 9% / 0.6) 50%,
+      hsl(240 6% 12% / 0.8) 100%
+    );
+    backdrop-filter: blur(24px) saturate(200%) brightness(1.1);
+    -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(1.1);
+    border: 1px solid hsl(var(--terminal-amber) / 0.2);
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
+    box-shadow:
+      var(--shadow-card),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 40px hsl(var(--terminal-amber) / 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-premium:hover {
+    backdrop-filter: blur(32px) saturate(250%) brightness(1.25);
+    -webkit-backdrop-filter: blur(32px) saturate(250%) brightness(1.25);
+    border-color: hsl(var(--terminal-amber) / 0.6);
+    box-shadow:
+      var(--shadow-card-hover),
+      inset 0 2px 0 rgba(255, 255, 255, 0.2),
+      0 0 60px hsl(var(--terminal-amber) / 0.4);
+    transform: translateY(-6px) scale(1.02);
   }
 
   /* Cyber button with clip-path - optimized for touch targets + enhanced micro-interactions */
@@ -387,9 +504,9 @@
   }
 
   .cyber-button:hover:not(:disabled) {
-    filter: brightness(1.15);
+    filter: brightness(1.3) saturate(1.2);
     box-shadow: var(--shadow-glow-primary);
-    transform: translateY(-2px) scale(1.02);
+    transform: translateY(-4px) scale(1.05);
   }
 
   .cyber-button:active:not(:disabled) {
@@ -425,17 +542,43 @@
     color: hsl(0 0% 5%);
   }
 
-  /* Terminal text gradient */
+  /* Terminal text gradient - 超强动画效果 + 发光 */
   .terminal-text {
     background: linear-gradient(
       90deg,
-      hsl(var(--terminal-amber)),
-      hsl(var(--terminal-emerald))
+      hsl(var(--terminal-amber)) 0%,
+      hsl(42 95% 58%) 25%,
+      hsl(var(--terminal-emerald)) 50%,
+      hsl(165 68% 55%) 75%,
+      hsl(var(--terminal-amber)) 100%
     );
+    background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    text-shadow: 0 0 30px hsl(var(--terminal-amber) / 0.4);
+    text-shadow: 0 0 40px hsl(var(--terminal-amber) / 0.8);
+    animation: gradient-flow 6s linear infinite;
+    filter: drop-shadow(0 0 20px hsl(var(--terminal-amber) / 0.6))
+            drop-shadow(0 0 40px hsl(var(--terminal-emerald) / 0.4));
+  }
+
+  /* Animated gradient text - 超强彩虹流光效果 */
+  .gradient-text-animated {
+    background: linear-gradient(
+      90deg,
+      hsl(38 92% 50%),
+      hsl(158 64% 52%),
+      hsl(200 90% 50%),
+      hsl(38 92% 50%)
+    );
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-flow 8s linear infinite;
+    filter: drop-shadow(0 0 25px hsl(38 92% 50% / 0.6))
+            drop-shadow(0 0 35px hsl(158 64% 52% / 0.5))
+            drop-shadow(0 0 45px hsl(200 90% 50% / 0.4));
   }
 
   /* Address display with terminal style */
@@ -900,21 +1043,23 @@
 }
 
 @keyframes pulse-amber {
-  0%, 100% { 
-    box-shadow: 
-      0 0 15px hsl(var(--terminal-amber) / 0.4),
-      0 0 30px hsl(var(--terminal-amber) / 0.2);
+  0%, 100% {
+    box-shadow:
+      0 0 25px hsl(var(--terminal-amber) / 0.6),
+      0 0 50px hsl(var(--terminal-amber) / 0.4),
+      0 0 75px hsl(var(--terminal-amber) / 0.2);
   }
-  50% { 
-    box-shadow: 
-      0 0 30px hsl(var(--terminal-amber) / 0.6),
-      0 0 60px hsl(var(--terminal-amber) / 0.4);
+  50% {
+    box-shadow:
+      0 0 50px hsl(var(--terminal-amber) / 0.9),
+      0 0 100px hsl(var(--terminal-amber) / 0.7),
+      0 0 150px hsl(var(--terminal-amber) / 0.5);
   }
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
+  50% { transform: translateY(-25px); }
 }
 
 @keyframes spin-slow {
@@ -922,11 +1067,49 @@
   to { transform: rotate(360deg); }
 }
 
-/* Legacy keyframe support */
 @keyframes gradient-flow {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+@keyframes background-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    filter: brightness(1) drop-shadow(0 0 20px hsl(var(--terminal-amber) / 0.5));
+  }
+  50% {
+    filter: brightness(1.4) drop-shadow(0 0 40px hsl(var(--terminal-amber) / 0.8)) drop-shadow(0 0 60px hsl(var(--terminal-amber) / 0.6));
+  }
+}
+
+@keyframes border-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes pulse-glow {
@@ -983,4 +1166,664 @@ w3m-modal [data-testid="fund-wallet"],
 w3m-modal [data-testid="send"],
 w3m-modal [data-testid="activity"] {
   display: none !important;
+}
+
+/* ===== ENHANCED VISUAL COMPONENTS ===== */
+
+/* Animated gradient border - 超强动态流光边框 */
+.animated-border {
+  position: relative;
+  background: hsl(var(--card));
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+}
+
+.animated-border::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: var(--card-radius);
+  background: linear-gradient(
+    90deg,
+    hsl(var(--terminal-amber)),
+    hsl(var(--terminal-emerald)),
+    hsl(200 90% 50%),
+    hsl(var(--terminal-amber))
+  );
+  background-size: 300% auto;
+  animation: border-flow 6s linear infinite;
+  z-index: -1;
+  opacity: 0.8;
+  filter: blur(2px) brightness(1.3);
+}
+
+.animated-border:hover::before {
+  opacity: 1;
+  animation-duration: 3s;
+  filter: blur(3px) brightness(1.5);
+  inset: -4px;
+}
+
+/* Shimmer effect - 超强闪光扫过效果 */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.25) 50%,
+    transparent 80%
+  );
+  animation: shimmer 3s infinite;
+  pointer-events: none;
+}
+
+/* Holographic card - 超强全息卡片效果 */
+.holographic-card {
+  @apply terminal-card;
+  background: linear-gradient(
+    135deg,
+    hsl(240 6% 9%) 0%,
+    hsl(38 92% 10% / 0.2) 25%,
+    hsl(240 6% 9%) 50%,
+    hsl(158 64% 15% / 0.15) 75%,
+    hsl(240 6% 9%) 100%
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+  border: 1px solid hsl(var(--terminal-amber) / 0.4);
+  box-shadow:
+    var(--shadow-card),
+    0 0 30px hsl(var(--terminal-amber) / 0.1);
+}
+
+.holographic-card:hover {
+  animation-duration: 6s;
+  border-color: hsl(var(--terminal-amber) / 0.8);
+  box-shadow:
+    var(--shadow-card-hover),
+    0 0 60px hsl(var(--terminal-amber) / 0.3),
+    0 0 90px hsl(var(--terminal-emerald) / 0.2);
+  transform: translateY(-6px) scale(1.02);
+}
+
+/* Neon pulse button - 霓虹脉冲按钮 */
+.neon-pulse-btn {
+  @apply cyber-button;
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Gradient border card - 渐变边框卡片 */
+.gradient-border-card {
+  position: relative;
+  background: hsl(var(--card));
+  padding: var(--card-padding);
+  border-radius: var(--card-radius);
+}
+
+.gradient-border-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--card-radius);
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--terminal-amber)) 0%,
+    hsl(var(--terminal-emerald)) 50%,
+    hsl(var(--terminal-amber)) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Aurora background - 超强极光背景效果 */
+.aurora-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.aurora-bg::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    hsl(38 92% 50% / 0.25) 0%,
+    transparent 40%
+  ),
+  radial-gradient(
+    circle at 30% 70%,
+    hsl(158 64% 52% / 0.2) 0%,
+    transparent 40%
+  ),
+  radial-gradient(
+    circle at 70% 30%,
+    hsl(200 90% 50% / 0.15) 0%,
+    transparent 40%
+  );
+  animation: aurora-flow 20s ease-in-out infinite;
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+@keyframes aurora-flow {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(10%, 10%) rotate(120deg);
+  }
+  66% {
+    transform: translate(-10%, 5%) rotate(240deg);
+  }
+}
+
+/* Data flow animation - 超强数据流动效果 */
+.data-flow {
+  position: relative;
+  overflow: hidden;
+}
+
+.data-flow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--terminal-amber) / 0.4),
+    hsl(var(--terminal-emerald) / 0.3),
+    transparent
+  );
+  animation: data-stream 2s linear infinite;
+  filter: blur(8px);
+}
+
+@keyframes data-stream {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Glitch text effect - 故障文字效果 */
+.glitch-text {
+  position: relative;
+  color: hsl(var(--terminal-amber));
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.8;
+}
+
+.glitch-text::before {
+  color: hsl(var(--terminal-emerald));
+  animation: glitch-1 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+}
+
+.glitch-text::after {
+  color: hsl(0 55% 48%);
+  animation: glitch-2 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both infinite;
+  clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+}
+
+@keyframes glitch-1 {
+  0%, 100% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+}
+
+@keyframes glitch-2 {
+  0%, 100% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(2px, -2px);
+  }
+  40% {
+    transform: translate(2px, 2px);
+  }
+  60% {
+    transform: translate(-2px, -2px);
+  }
+  80% {
+    transform: translate(-2px, 2px);
+  }
+}
+
+/* ===== PREMIUM 3D & ADVANCED EFFECTS ===== */
+
+/* 3D Perspective Card - 透视3D卡片 */
+.card-3d {
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.card-3d:hover {
+  transform: rotateY(5deg) rotateX(5deg) translateZ(20px);
+  box-shadow:
+    var(--shadow-card-hover),
+    0 0 80px hsl(var(--terminal-amber) / 0.4);
+}
+
+/* Liquid Metal Effect - 液态金属效果 */
+.liquid-metal {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    hsl(240 6% 15%) 0%,
+    hsl(240 6% 25%) 25%,
+    hsl(240 6% 15%) 50%,
+    hsl(240 6% 30%) 75%,
+    hsl(240 6% 15%) 100%
+  );
+  background-size: 400% 400%;
+  animation: liquid-flow 8s ease-in-out infinite;
+  border: 1px solid hsl(var(--terminal-amber) / 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 0 40px hsl(var(--terminal-amber) / 0.2);
+}
+
+@keyframes liquid-flow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  33% {
+    background-position: 100% 50%;
+  }
+  66% {
+    background-position: 50% 100%;
+  }
+}
+
+/* Mirror Reflection - 镜面倒影效果 */
+.mirror-card {
+  position: relative;
+}
+
+.mirror-card::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: inherit;
+  transform: scaleY(-1);
+  opacity: 0.15;
+  filter: blur(8px);
+  mask-image: linear-gradient(to bottom, black 0%, transparent 80%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 80%);
+  pointer-events: none;
+}
+
+/* Neon Scan Lines - 霓虹扫描线 */
+.neon-scanlines {
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-scanlines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    hsl(var(--terminal-amber) / 0.05) 2px,
+    hsl(var(--terminal-amber) / 0.05) 4px
+  );
+  pointer-events: none;
+  animation: scanlines-move 8s linear infinite;
+}
+
+@keyframes scanlines-move {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(20px);
+  }
+}
+
+/* Light Beam Scan - 光束扫描 */
+.light-beam {
+  position: relative;
+  overflow: hidden;
+}
+
+.light-beam::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -20%;
+  width: 140%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--terminal-amber) / 0.1) 45%,
+    hsl(var(--terminal-amber) / 0.3) 50%,
+    hsl(var(--terminal-amber) / 0.1) 55%,
+    transparent
+  );
+  animation: beam-scan 6s ease-in-out infinite;
+  pointer-events: none;
+  transform: rotate(45deg);
+}
+
+@keyframes beam-scan {
+  0%, 100% {
+    top: -100%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+/* Floating Particles - 浮动粒子效果 */
+.floating-particles {
+  position: relative;
+  overflow: hidden;
+}
+
+.floating-particles::before,
+.floating-particles::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: hsl(var(--terminal-amber));
+  box-shadow:
+    20px 30px 0 hsl(var(--terminal-emerald)),
+    -30px 50px 0 hsl(var(--terminal-amber)),
+    50px -20px 0 hsl(200 90% 50%),
+    -50px -40px 0 hsl(var(--terminal-emerald)),
+    70px 60px 0 hsl(var(--terminal-amber)),
+    -70px 20px 0 hsl(200 90% 50%),
+    100px -50px 0 hsl(var(--terminal-emerald)),
+    -100px 70px 0 hsl(var(--terminal-amber));
+  animation: particles-float 20s linear infinite;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.floating-particles::after {
+  animation-delay: -10s;
+  animation-duration: 25s;
+}
+
+@keyframes particles-float {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(10px, -20px);
+  }
+  50% {
+    transform: translate(-15px, 15px);
+  }
+  75% {
+    transform: translate(20px, -10px);
+  }
+}
+
+/* Cyber Grid Background - 赛博网格背景 */
+.cyber-grid {
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-grid::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background-image:
+    linear-gradient(hsl(var(--terminal-amber) / 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--terminal-amber) / 0.1) 1px, transparent 1px);
+  background-size: 30px 30px;
+  animation: grid-move 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes grid-move {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(30px, 30px);
+  }
+}
+
+/* Holographic Foil - 全息箔纸效果 */
+.holographic-foil {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--card)) 0%,
+    hsl(38 92% 10% / 0.3) 20%,
+    hsl(var(--card)) 40%,
+    hsl(158 64% 15% / 0.3) 60%,
+    hsl(var(--card)) 80%,
+    hsl(200 90% 20% / 0.3) 100%
+  );
+  background-size: 300% 300%;
+  animation: foil-shift 10s ease infinite;
+}
+
+@keyframes foil-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Neon Border Pulse - 霓虹边框脉冲 */
+.neon-border-pulse {
+  position: relative;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
+    linear-gradient(
+      90deg,
+      hsl(var(--terminal-amber)),
+      hsl(var(--terminal-emerald)),
+      hsl(200 90% 50%),
+      hsl(var(--terminal-amber))
+    ) border-box;
+  background-size: auto, 300% 100%;
+  animation: border-pulse 4s linear infinite;
+}
+
+@keyframes border-pulse {
+  0%, 100% {
+    background-position: 0% 0%, 0% 0%;
+    box-shadow:
+      0 0 20px hsl(var(--terminal-amber) / 0.3),
+      inset 0 0 20px hsl(var(--terminal-amber) / 0.1);
+  }
+  50% {
+    background-position: 0% 0%, 100% 0%;
+    box-shadow:
+      0 0 40px hsl(var(--terminal-emerald) / 0.5),
+      inset 0 0 30px hsl(var(--terminal-emerald) / 0.2);
+  }
+}
+
+/* Digital Rain Effect - 数字雨效果 */
+.digital-rain {
+  position: relative;
+  overflow: hidden;
+}
+
+.digital-rain::before {
+  content: '0101010101010101';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  right: 0;
+  font-family: monospace;
+  font-size: 12px;
+  color: hsl(var(--terminal-emerald) / 0.3);
+  word-wrap: break-word;
+  animation: rain-fall 8s linear infinite;
+  pointer-events: none;
+  line-height: 1.2;
+}
+
+@keyframes rain-fall {
+  0% {
+    top: -100%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* Energy Shield - 能量护盾效果 */
+.energy-shield {
+  position: relative;
+  border: 2px solid hsl(var(--terminal-amber) / 0.5);
+  box-shadow:
+    0 0 20px hsl(var(--terminal-amber) / 0.3),
+    inset 0 0 20px hsl(var(--terminal-amber) / 0.1);
+  animation: shield-pulse 3s ease-in-out infinite;
+}
+
+@keyframes shield-pulse {
+  0%, 100% {
+    border-color: hsl(var(--terminal-amber) / 0.5);
+    box-shadow:
+      0 0 20px hsl(var(--terminal-amber) / 0.3),
+      inset 0 0 20px hsl(var(--terminal-amber) / 0.1);
+  }
+  50% {
+    border-color: hsl(var(--terminal-amber) / 0.9);
+    box-shadow:
+      0 0 40px hsl(var(--terminal-amber) / 0.6),
+      inset 0 0 40px hsl(var(--terminal-amber) / 0.3);
+  }
+}
+
+/* Glitch Distortion - 故障扭曲效果 */
+.glitch-distortion {
+  position: relative;
+  animation: glitch-distort 5s infinite;
+}
+
+@keyframes glitch-distort {
+  0%, 90%, 100% {
+    transform: translate(0) skew(0deg);
+    filter: hue-rotate(0deg);
+  }
+  91% {
+    transform: translate(-2px, 1px) skew(1deg);
+    filter: hue-rotate(90deg);
+  }
+  92% {
+    transform: translate(2px, -1px) skew(-1deg);
+    filter: hue-rotate(-90deg);
+  }
+  93% {
+    transform: translate(-1px, 2px) skew(0.5deg);
+    filter: hue-rotate(45deg);
+  }
+  94% {
+    transform: translate(0) skew(0deg);
+    filter: hue-rotate(0deg);
+  }
+}
+
+/* Plasma Effect - 等离子效果 */
+.plasma-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.plasma-effect::before {
+  content: '';
+  position: absolute;
+  inset: -100%;
+  background:
+    radial-gradient(circle at 20% 50%, hsl(38 92% 50% / 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, hsl(158 64% 52% / 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 50% 80%, hsl(200 90% 50% / 0.3) 0%, transparent 50%);
+  animation: plasma-move 15s ease-in-out infinite;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+@keyframes plasma-move {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(20%, 20%) rotate(120deg);
+  }
+  66% {
+    transform: translate(-20%, 10%) rotate(240deg);
+  }
 }
